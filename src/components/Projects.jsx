@@ -6,9 +6,7 @@ import {
   Github,
   Star,
   Calendar,
-  Cpu,
   Code2,
-  Cloud,
   Search,
   LayoutGrid,
   List,
@@ -20,7 +18,6 @@ import {
   Zap,
   Eye,
   GitFork,
-  Crown,
   Rocket,
   ArrowRight,
   Mail,
@@ -379,21 +376,20 @@ const StatusBadge = ({ status }) => {
 
 /* ═══════════════ PROJECT CARD (GRID MODE) ═══════════════════ */
 
+const CARD_PATTERNS = {
+  Hardware:
+    "radial-gradient(ellipse at 30% 70%, rgba(245,158,11,0.12), transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(0,245,255,0.08), transparent 50%)",
+  "Full-Stack":
+    "radial-gradient(ellipse at 25% 80%, rgba(99,102,241,0.12), transparent 60%), radial-gradient(ellipse at 75% 20%, rgba(0,245,255,0.1), transparent 50%)",
+  "Web Dev":
+    "radial-gradient(ellipse at 30% 60%, rgba(0,245,255,0.1), transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(139,92,246,0.1), transparent 50%)",
+  IoT: "radial-gradient(ellipse at 40% 80%, rgba(6,182,212,0.12), transparent 60%), radial-gradient(ellipse at 60% 20%, rgba(139,92,246,0.08), transparent 50%)",
+  "AI/ML":
+    "radial-gradient(ellipse at 30% 70%, rgba(139,92,246,0.12), transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(240,171,252,0.1), transparent 50%)",
+};
+
 const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
   const [hovered, setHovered] = useState(false);
-
-  // Category-specific visual pattern
-  const patterns = {
-    Hardware:
-      "radial-gradient(ellipse at 30% 70%, rgba(245,158,11,0.12), transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(0,245,255,0.08), transparent 50%)",
-    "Full-Stack":
-      "radial-gradient(ellipse at 25% 80%, rgba(99,102,241,0.12), transparent 60%), radial-gradient(ellipse at 75% 20%, rgba(0,245,255,0.1), transparent 50%)",
-    "Web Dev":
-      "radial-gradient(ellipse at 30% 60%, rgba(0,245,255,0.1), transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(139,92,246,0.1), transparent 50%)",
-    IoT: "radial-gradient(ellipse at 40% 80%, rgba(6,182,212,0.12), transparent 60%), radial-gradient(ellipse at 60% 20%, rgba(139,92,246,0.08), transparent 50%)",
-    "AI/ML":
-      "radial-gradient(ellipse at 30% 70%, rgba(139,92,246,0.12), transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(240,171,252,0.1), transparent 50%)",
-  };
 
   return (
     <motion.div
@@ -431,7 +427,7 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
               className="absolute inset-0 opacity-60"
               style={{
                 backgroundImage:
-                  patterns[project.category] || patterns["Web Dev"],
+                  CARD_PATTERNS[project.category] || CARD_PATTERNS["Web Dev"],
               }}
             />
 
@@ -698,7 +694,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
         exit={{ opacity: 0, y: 40, scale: 0.95 }}
         transition={{ duration: 0.3 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[20px] z-10"
+        className="relative w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-[20px] z-10"
         style={{
           background: "rgba(10, 10, 30, 0.95)",
           backdropFilter: "blur(24px)",
@@ -706,7 +702,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
         }}>
         {/* Close + Nav buttons */}
         <div
-          className="sticky top-0 z-20 flex items-center justify-between p-4"
+          className="sticky top-0 z-20 flex items-center justify-between p-3 sm:p-4"
           style={{
             background: "rgba(10,10,30,0.9)",
             borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -748,28 +744,28 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
 
         <div className="grid gap-0 lg:grid-cols-2">
           {/* Left: Visual */}
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Browser mockup */}
             <div
               className="overflow-hidden rounded-xl"
               style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
               <div
-                className="flex items-center gap-2 px-4 py-2.5"
+                className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5"
                 style={{ background: "rgba(255,255,255,0.04)" }}>
                 <div
-                  className="w-3 h-3 rounded-full"
+                  className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: "#ff5f57" }}
                 />
                 <div
-                  className="w-3 h-3 rounded-full"
+                  className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: "#febc2e" }}
                 />
                 <div
-                  className="w-3 h-3 rounded-full"
+                  className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: "#28c840" }}
                 />
                 <div
-                  className="flex-1 mx-4 px-3 py-1 rounded-md text-[10px] text-slate-500"
+                  className="flex-1 min-w-0 mx-2 sm:mx-4 px-2 sm:px-3 py-1 rounded-md text-[10px] text-slate-500 truncate"
                   style={{ background: "rgba(255,255,255,0.04)" }}>
                   {project.github}
                 </div>
@@ -805,7 +801,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
 
           {/* Right: Details */}
           <div
-            className="p-6 lg:border-l"
+            className="p-4 sm:p-6 lg:border-l"
             style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <div className="flex items-center gap-3 mb-4">
               <StatusBadge status={project.status} />
@@ -814,7 +810,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
               </span>
             </div>
 
-            <h2 className="mb-4 text-2xl font-bold text-transparent lg:text-3xl font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
+            <h2 className="mb-4 text-xl sm:text-2xl lg:text-3xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
               {project.title}
             </h2>
 
@@ -855,7 +851,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             )}
 
             {/* Metrics */}
-            <div className="flex items-center gap-5 mb-6 text-sm text-slate-400">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-5 mb-6 text-sm text-slate-400">
               <span className="flex items-center gap-1.5">
                 <Star className="w-4 h-4 text-yellow-400" />
                 {project.stars} stars
@@ -871,13 +867,13 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             </div>
 
             {/* CTA */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               {project.live && (
                 <a
                   href={project.live}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105"
+                  className="px-4 sm:px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105"
                   style={{
                     background: "linear-gradient(135deg, #00f5ff, #8b5cf6)",
                     color: "#fff",
@@ -889,13 +885,12 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105"
+                className="px-4 sm:px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105"
                 style={{
-                  background: "transparent",
                   border: "1px solid rgba(0,245,255,0.3)",
                   color: "#22d3ee",
                 }}>
-                <Star className="w-4 h-4" /> View on GitHub
+                <Star className="w-4 h-4" /> GitHub
               </a>
               <button
                 onClick={copyLink}
@@ -906,136 +901,13 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
-                {copied ? "Copied!" : "Copy Link"}
+                {copied ? "Copied!" : "Copy"}
               </button>
             </div>
           </div>
         </div>
       </motion.div>
     </motion.div>
-  );
-};
-
-/* ═══════════════ FEATURED SPOTLIGHT ═════════════════════════ */
-
-const FeaturedSpotlight = ({ project, onOpenDetail }) => {
-  const [ref] = useInView({ triggerOnce: true, threshold: 0.15 });
-  return (
-    <ScrollReveal>
-      <div
-        ref={ref}
-        className="relative mb-16 overflow-hidden rounded-2xl glass group">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at 20% 50%, rgba(0,245,255,0.06), transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(139,92,246,0.06), transparent 60%)",
-          }}
-        />
-        <div className="relative grid gap-6 p-6 lg:grid-cols-2 lg:p-10">
-          {/* Left: Mockup */}
-          <div className="relative">
-            {/* Featured badge */}
-            <div
-              className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold"
-              style={{
-                background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
-                color: "#1a1a2e",
-              }}>
-              <Crown className="w-3.5 h-3.5" /> Featured
-            </div>
-            {/* Laptop frame */}
-            <div
-              className="overflow-hidden rounded-xl"
-              style={{
-                border: "2px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 0 40px rgba(0,245,255,0.08)",
-              }}>
-              <div
-                className="flex items-center gap-1.5 px-4 py-2"
-                style={{ background: "rgba(255,255,255,0.04)" }}>
-                <div
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: "#ff5f57" }}
-                />
-                <div
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: "#febc2e" }}
-                />
-                <div
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: "#28c840" }}
-                />
-              </div>
-              <img
-                src={project.image}
-                alt={project.title}
-                className="object-cover w-full aspect-video"
-                loading="lazy"
-              />
-            </div>
-          </div>
-
-          {/* Right: Info */}
-          <div className="flex flex-col justify-center">
-            <StatusBadge status={project.status} />
-            <h3 className="mt-4 mb-3 text-2xl font-bold text-transparent lg:text-3xl font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
-              {project.title}
-            </h3>
-            <p className="mb-5 text-sm leading-relaxed text-slate-400">
-              {project.fullDesc?.slice(0, 200) || project.shortDesc}...
-            </p>
-
-            {/* Tech icons */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {project.tags.map((t) => (
-                <TechIcon key={t} name={t} size={20} />
-              ))}
-            </div>
-
-            {/* Stats */}
-            <div className="flex items-center gap-5 mb-6 text-sm text-slate-400">
-              <span className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-yellow-400" />
-                {project.stars}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <GitFork className="w-4 h-4" />
-                {project.forks}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" />
-                {project.year}
-              </span>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => onOpenDetail(project)}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105 cursor-pointer"
-                style={{
-                  background: "linear-gradient(135deg, #00f5ff, #8b5cf6)",
-                  color: "#fff",
-                }}>
-                <Eye className="w-4 h-4" /> View Details
-              </button>
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all duration-200 hover:scale-105"
-                style={{
-                  border: "1px solid rgba(0,245,255,0.3)",
-                  color: "#22d3ee",
-                }}>
-                <Github className="w-4 h-4" /> Source Code
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ScrollReveal>
   );
 };
 
@@ -1261,7 +1133,7 @@ const Projects = () => {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/3 right-0 h-[500px] bg-purple-500/5 rounded-full blur-[128px]" />
         <div className="absolute bottom-0 left-0 h-[400px] bg-cyan-500/5 rounded-full blur-[128px]" />
-        <div className="absolute top-2/3 left-1/3 w-96 h-96 bg-fuchsia-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-2/3 left-1/3 h-96 bg-fuchsia-500/5 rounded-full blur-[128px]" />
       </div>
 
       <div className="relative z-10 section-padding pt-28">
@@ -1311,14 +1183,6 @@ const Projects = () => {
               <StatCard key={stat.title} {...stat} index={i} />
             ))}
           </div>
-
-          {/* ══════ FEATURED SPOTLIGHT ══════ */}
-          {featuredProject && (
-            <FeaturedSpotlight
-              project={featuredProject}
-              onOpenDetail={setModalProject}
-            />
-          )}
 
           {/* ══════ FILTER BAR ══════ */}
           <div className="sticky top-[72px] z-30 mb-10">
