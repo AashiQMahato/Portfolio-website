@@ -28,7 +28,7 @@ import {
 import { TypeAnimation } from "react-type-animation";
 import { Link } from "react-router-dom";
 import { ScrollReveal, SpotlightCard } from "./ui";
-import aams from "../assets/aams.png";
+import aams from "../assets/AAMS.png";
 
 /* ════════════════════════ CONSTANTS ═══════════════════════════ */
 
