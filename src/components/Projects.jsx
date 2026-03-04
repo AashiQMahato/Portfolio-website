@@ -3,7 +3,6 @@ import React, {
   useEffect,
   useRef,
   useMemo,
-  useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
@@ -12,7 +11,6 @@ import {
   Github,
   Star,
   Calendar,
-  ArrowUpRight,
   Cpu,
   Code2,
   Cloud,
@@ -37,6 +35,7 @@ import {
 import { TypeAnimation } from "react-type-animation";
 import { Link } from "react-router-dom";
 import { ScrollReveal, SpotlightCard } from "./ui";
+import aams from "../assets/aams.png";
 
 /* ════════════════════════ CONSTANTS ═══════════════════════════ */
 
@@ -107,7 +106,7 @@ const projects = [
     views: 340,
     year: "2023",
     teamSize: 3,
-    featured: true,
+    featured: false,
     highlights: [
       "Custom PCB design for compact form factor",
       "Power-efficient sleep mode for extended battery",
@@ -120,8 +119,7 @@ const projects = [
       "A web-integrated attendance management system using facial recognition that streamlines tracking for educational institutions.",
     fullDesc:
       "Built to eliminate manual attendance headaches in educational institutions, this system uses a Python-based facial recognition engine powered by the face_recognition library. Students register once with a photo, and the system recognizes them in real-time via webcam. The React frontend provides a clean dashboard for teachers, while the MongoDB backend stores all attendance data with timestamps. Reports can be generated as CSV exports with filtering by date, class, and student.",
-    image:
-      "https://ubsapp.com/wp-content/uploads/2022/03/attendance_management-copy.png",
+    image: aams,
     tags: ["Python", "Face Recognition", "React", "MongoDB"],
     features: [
       "99.5% facial recognition accuracy",
