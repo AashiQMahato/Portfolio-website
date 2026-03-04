@@ -22,61 +22,29 @@ import logo from "../assets/logo.jpeg";
 /* ── Theme Toggle ── */
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
-  const themes = ["dark", "system", "light"];
-  const idx = themes.indexOf(theme);
+  const themes = ["dark", "light", "system"];
+  const idx = Math.max(0, themes.indexOf(theme));
 
-  const cycleTheme = () => setTheme(themes[(idx + 1) % 3]);
+  const cycleTheme = () => setTheme(themes[(idx + 1) % themes.length]);
 
-  const icons = [
-    { key: "dark", Icon: Moon, label: "Dark" },
-    { key: "system", Icon: Monitor, label: "System" },
-    { key: "light", Icon: Sun, label: "Light" },
-  ];
+  const iconMap = {
+    dark: { Icon: Moon, label: "Dark" },
+    light: { Icon: Sun, label: "Light" },
+    system: { Icon: Monitor, label: "System" },
+  };
+
+  const { Icon, label } = iconMap[theme] || iconMap.dark;
 
   return (
-    <>
-      {/* Desktop: pill with 3 segments */}
-      <div className="hidden sm:flex items-center gap-0 p-1 rounded-full glass relative">
-        {/* Sliding highlight */}
-        <motion.div
-          className="absolute top-1 bottom-1 rounded-full"
-          style={{
-            width: "28px",
-            background: "rgba(0, 245, 255, 0.15)",
-            border: "1px solid rgba(0, 245, 255, 0.2)",
-          }}
-          animate={{ left: `${idx * 28 + 4}px` }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        />
-        {icons.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTheme(t.key)}
-            className={`relative z-10 w-7 h-7 flex items-center justify-center rounded-full transition-colors duration-300 cursor-pointer ${
-              theme === t.key
-                ? "text-cyan-300"
-                : "text-slate-500 hover:text-slate-300"
-            }`}
-            title={t.label}>
-            <t.Icon className="w-3.5 h-3.5" />
-          </button>
-        ))}
-      </div>
-
-      {/* Mobile: single cycling button */}
-      <button
-        onClick={cycleTheme}
-        className="sm:hidden p-2 rounded-xl glass text-slate-400 hover:text-white transition-colors cursor-pointer"
-        title={`Theme: ${theme}`}>
-        {theme === "dark" ? (
-          <Moon className="w-4 h-4" />
-        ) : theme === "light" ? (
-          <Sun className="w-4 h-4" />
-        ) : (
-          <Monitor className="w-4 h-4" />
-        )}
-      </button>
-    </>
+    <motion.button
+      onClick={cycleTheme}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="p-2.5 rounded-xl glass text-dark-300 hover:text-white transition-colors cursor-pointer"
+      title={`Theme: ${label} (click to cycle)`}
+      aria-label={`Theme toggle. Current: ${label}`}>
+      <Icon className="w-4 h-4" />
+    </motion.button>
   );
 };
 
@@ -116,6 +84,10 @@ const Navbar = () => {
     };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   const toggleMenu = useCallback(() => setIsMenuOpen((prev) => !prev), []);
 
   return (
@@ -124,13 +96,17 @@ const Navbar = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 ${
           isScrolled
             ? "py-2 glass shadow-lg shadow-primary-500/5"
             : "py-4 bg-transparent"
-        }`}>
+        }`}
+        style={{
+          paddingLeft: "env(safe-area-inset-left)",
+          paddingRight: "env(safe-area-inset-right)",
+        }}>
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-w-0">
             {/* Logo */}
             <Link to="/" className="relative group">
               <motion.div
@@ -146,7 +122,7 @@ const Navbar = () => {
                     />
                   </div>
                 </div>
-                <span className="hidden text-xl font-bold sm:block font-display">
+                <span className="hidden text-xl font-bold md:block font-display">
                   <span className="gradient-text">Aashiq</span>
                   <span className="text-dark-400">.dev</span>
                 </span>
@@ -192,23 +168,25 @@ const Navbar = () => {
             </nav>
 
             {/* Right Section */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <ThemeToggle />
 
-              <Magnet strength={0.2}>
-                <Link
-                  to="/contactus"
-                  className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-secondary-500 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-300 hover:-translate-y-0.5">
-                  <Sparkles className="w-4 h-4" />
-                  Hire Me
-                </Link>
-              </Magnet>
+              <div className="hidden md:block">
+                <Magnet strength={0.2}>
+                  <Link
+                    to="/contactus"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-secondary-500 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-300 hover:-translate-y-0.5">
+                    <Sparkles className="w-4 h-4" />
+                    Hire Me
+                  </Link>
+                </Magnet>
+              </div>
 
               <motion.button
                 onClick={toggleMenu}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="lg:hidden p-2.5 rounded-xl glass text-dark-300"
+                className="lg:hidden p-2.5 rounded-xl glass text-dark-300 hover:text-white transition-colors flex-shrink-0"
                 aria-label="Toggle menu">
                 <AnimatePresence mode="wait">
                   {isMenuOpen ? (

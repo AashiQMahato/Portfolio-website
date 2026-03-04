@@ -781,9 +781,9 @@ const Skills = () => {
     <div className="relative min-h-screen">
       {/* Decorative blurs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/5 rounded-full blur-[128px]" />
-        <div className="absolute top-3/4 left-1/2 w-72 h-72 bg-fuchsia-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-1/4 left-1/4 h-96 bg-cyan-500/5 rounded-full blur-[128px]" />
+        <div className="absolute bottom-1/4 right-1/4 h-80 bg-purple-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-3/4 left-1/2 h-72 bg-fuchsia-500/5 rounded-full blur-[128px]" />
       </div>
 
       {/* Floating tech pills */}

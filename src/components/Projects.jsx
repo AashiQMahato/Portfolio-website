@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import {
@@ -26,10 +21,8 @@ import {
   Eye,
   GitFork,
   Crown,
-  Brain,
   Rocket,
   ArrowRight,
-  Sparkles,
   Mail,
 } from "lucide-react";
 import { TypeAnimation } from "react-type-animation";
@@ -40,7 +33,6 @@ import aams from "../assets/aams.png";
 /* ════════════════════════ CONSTANTS ═══════════════════════════ */
 
 const DEVICON = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
-const SI = "https://cdn.simpleicons.org";
 
 const TECH_ICONS = {
   Arduino: `${DEVICON}/arduino/arduino-original.svg`,
@@ -99,7 +91,6 @@ const projects = [
     live: null,
     category: "Hardware",
     cats: ["Hardware", "IoT"],
-    icon: Cpu,
     status: "live",
     stars: 12,
     forks: 5,
@@ -134,7 +125,6 @@ const projects = [
     live: null,
     category: "Full-Stack",
     cats: ["Full-Stack", "AI/ML"],
-    icon: Code2,
     status: "live",
     stars: 24,
     forks: 8,
@@ -169,7 +159,6 @@ const projects = [
     live: null,
     category: "Web Dev",
     cats: ["Web Dev", "AI/ML"],
-    icon: Cloud,
     status: "live",
     stars: 18,
     forks: 6,
@@ -697,13 +686,10 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[80] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
       onClick={onClose}>
       {/* Backdrop */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
-      />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
 
       {/* Modal */}
       <motion.div
@@ -933,7 +919,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
 /* ═══════════════ FEATURED SPOTLIGHT ═════════════════════════ */
 
 const FeaturedSpotlight = ({ project, onOpenDetail }) => {
-  const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.15 });
+  const [ref] = useInView({ triggerOnce: true, threshold: 0.15 });
   return (
     <ScrollReveal>
       <div
@@ -1273,8 +1259,8 @@ const Projects = () => {
     <div className="relative min-h-screen">
       {/* Decorative blurs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[128px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-1/3 right-0 h-[500px] bg-purple-500/5 rounded-full blur-[128px]" />
+        <div className="absolute bottom-0 left-0 h-[400px] bg-cyan-500/5 rounded-full blur-[128px]" />
         <div className="absolute top-2/3 left-1/3 w-96 h-96 bg-fuchsia-500/5 rounded-full blur-[128px]" />
       </div>
 

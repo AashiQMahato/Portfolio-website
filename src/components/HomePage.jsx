@@ -19,8 +19,8 @@ const HomePage = () => {
     <div className="relative flex items-center min-h-screen overflow-hidden">
       {/* Ambient Gradient Orbs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/4 -right-32 w-[400px] h-[400px] bg-secondary-500/10 rounded-full blur-[128px]" />
+        <div className="absolute top-1/4 -left-32 h-[500px] bg-primary-500/10 rounded-full blur-[128px]" />
+        <div className="absolute bottom-1/4 -right-32 h-[400px] bg-secondary-500/10 rounded-full blur-[128px]" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-500/5 rounded-full blur-[128px]" />
       </div>
 

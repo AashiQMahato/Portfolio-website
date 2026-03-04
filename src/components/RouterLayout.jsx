@@ -10,7 +10,7 @@ const RouterLayout = () => {
   return (
     <ThemeProvider>
       <ActiveContextProvider>
-        <div className="relative min-h-screen bg-dark-950 transition-colors duration-300">
+        <div className="relative min-h-screen transition-colors duration-300 bg-dark-950">
           {/* Iridescence Background - Fixed z-0 across entire site */}
           <div className="fixed inset-0 z-0 pointer-events-none opacity-30">
             <Iridescence
@@ -25,7 +25,7 @@ const RouterLayout = () => {
           <Navbar />
 
           {/* Main Content */}
-          <main className="relative z-10">
+          <main className="relative">
             <Outlet />
           </main>
 

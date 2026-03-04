@@ -80,16 +80,16 @@ const TimelineCard = ({ education, index, isLeft }) => {
           </div>
 
           {/* Location */}
-          <div className="flex items-center gap-2 ml-16 mb-4 text-xs text-dark-500">
+          <div className="flex items-center gap-2 mb-4 ml-16 text-xs text-dark-500">
             <MapPin className="w-3.5 h-3.5" />
             <span>{education.location}</span>
           </div>
 
-          <p className="text-sm text-dark-400 leading-relaxed mb-4 ml-16">{education.description}</p>
+          <p className="mb-4 ml-16 text-sm leading-relaxed text-dark-400">{education.description}</p>
 
           {/* Courses */}
-          <div className="ml-16 mb-4">
-            <h4 className="text-xs font-semibold text-dark-300 mb-2 uppercase tracking-wider">Key Courses</h4>
+          <div className="mb-4 ml-16">
+            <h4 className="mb-2 text-xs font-semibold tracking-wider uppercase text-dark-300">Key Courses</h4>
             <div className="grid grid-cols-2 gap-1.5">
               {education.courses.map((course) => (
                 <div key={course} className="flex items-center gap-2 text-xs text-dark-400">
@@ -112,7 +112,7 @@ const TimelineCard = ({ education, index, isLeft }) => {
       </motion.div>
 
       {/* Timeline Dot - Desktop only */}
-      <div className="hidden lg:flex flex-col items-center">
+      <div className="flex-col items-center hidden lg:flex">
         <motion.div
           initial={{ scale: 0 }}
           animate={inView ? { scale: 1 } : {}}
@@ -131,12 +131,12 @@ const Education = () => {
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-primary-500/5 rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/3 right-0 w-[400px] h-[400px] bg-secondary-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-1/4 left-0 h-[500px] bg-primary-500/5 rounded-full blur-[128px]" />
+        <div className="absolute bottom-1/3 right-0 h-[400px] bg-secondary-500/5 rounded-full blur-[128px]" />
       </div>
 
       <div className="relative z-10 section-padding pt-28">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Education"
             title={<>Academic <span className="gradient-text">Journey</span></>}
@@ -146,7 +146,7 @@ const Education = () => {
           {/* Timeline */}
           <div className="relative">
             {/* Center line - Desktop */}
-            <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-primary-500/30 via-secondary-500/30 to-accent-500/30 -translate-x-1/2" />
+            <div className="absolute top-0 bottom-0 hidden w-px -translate-x-1/2 lg:block left-1/2 bg-gradient-to-b from-primary-500/30 via-secondary-500/30 to-accent-500/30" />
 
             {educationData.map((edu, i) => (
               <TimelineCard key={edu.degree} education={edu} index={i} isLeft={i % 2 === 0} />
@@ -155,21 +155,21 @@ const Education = () => {
 
           {/* Learning Goals */}
           <ScrollReveal>
-            <div className="glass rounded-2xl p-8 lg:p-12 mt-8">
-              <div className="text-center mb-10">
-                <div className="inline-block p-3 rounded-xl bg-gradient-to-r from-secondary-500/20 to-primary-500/20 mb-4">
+            <div className="p-8 mt-8 glass rounded-2xl lg:p-12">
+              <div className="mb-10 text-center">
+                <div className="inline-block p-3 mb-4 rounded-xl bg-gradient-to-r from-secondary-500/20 to-primary-500/20">
                   <span className="text-2xl">{"\u{1F3AF}"}</span>
                 </div>
-                <h3 className="text-2xl font-bold font-display mb-2">Future Learning Goals</h3>
+                <h3 className="mb-2 text-2xl font-bold font-display">Future Learning Goals</h3>
                 <p className="text-dark-400">Continuous learning and skill development</p>
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {learningGoals.map((goal, i) => (
                   <ScrollReveal key={goal.title} delay={i * 0.1}>
                     <div className="glass rounded-xl p-5 text-center hover:bg-white/[0.06] transition-all group">
-                      <div className="text-3xl mb-3">{goal.icon}</div>
-                      <h4 className="text-sm font-semibold text-dark-200 mb-4">{goal.title}</h4>
+                      <div className="mb-3 text-3xl">{goal.icon}</div>
+                      <h4 className="mb-4 text-sm font-semibold text-dark-200">{goal.title}</h4>
                       <div className="relative">
                         <div className="flex justify-between text-xs text-dark-500 mb-1.5">
                           <span>Progress</span>

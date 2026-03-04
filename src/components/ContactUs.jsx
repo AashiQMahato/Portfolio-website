@@ -48,24 +48,24 @@ const ContactUs = () => {
   return (
     <div className="relative min-h-screen">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/5 rounded-full blur-[128px]" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary-500/5 rounded-full blur-[128px]" />
+        <div className="absolute -top-40 -right-40 h-80 bg-primary-500/5 rounded-full blur-[128px]" />
+        <div className="absolute -bottom-40 -left-40 h-80 bg-secondary-500/5 rounded-full blur-[128px]" />
       </div>
 
       <div className="relative z-10 section-padding pt-28">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <SectionHeader
             badge="Contact"
             title={<>Get In <span className="gradient-text">Touch</span></>}
             description="Ready to bring your ideas to life? Let's discuss your next project."
           />
 
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
+          <div className="grid gap-8 lg:grid-cols-5 lg:gap-12">
             {/* Left Column - Info */}
-            <ScrollReveal direction="left" className="lg:col-span-2 space-y-6">
+            <ScrollReveal direction="left" className="space-y-6 lg:col-span-2">
               {/* Contact Cards */}
               <GlassCard className="p-6" hover={false}>
-                <h3 className="text-lg font-semibold font-display mb-5">Contact Information</h3>
+                <h3 className="mb-5 text-lg font-semibold font-display">Contact Information</h3>
                 <div className="space-y-4">
                   {contactInfo.map((item) => {
                     const Icon = item.icon;
@@ -76,7 +76,7 @@ const ContactUs = () => {
                         </div>
                         <div>
                           <p className="text-xs text-dark-500">{item.title}</p>
-                          <p className="text-sm text-dark-200 font-medium">{item.content}</p>
+                          <p className="text-sm font-medium text-dark-200">{item.content}</p>
                         </div>
                       </div>
                     );
@@ -86,7 +86,7 @@ const ContactUs = () => {
 
               {/* Social Links */}
               <GlassCard className="p-6" hover={false}>
-                <h3 className="text-lg font-semibold font-display mb-5">Connect With Me</h3>
+                <h3 className="mb-5 text-lg font-semibold font-display">Connect With Me</h3>
                 <div className="flex gap-3">
                   {socialLinks.map((social) => {
                     const Icon = social.icon;
@@ -96,7 +96,7 @@ const ContactUs = () => {
                           href={social.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center w-11 h-11 rounded-xl glass glass-hover text-dark-400 hover:text-primary-400 transition-all"
+                          className="flex items-center justify-center transition-all w-11 h-11 rounded-xl glass glass-hover text-dark-400 hover:text-primary-400"
                           title={social.label}
                         >
                           <Icon className="w-5 h-5" />
@@ -108,7 +108,7 @@ const ContactUs = () => {
               </GlassCard>
 
               {/* Available Badge */}
-              <div className="glass rounded-xl p-5 text-center">
+              <div className="p-5 text-center glass rounded-xl">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <span className="relative flex w-3 h-3">
                     <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-emerald-400" />
@@ -134,20 +134,20 @@ const ContactUs = () => {
                 </div>
 
                 {submitted ? (
-                  <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-8 text-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                  <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="p-8 text-center border rounded-xl bg-emerald-500/10 border-emerald-500/20">
                     <CheckCircle className="w-12 h-12 mx-auto mb-3 text-emerald-400" />
-                    <h4 className="text-lg font-semibold text-emerald-400 mb-1">Message Sent!</h4>
+                    <h4 className="mb-1 text-lg font-semibold text-emerald-400">Message Sent!</h4>
                     <p className="text-sm text-emerald-300/70">Thanks for reaching out. I'll get back to you soon!</p>
                   </motion.div>
                 ) : (
                   <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <div className="relative">
-                        <User className="absolute w-4 h-4 left-4 top-1/2 -translate-y-1/2 text-dark-500" />
+                        <User className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-dark-500" />
                         <input type="text" name="user_name" placeholder="Your Name" value={formData.user_name} onChange={handleChange} required className={`${inputClass} pl-11`} />
                       </div>
                       <div className="relative">
-                        <AtSign className="absolute w-4 h-4 left-4 top-1/2 -translate-y-1/2 text-dark-500" />
+                        <AtSign className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-dark-500" />
                         <input type="email" name="user_email" placeholder="Your Email" value={formData.user_email} onChange={handleChange} required className={`${inputClass} pl-11`} />
                       </div>
                     </div>
@@ -155,7 +155,7 @@ const ContactUs = () => {
                     <textarea name="message" placeholder="Your Message..." value={formData.message} onChange={handleChange} required rows={5} className={`${inputClass} resize-none`} />
 
                     {error && (
-                      <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">{error}</div>
+                      <div className="p-3 text-sm text-red-400 border rounded-lg bg-red-500/10 border-red-500/20">{error}</div>
                     )}
 
                     <Magnet strength={0.15}>
