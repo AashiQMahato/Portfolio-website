@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -10,6 +10,12 @@
     --color-secondary: 168, 85, 247;
     --color-accent: 6, 182, 212;
     --color-bg: 3, 7, 18;
+
+    /* Global typography: sans-serif + medium-bold */
+    --app-font-sans:
+      "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+      Arial, sans-serif;
+    --app-font-weight: 600;
   }
 
   * {
@@ -23,11 +29,11 @@
   }
 
   body {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: var(--app-font-sans);
     background-color: #030712;
     color: #e2e8f0;
     line-height: 1.7;
-    font-weight: 400;
+    font-weight: var(--app-font-weight);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -35,6 +41,13 @@
     transition:
       background-color 0.3s ease,
       color 0.3s ease;
+  }
+
+  /* Force the same typography everywhere (overrides Tailwind utilities + inline styles) */
+  body,
+  body * {
+    font-family: var(--app-font-sans) !important;
+    font-weight: var(--app-font-weight) !important;
   }
 
   /* ── Light mode base overrides ── */
@@ -70,8 +83,8 @@
   h4,
   h5,
   h6 {
-    font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-    font-weight: 700;
+    font-family: inherit;
+    font-weight: inherit;
     line-height: 1.2;
     color: #f8fafc;
   }

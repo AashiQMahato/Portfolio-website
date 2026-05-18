@@ -31,15 +31,6 @@ const SOCIAL = [
   { Icon: Mail, href: "mailto:aashikmahato9567@gmail.com", label: "Email" },
 ];
 
-const TECH = [
-  { name: "React", icon: "⚛️" },
-  { name: "Tailwind", icon: "🎨" },
-  { name: "Node.js", icon: "🟢" },
-  { name: "JavaScript", icon: "🟨" },
-  { name: "Vite", icon: "⚡" },
-  { name: "Framer", icon: "🎞️" },
-];
-
 /* ─── Component ───────────────────────────────────────────────────────────── */
 const Footer = () => (
   <footer className="f-footer">
@@ -121,24 +112,6 @@ const Footer = () => (
           </nav>
         </div>
 
-        {/* Col 3 — Tech Stack */}
-        <div>
-          <p className="f-section-heading">Built With</p>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 8,
-            }}>
-            {TECH.map(({ name, icon }) => (
-              <div key={name} className="f-chip">
-                <span style={{ fontSize: 14, lineHeight: 1 }}>{icon}</span>
-                <span className="f-chip-label">{name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Col 4 — Contact Teaser */}
         <div>
           <p className="f-section-heading">Get In Touch</p>
@@ -175,25 +148,12 @@ const Footer = () => (
         </div>
       </div>
 
-      {/* ── ROW 2 — Gradient Divider ──────────────────────────────────────── */}
-      <div
-        style={{
-          height: 1,
-          margin: "48px 0 0",
-          background:
-            "linear-gradient(90deg, transparent, #00f5ff, #8b5cf6, #f0abfc, transparent)",
-        }}
-      />
-
       {/* ── ROW 3 — Bottom Bar ────────────────────────────────────────────── */}
       <div className="f-bottom-bar">
         <p className="f-small-text">
-          &copy; 2026 Aashiq Muhsin. All rights reserved.
+          &copy; 2026 Aashiq Mahato. All rights reserved.
         </p>
-        <p className="f-small-text">
-          Designed &amp; Built with <span style={{ color: "#f0abfc" }}>❤️</span>{" "}
-          using React &amp; Tailwind
-        </p>
+
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="f-backtop"
@@ -208,8 +168,8 @@ const Footer = () => (
       /* ── Layout ── */
       .f-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 48px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
         align-items: start;
       }
       .f-bottom-bar {
@@ -250,8 +210,7 @@ const Footer = () => (
         margin-top: 5rem;
       }
       html.dark .f-brand-name, html:not(.light) .f-brand-name {
-        font-size: 18px; font-weight: 700; color: #fff;
-        font-family: Space Grotesk, Inter, sans-serif;
+        font-size: 18px; font-weight: inherit; color: #fff;
       }
       html.dark .f-brand-dot, html:not(.light) .f-brand-dot {
         color: rgba(255,255,255,0.32);
@@ -330,8 +289,7 @@ const Footer = () => (
         margin-top: 5rem;
       }
       html.light .f-brand-name {
-        font-size: 18px; font-weight: 700; color: #0f172a;
-        font-family: Space Grotesk, Inter, sans-serif;
+        font-size: 18px; font-weight: inherit; color: #0f172a;
       }
       html.light .f-brand-dot { color: rgba(0,0,0,0.35); }
       html.light .f-body-text { font-size: 13px; color: rgba(0,0,0,0.55); }
