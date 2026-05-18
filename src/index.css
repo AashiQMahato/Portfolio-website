@@ -208,7 +208,7 @@
   html.light .text-slate-400 {
     color: #697d99;
   }
-  html.light .text-slate-500 {
+  html.light .text-slate-600 {
     color: #7f96b6;
   }
   html.light .text-dark-100 {
@@ -308,7 +308,7 @@
 
   /* Light mode placeholder fix */
   html.light .placeholder-dark-500::placeholder,
-  html.light .placeholder\:text-slate-500::placeholder {
+  html.light .placeholder\:text-slate-600::placeholder {
     color: #94a3b8;
   }
 

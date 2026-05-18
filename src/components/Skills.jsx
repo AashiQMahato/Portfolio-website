@@ -461,7 +461,7 @@ const SkillCard = ({ category, index }) => {
             <h3 className="text-xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
               {category.title}
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-600">
               {category.skills.length} Skills
             </p>
             {/* Pulsing underline */}
@@ -565,7 +565,7 @@ const TechRadar = () => {
             <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
               Tech Stack Radar
             </h3>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-600">
               Proficiency overview at a glance
             </p>
           </div>
@@ -731,10 +731,10 @@ const GitHubHeatmap = () => {
               <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
                 Coding Activity
               </h3>
-              <p className="text-sm text-slate-500">Contribution overview</p>
+              <p className="text-sm text-slate-600">Contribution overview</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-slate-600">
             <span>Less</span>
             {colors.map((c, i) => (
               <div
@@ -852,7 +852,7 @@ const Skills = () => {
                   <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
                     Continuous Learning
                   </h3>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-slate-600">
                     Always growing, always improving
                   </p>
                 </div>

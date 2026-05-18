@@ -119,8 +119,7 @@ const projects = [
     ],
     github:
       "https://github.com/Aashik9567/Automated_Attendance_Management_System",
-    live:
-    "https://aams-frontend.onrender.com/",
+    live: "https://aams-frontend.onrender.com/",
     category: "Full-Stack",
     cats: ["Full-Stack", "AI/ML"],
     status: "live",
@@ -171,105 +170,96 @@ const projects = [
     ],
   },
   {
-  title: "Smart School Management System",
-  shortDesc:
-    "A modern role-based school management platform for managing academics, attendance, schedules, fees, and student performance.",
-  fullDesc:
-    "Developed a full-stack Smart School Management System to streamline academic and administrative workflows for educational institutions. The platform features separate dashboards for Admin, Teacher, Student, and Parent with secure role-based authentication. Admins can manage users, schedules, fees, notifications, and academic structures, while teachers can handle attendance and marks. Students and parents can monitor academic progress, schedules, attendance, and announcements in real-time. The system also integrates AI-powered analytics and insights for performance monitoring and smart educational management.",
-  image: "https://img.freepik.com/premium-photo/3d-cartoon-back-school_1268653-382.jpg",
-  tags: [
-    "React",
-    "Node.js",
-    "Express",
-    "MongoDB",
-    "Tailwind CSS",
-    "JWT",
-  ],
-  features: [
-    "Role-based dashboards for Admin, Teacher, Student, and Parent",
-    "Advanced class schedule and timetable management",
-    "Attendance and marks management system",
-    "Parent-child academic monitoring",
-    "Responsive modern dashboard UI",
-    "AI-powered analytics and student insights",
-  ],
-  github:
-    "https://github.com/Aashik9567/Smart_School_Management_System",
-  live:
-    "https://smart-school-management-system-frontend.onrender.com/",
-  category: "Full-Stack",
-  cats: ["Full-Stack", "Web Dev", "AI/ML"],
-  status: "live",
-  stars: 32,
-  forks: 11,
-  views: 920,
-  year: "2025",
-  teamSize: 4,
-  featured: true,
-  highlights: [
-    "Strict role-based access with profile-linked architecture",
-    "Centralized schedule management with dynamic timetable views",
-    "Modern responsive dashboard optimized for all devices",
-  ],
-},
-{
-  title: "Raghunathpur Cable Network Website",
-  shortDesc:
-    "A modern and responsive ISP website built for showcasing internet services, plans, coverage areas, and customer engagement.",
+    title: "Smart School Management System",
+    shortDesc:
+      "A modern role-based school management platform for managing academics, attendance, schedules, fees, and student performance.",
+    fullDesc:
+      "Developed a full-stack Smart School Management System to streamline academic and administrative workflows for educational institutions. The platform features separate dashboards for Admin, Teacher, Student, and Parent with secure role-based authentication. Admins can manage users, schedules, fees, notifications, and academic structures, while teachers can handle attendance and marks. Students and parents can monitor academic progress, schedules, attendance, and announcements in real-time. The system also integrates AI-powered analytics and insights for performance monitoring and smart educational management.",
+    image:
+      "https://img.freepik.com/premium-photo/3d-cartoon-back-school_1268653-382.jpg",
+    tags: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS", "JWT"],
+    features: [
+      "Role-based dashboards for Admin, Teacher, Student, and Parent",
+      "Advanced class schedule and timetable management",
+      "Attendance and marks management system",
+      "Parent-child academic monitoring",
+      "Responsive modern dashboard UI",
+      "AI-powered analytics and student insights",
+    ],
+    github: "https://github.com/Aashik9567/Smart_School_Management_System",
+    live: "https://smart-school-management-system-frontend.onrender.com/",
+    category: "Full-Stack",
+    cats: ["Full-Stack", "Web Dev", "AI/ML"],
+    status: "live",
+    stars: 32,
+    forks: 11,
+    views: 920,
+    year: "2025",
+    teamSize: 4,
+    featured: true,
+    highlights: [
+      "Strict role-based access with profile-linked architecture",
+      "Centralized schedule management with dynamic timetable views",
+      "Modern responsive dashboard optimized for all devices",
+    ],
+  },
+  {
+    title: "Raghunathpur Cable Network Website",
+    shortDesc:
+      "A modern and responsive ISP website built for showcasing internet services, plans, coverage areas, and customer engagement.",
 
-  fullDesc:
-    "Designed and developed a premium ISP business website for Raghunathpur Cable Network using Next.js, Tailwind CSS, TypeScript, and Ant Design. The platform features a highly modern UI with responsive layouts, animated sections, dark/light/system theme support, interactive pricing plans, service coverage pages, FAQs, and advanced hero animations powered by Framer Motion and React Three Fiber. The project focuses heavily on user experience, scalability, and modern frontend architecture.",
+    fullDesc:
+      "Designed and developed a premium ISP business website for Raghunathpur Cable Network using Next.js, Tailwind CSS, TypeScript, and Ant Design. The platform features a highly modern UI with responsive layouts, animated sections, dark/light/system theme support, interactive pricing plans, service coverage pages, FAQs, and advanced hero animations powered by Framer Motion and React Three Fiber. The project focuses heavily on user experience, scalability, and modern frontend architecture.",
 
-  image: "https://i.ytimg.com/vi/wbBFNa1bTOQ/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBZkhFMn_FEh8DWV-gJI-uDJLeYiw",
+    image:
+      "https://i.ytimg.com/vi/wbBFNa1bTOQ/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBZkhFMn_FEh8DWV-gJI-uDJLeYiw",
 
-  tags: [
-    "Next.js",
-    "TypeScript",
-    "Tailwind CSS",
-    "Ant Design",
-    "Framer Motion",
-    "React Three Fiber",
-  ],
+    tags: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Ant Design",
+      "Framer Motion",
+      "React Three Fiber",
+    ],
 
-  features: [
-    "Modern responsive ISP landing pages",
-    "Dark, light, and system theme support",
-    "Animated hero section with 3D visuals",
-    "Interactive pricing and coverage pages",
-    "Smooth animations and micro-interactions",
-    "Reusable scalable component architecture",
-  ],
+    features: [
+      "Modern responsive ISP landing pages",
+      "Dark, light, and system theme support",
+      "Animated hero section with 3D visuals",
+      "Interactive pricing and coverage pages",
+      "Smooth animations and micro-interactions",
+      "Reusable scalable component architecture",
+    ],
 
-  github:
-    "https://github.com/yourusername/raghunathpur-cable-network",
+    github: "https://github.com/yourusername/raghunathpur-cable-network",
 
-  live:
-    "https://raghunathpurcable.com.np/",
+    live: "https://raghunathpurcable.com.np/",
 
-  category: "Frontend",
+    category: "Frontend",
 
-  cats: ["Frontend", "Web Dev"],
+    cats: ["Frontend", "Web Dev"],
 
-  status: "live",
+    status: "live",
 
-  stars: 18,
+    stars: 18,
 
-  forks: 5,
+    forks: 5,
 
-  views: 420,
+    views: 420,
 
-  year: "2026",
+    year: "2026",
 
-  teamSize: 1,
+    teamSize: 1,
 
-  featured: true,
+    featured: true,
 
-  highlights: [
-    "Implemented modern SaaS-inspired ISP UI with advanced responsiveness",
-    "Integrated Framer Motion and React Three Fiber for immersive animations",
-    "Built scalable folder architecture with reusable components and theme system",
-  ],
-}
+    highlights: [
+      "Implemented modern SaaS-inspired ISP UI with advanced responsiveness",
+      "Integrated Framer Motion and React Three Fiber for immersive animations",
+      "Built scalable folder architecture with reusable components and theme system",
+    ],
+  },
 ];
 
 const categories = [
@@ -620,7 +610,7 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
             </p>
 
             {/* Metrics row */}
-            <div className="flex items-center gap-4 mb-4 text-[11px] text-slate-500">
+            <div className="flex items-center gap-4 mb-4 text-[11px] text-slate-600">
               <span className="flex items-center gap-1">
                 <Star className="w-3 h-3" />
                 {project.stars}
@@ -724,7 +714,7 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-[11px] text-slate-500">
+          <div className="flex items-center gap-4 text-[11px] text-slate-600">
             <span className="flex items-center gap-1">
               <Star className="w-3 h-3" />
               {project.stars}
@@ -831,7 +821,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                 <ChevronRight className="w-4 h-4" />
               </button>
             )}
-            <span className="ml-2 text-xs text-slate-500">
+            <span className="ml-2 text-xs text-slate-600">
               {currentIdx + 1} / {allProjects.length}
             </span>
           </div>
@@ -866,7 +856,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                   style={{ backgroundColor: "#28c840" }}
                 />
                 <div
-                  className="flex-1 min-w-0 mx-2 sm:mx-4 px-2 sm:px-3 py-1 rounded-md text-[10px] text-slate-500 truncate"
+                  className="flex-1 min-w-0 mx-2 sm:mx-4 px-2 sm:px-3 py-1 rounded-md text-[10px] text-slate-600 truncate"
                   style={{ background: "rgba(255,255,255,0.04)" }}>
                   {project.github}
                 </div>
@@ -880,7 +870,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
 
             {/* Tech stack large */}
             <div className="mt-6">
-              <h4 className="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-500">
+              <h4 className="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-600">
                 Tech Stack
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -906,7 +896,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <div className="flex items-center gap-3 mb-4">
               <StatusBadge status={project.status} />
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-600">
                 {project.year} &middot; Team of {project.teamSize}
               </span>
             </div>
@@ -921,7 +911,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
 
             {/* Features */}
             <div className="mb-6">
-              <h4 className="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-500">
+              <h4 className="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-600">
                 Key Features
               </h4>
               <div className="space-y-2">
@@ -937,7 +927,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             {/* Highlights */}
             {project.highlights && (
               <div className="mb-6">
-                <h4 className="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-500">
+                <h4 className="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-600">
                   Technical Highlights
                 </h4>
                 <div className="space-y-2">
@@ -1042,7 +1032,7 @@ const TechUsageSection = () => {
             <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
               Technologies I Build With
             </h3>
-            <p className="text-sm text-slate-500">Across all projects</p>
+            <p className="text-sm text-slate-600">Across all projects</p>
           </div>
         </div>
 
@@ -1271,7 +1261,7 @@ const Projects = () => {
                   className="text-lg font-medium md:text-xl text-slate-400"
                 />
               </div>
-              <p className="max-w-2xl mx-auto text-sm text-slate-500">
+              <p className="max-w-2xl mx-auto text-sm text-slate-600">
                 A curated collection of projects spanning web development,
                 electronics, and IoT systems
               </p>
@@ -1317,7 +1307,7 @@ const Projects = () => {
               {/* Search + View toggle */}
               <div className="flex items-center flex-shrink-0 gap-2">
                 <div className="relative">
-                  <Search className="absolute w-4 h-4 -translate-y-1/2 left-3 top-1/2 text-slate-500" />
+                  <Search className="absolute w-4 h-4 -translate-y-1/2 left-3 top-1/2 text-slate-600" />
                   <input
                     type="text"
                     value={searchQuery}
@@ -1384,7 +1374,7 @@ const Projects = () => {
                   <p className="text-lg font-medium text-slate-400">
                     No projects match your search
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-600">
                     Try a different category or search term
                   </p>
                 </div>
