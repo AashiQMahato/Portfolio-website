@@ -41,7 +41,7 @@ Then visit [http://localhost:5173](http://localhost:5173) in your browser.
 Create a `.env` file (see `.env.example`) for local development.
 
 - `VITE_GROQ_API_KEY` (used by the AI chatbot)
-- `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY` (used by the Contact form)
+- `VITE_WEB3FORMS_ACCESS_KEY` (used by the Contact form)
 
 ## 🧑‍💻 About Me
 

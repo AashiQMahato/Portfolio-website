@@ -71,7 +71,7 @@ const HomePage = () => {
                 <SplitText
                   text="Aashiq Mahato"
                   tag="h1"
-                  className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl font-display gradient-text"
+                  className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl font-display text-primary"
                   delay={40}
                   splitType="chars"
                 />

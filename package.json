@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
-    "@emailjs/browser": "^4.4.1",
     "@gsap/react": "^2.1.2",
     "antd": "^5.21.1",
     "framer-motion": "^11.9.0",

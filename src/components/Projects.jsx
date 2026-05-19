@@ -254,7 +254,6 @@ const categories = [
   "IoT",
   "Full-Stack",
   "AI/ML",
-  "Open Source",
 ];
 
 /* ═══════════════════ HELPER: counter hook ════════════════════ */
@@ -329,7 +328,7 @@ const StatCard = ({ icon: Icon, number, suffix, title, index }) => {
   return (
     <ScrollReveal delay={index * 0.1}>
       <div ref={ref} className="relative group">
-        <div className="relative p-5 overflow-hidden text-center transition-all duration-300 rounded-2xl bg-card/60 backdrop-blur border border-border shadow-sm hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
+        <div className="relative p-5 overflow-hidden text-center transition-all duration-300 border shadow-sm rounded-2xl bg-card/60 backdrop-blur border-border hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
           <div className="relative z-10">
             <div className="flex items-center justify-center mx-auto mb-2 w-11 h-11 rounded-xl bg-primary/10">
               <Icon className="w-5 h-5 text-primary" />
@@ -353,7 +352,7 @@ const TechIcon = ({ name, size = 18, showTooltip = true }) => {
   return (
     <div className="relative group/tech">
       <div
-        className="flex items-center justify-center transition-colors duration-200 rounded-md border border-border bg-card/50"
+        className="flex items-center justify-center transition-colors duration-200 border rounded-md border-border bg-card/50"
         style={{ width: size + 8, height: size + 8 }}>
         {src ? (
           <img
@@ -563,7 +562,7 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
             <div className="flex items-center justify-between pt-3 border-t border-border/60">
               <button
                 onClick={() => onOpenDetail(project)}
-                className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200 cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-md">
+                className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200 rounded-md cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 Learn More <ArrowRight className="w-3 h-3" />
               </button>
               <div className="flex items-center gap-2">
@@ -601,7 +600,7 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
     exit={{ opacity: 0, x: 20 }}
     transition={{ duration: 0.3, delay: index * 0.06 }}
     layout
-    className="overflow-hidden transition-all duration-300 rounded-2xl group hover:-translate-y-1 bg-card/60 backdrop-blur border border-border shadow-sm hover:shadow-md">
+    className="overflow-hidden transition-all duration-300 border shadow-sm rounded-2xl group hover:-translate-y-1 bg-card/60 backdrop-blur border-border hover:shadow-md">
     <div className="flex flex-col md:flex-row">
       {/* Image */}
       <div className="relative flex-shrink-0 w-full h-48 overflow-hidden md:w-64 md:h-auto">
@@ -649,7 +648,7 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
           </div>
           <button
             onClick={() => onOpenDetail(project)}
-            className="flex items-center gap-1 text-xs font-semibold cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-md">
+            className="flex items-center gap-1 text-xs font-semibold rounded-md cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
             Details <ArrowRight className="w-3 h-3" />
           </button>
         </div>
@@ -707,19 +706,19 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
         aria-modal="true"
         className="relative w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto rounded-[20px] z-10 border border-border bg-card/90 backdrop-blur-sm shadow-xl">
         {/* Close + Nav buttons */}
-        <div className="sticky top-0 z-20 flex items-center justify-between p-3 sm:p-4 border-b bg-card/80 border-border backdrop-blur-sm">
+        <div className="sticky top-0 z-20 flex items-center justify-between p-3 border-b sm:p-4 bg-card/80 border-border backdrop-blur-sm">
           <div className="flex items-center gap-2">
             {currentIdx > 0 && (
               <button
                 onClick={() => onNavigate(allProjects[currentIdx - 1])}
-                className="p-2 transition-colors rounded-lg cursor-pointer border border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                className="p-2 transition-colors border rounded-lg cursor-pointer border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 <ChevronLeft className="w-4 h-4" />
               </button>
             )}
             {currentIdx < allProjects.length - 1 && (
               <button
                 onClick={() => onNavigate(allProjects[currentIdx + 1])}
-                className="p-2 transition-colors rounded-lg cursor-pointer border border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                className="p-2 transition-colors border rounded-lg cursor-pointer border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 <ChevronRight className="w-4 h-4" />
               </button>
             )}
@@ -729,7 +728,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 transition-colors rounded-lg cursor-pointer border border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+            className="p-2 transition-colors border rounded-lg cursor-pointer border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -905,7 +904,7 @@ const TechUsageSection = () => {
     <ScrollReveal>
       <div ref={ref} className="p-8 mb-16 lg:p-12 rounded-2xl glass">
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 rounded-xl bg-primary/10 border border-primary/15">
+          <div className="p-3 border rounded-xl bg-primary/10 border-primary/15">
             <Zap className="w-6 h-6 text-primary" />
           </div>
           <div>
@@ -923,7 +922,7 @@ const TechUsageSection = () => {
             return (
               <motion.div
                 key={tech.name}
-                className="relative flex flex-col items-center gap-2 p-4 transition-colors duration-300 cursor-default group/bubble rounded-2xl border border-border bg-card/40 hover:bg-card/50 hover:border-primary/20"
+                className="relative flex flex-col items-center gap-2 p-4 transition-colors duration-300 border cursor-default group/bubble rounded-2xl border-border bg-card/40 hover:bg-card/50 hover:border-primary/20"
                 style={{ transform: `scale(${scale})` }}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={inView ? { opacity: 1, scale } : {}}
@@ -938,7 +937,7 @@ const TechUsageSection = () => {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="flex items-center justify-center w-8 h-8 text-sm font-bold rounded-lg text-primary bg-primary/10 border border-primary/15">
+                    <div className="flex items-center justify-center w-8 h-8 text-sm font-bold border rounded-lg text-primary bg-primary/10 border-primary/15">
                       {tech.name.charAt(0)}
                     </div>
                   )}
@@ -980,7 +979,7 @@ const BottomCTA = () => {
               transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="absolute w-60 h-60 rounded-full blur bg-accent/10"
+              className="absolute rounded-full w-60 h-60 blur bg-accent/10"
               style={{ bottom: "-20%", right: "-10%" }}
               animate={{ x: [0, -30, 0], y: [0, -20, 0] }}
               transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -1004,7 +1003,7 @@ const BottomCTA = () => {
             </Link>
             <Link
               to="/contactus"
-              className="flex items-center gap-2 py-3 text-sm font-semibold transition-transform duration-300 px-7 rounded-xl hover:scale-105 border border-primary/30 text-primary bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+              className="flex items-center gap-2 py-3 text-sm font-semibold transition-transform duration-300 bg-transparent border px-7 rounded-xl hover:scale-105 border-primary/30 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
               <Mail className="w-4 h-4" /> Get In Touch
             </Link>
           </div>
@@ -1078,7 +1077,7 @@ const Projects = () => {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/3 right-0 h-[500px] bg-primary/10 rounded-full blur" />
         <div className="absolute bottom-0 left-0 h-[400px] bg-primary/10 rounded-full blur" />
-        <div className="absolute top-2/3 left-1/3 h-96 bg-primary/5 rounded-full blur" />
+        <div className="absolute rounded-full top-2/3 left-1/3 h-96 bg-primary/5 blur" />
       </div>
 
       <div className="relative z-10 section-padding pt-28">
@@ -1087,7 +1086,7 @@ const Projects = () => {
           <ScrollReveal className="relative mb-12 text-center lg:mb-16">
             <HeroParticles />
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium rounded-full border border-border bg-card/60 backdrop-blur text-primary">
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-primary">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 Portfolio
               </div>
@@ -1154,7 +1153,7 @@ const Projects = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search projects..."
-                    className="w-44 md:w-52 py-2 pr-4 text-xs outline-none pl-9 rounded-xl border border-border bg-card/40 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
+                    className="py-2 pr-4 text-xs border outline-none w-44 md:w-52 pl-9 rounded-xl border-border bg-card/40 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50"
                   />
                 </div>
                 <div className="flex gap-1">

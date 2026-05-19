@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -14,15 +14,12 @@ import {
   CheckCircle,
   Loader2,
 } from "lucide-react";
-import emailjs from "@emailjs/browser";
 import { ScrollReveal, SectionHeader, GlassCard, Magnet } from "./ui";
 
-const EMAILJS_SERVICE_ID =
-  import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_oe9gxpe";
-const EMAILJS_TEMPLATE_ID =
-  import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_9wp6q8s";
-const EMAILJS_PUBLIC_KEY =
-  import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "BFWbJjRatPX36zT7V";
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const WEB3FORMS_ACCESS_KEY =
+  import.meta.env.VITE_WEB3FORMS_ACCESS_KEY ||
+  "18a22bbb-2e79-4455-b38e-193a751289de";
 
 const contactInfo = [
   {
@@ -63,7 +60,6 @@ const socialLinks = [
 ];
 
 const ContactUs = () => {
-  const formRef = useRef();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
@@ -74,25 +70,17 @@ const ContactUs = () => {
     message: "",
   });
 
-  const formatEmailError = (err) => {
-    const status = err?.status;
-    const text = err?.text;
+  const formatWeb3FormsError = (err) => {
     const message = err?.message;
-
-    if (status === 403)
-      return "Email service blocked this site (403). Add your domain to EmailJS Allowed Origins.";
-    if (status === 400)
-      return `Email service rejected the request (400): ${text || "check your template variables"}.`;
-    if (status === 429)
-      return "Too many requests (429). Please wait a bit and try again.";
+    const apiMessage = err?.apiMessage;
 
     // Common browser/network failure (CORS, adblock, offline)
-    if (message && /fetch|network/i.test(message)) {
-      return "Network/CORS error while contacting EmailJS. Check your connection or browser extensions.";
+    if (message && /fetch|network|cors/i.test(message)) {
+      return "Network/CORS error while submitting the form. Check your connection or browser extensions.";
     }
 
-    if (text) return `Failed to send message: ${text}`;
-    if (message) return `Failed to send message: ${message}`;
+    if (apiMessage) return apiMessage;
+    if (message) return message;
     return "Failed to send message. Please try again.";
   };
 
@@ -104,40 +92,55 @@ const ContactUs = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-        throw new Error("Email service is not configured.");
+      if (!WEB3FORMS_ACCESS_KEY) {
+        throw new Error("Web3Forms access key is not configured.");
       }
 
-      // Send explicit params so it works even if your EmailJS template
-      // expects common variable names like from_name/reply_to.
-      const templateParams = {
-        user_name: formData.user_name,
-        user_email: formData.user_email,
+      const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        name: formData.user_name,
+        email: formData.user_email,
         subject: formData.subject,
         message: formData.message,
 
-        // Common EmailJS template variable names (safe to include)
+        // Optional fields Web3Forms will include in the email
         from_name: formData.user_name,
-        from_email: formData.user_email,
-        reply_to: formData.user_email,
-        to_name: "Aashik Mahato",
-        to_email: "aashikmahato9567@gmail.com",
+        replyto: formData.user_email,
       };
 
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams,
-        {
-          publicKey: EMAILJS_PUBLIC_KEY,
+      const res = await fetch(WEB3FORMS_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-      );
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        const apiMessage =
+          data?.message ||
+          `Submission failed (${res.status}). Please try again later.`;
+        const err = new Error(apiMessage);
+        err.apiMessage = apiMessage;
+        throw err;
+      }
+
+      if (!data?.success) {
+        const apiMessage =
+          data?.message || "Submission failed. Please try again.";
+        const err = new Error(apiMessage);
+        err.apiMessage = apiMessage;
+        throw err;
+      }
+
       setFormData({ user_name: "", user_email: "", subject: "", message: "" });
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 5000);
     } catch (err) {
-      console.error("Error sending email:", err);
-      setError(formatEmailError(err));
+      console.error("Error submitting contact form:", err);
+      setError(formatWeb3FormsError(err));
       setTimeout(() => setError(null), 5000);
     } finally {
       setIsSubmitting(false);
@@ -150,8 +153,8 @@ const ContactUs = () => {
   return (
     <div className="relative">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-72 h-72 bg-primary/8 rounded-full blur opacity-60" />
-        <div className="absolute -bottom-40 -left-40 w-72 h-72 bg-primary/8 rounded-full blur opacity-50" />
+        <div className="absolute rounded-full -top-40 -right-40 w-72 h-72 bg-primary/8 blur opacity-60" />
+        <div className="absolute rounded-full opacity-50 -bottom-40 -left-40 w-72 h-72 bg-primary/8 blur" />
       </div>
 
       <div className="relative z-10 section-padding pt-28">
@@ -210,7 +213,7 @@ const ContactUs = () => {
                           href={social.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center w-11 h-11 rounded-xl border border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-primary hover:bg-card/80 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                          className="flex items-center justify-center transition-colors duration-200 border w-11 h-11 rounded-xl border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-primary hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                           title={social.label}>
                           <Icon className="w-5 h-5" />
                         </a>
@@ -221,7 +224,7 @@ const ContactUs = () => {
               </GlassCard>
 
               {/* Available Badge */}
-              <div className="p-5 text-center rounded-xl border border-border bg-card/60 backdrop-blur shadow-sm">
+              <div className="p-5 text-center border shadow-sm rounded-xl border-border bg-card/60 backdrop-blur">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <span className="relative flex w-3 h-3">
                     <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-emerald-400" />
@@ -268,10 +271,7 @@ const ContactUs = () => {
                     </p>
                   </motion.div>
                 ) : (
-                  <form
-                    ref={formRef}
-                    onSubmit={handleSubmit}
-                    className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="relative">
                         <User className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-muted-foreground" />
