@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import {
   Code2,
@@ -275,31 +275,43 @@ const useCounter = (end, duration = 2000, startCounting = false) => {
 
 /* ──────────────────── FLOATING PILLS BG ─────────────────────── */
 
-const FloatingPills = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    {techPills.map((pill, i) => (
-      <motion.div
-        key={pill}
-        className="absolute px-3 py-1 text-xs font-medium border rounded-full text-white/15 border-white/5"
-        style={{
-          left: `${(i * 6.25) % 95}%`,
-          top: `${(i * 17 + 10) % 85}%`,
-        }}
-        animate={{
-          y: [0, -30, 0],
-          opacity: [0.1, 0.22, 0.1],
-        }}
-        transition={{
-          duration: 6 + (i % 4) * 1.5,
-          repeat: Infinity,
-          delay: i * 0.4,
-          ease: "easeInOut",
-        }}>
-        {pill}
-      </motion.div>
-    ))}
-  </div>
-);
+const FloatingPills = () => {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {techPills.map((pill, i) => (
+        <motion.div
+          key={pill}
+          className="absolute px-3 py-1 text-xs font-medium border rounded-full bg-card/20 text-muted-foreground/40 border-border/60"
+          style={{
+            left: `${(i * 6.25) % 95}%`,
+            top: `${(i * 17 + 10) % 85}%`,
+          }}
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  y: [0, -30, 0],
+                  opacity: [0.1, 0.22, 0.1],
+                }
+          }
+          transition={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  duration: 6 + (i % 4) * 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.4,
+                  ease: "easeInOut",
+                }
+          }>
+          {pill}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
 
 /* ────────────────────── STAT CARD ───────────────────────────── */
 
@@ -313,26 +325,19 @@ const StatCard = ({ stat, index }) => {
       <div ref={ref} className="relative group">
         <div
           className="relative p-6 text-center transition-all duration-300 rounded-2xl overflow-hidden
-            bg-white/[0.04] backdrop-blur-xl border border-white/[0.08]
-            hover:-translate-y-2 hover:border-cyan-400/30"
-          style={{ transition: "all 0.3s ease" }}>
-          {/* Neon hover glow */}
-          <div
-            className="absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none rounded-2xl group-hover:opacity-100"
-            style={{
-              boxShadow:
-                "0 0 30px rgba(0,245,255,0.12) inset, 0 0 60px rgba(0,245,255,0.06)",
-            }}
-          />
+            bg-card/60 backdrop-blur border border-border shadow-sm
+            hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
           <div className="relative z-10">
-            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20">
-              <Icon className="w-5 h-5 text-cyan-400" />
+            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-xl bg-primary/10">
+              <Icon className="w-5 h-5 text-primary" />
             </div>
-            <div className="text-3xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
+            <div className="text-3xl font-bold font-display text-primary">
               {count}
               {stat.suffix}
             </div>
-            <div className="mt-1 text-xs text-slate-400">{stat.title}</div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {stat.title}
+            </div>
           </div>
         </div>
       </div>
@@ -364,7 +369,7 @@ const NeonSkillBar = ({ skill, delay, inView }) => {
     <div className="mb-5 group/skill">
       <div className="flex items-center gap-3 mb-2">
         {/* Tech icon */}
-        <div className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0 border border-white/[0.06]">
+        <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 border rounded-lg bg-card/60 border-border">
           {skill.icon ? (
             <img
               src={skill.icon}
@@ -373,39 +378,34 @@ const NeonSkillBar = ({ skill, delay, inView }) => {
               loading="lazy"
             />
           ) : LucideIcon ? (
-            <LucideIcon className="w-4 h-4 text-cyan-400" />
+            <LucideIcon className="w-4 h-4 text-primary" />
           ) : null}
         </div>
 
         {/* Skill name */}
-        <span className="text-sm font-semibold transition-colors duration-300 text-slate-200 group-hover/skill:text-cyan-300">
+        <span className="text-sm font-semibold transition-colors duration-300 text-foreground group-hover/skill:text-primary">
           {skill.name}
         </span>
 
         {/* Animated percentage */}
-        <span className="ml-auto text-sm font-bold text-transparent tabular-nums bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text">
+        <span className="ml-auto text-sm font-bold tabular-nums text-primary">
           {count}%
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="relative h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
+      <div className="relative h-2.5 rounded-full bg-muted overflow-hidden">
         <motion.div
-          initial={{ width: 0 }}
-          animate={inView ? { width: `${skill.level}%` } : { width: 0 }}
+          initial={{ scaleX: 0 }}
+          animate={inView ? { scaleX: skill.level / 100 } : { scaleX: 0 }}
           transition={{ duration: 1.2, delay, ease: "easeOut" }}
-          className="relative h-full rounded-full"
-          style={{
-            background: "linear-gradient(90deg, #00f5ff, #8b5cf6, #f0abfc)",
-            boxShadow:
-              "0 0 12px rgba(0,245,255,0.4), 0 0 24px rgba(139,92,246,0.2)",
-          }}>
+          className="relative h-full rounded-full origin-left bg-primary shadow-sm">
           {/* Shimmer */}
           <motion.div
             className="absolute inset-0 rounded-full"
             style={{
               background:
-                "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                "linear-gradient(90deg, transparent 0%, rgb(var(--foreground) / 0.18) 50%, transparent 100%)",
               backgroundSize: "200% 100%",
             }}
             animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
@@ -426,7 +426,7 @@ const NeonSkillBar = ({ skill, delay, inView }) => {
             <span
               key={tag}
               className="px-2 py-0.5 text-[10px] font-medium rounded-full
-                bg-white/[0.06] backdrop-blur-sm text-slate-400 border border-white/[0.06]">
+                bg-card/50 backdrop-blur-sm text-muted-foreground border border-border">
               {tag}
             </span>
           ))}
@@ -450,26 +450,23 @@ const SkillCard = ({ category, index }) => {
       transition={{ duration: 0.6, delay: index * 0.15 }}>
       <SpotlightCard
         className="h-full p-6 lg:p-8 transition-all duration-300 rounded-2xl group hover:-translate-y-1
-          bg-white/[0.04] backdrop-blur-xl border border-white/[0.08]"
-        spotlightColor="rgba(0, 245, 255, 0.08)">
+          bg-card/60 backdrop-blur border border-border shadow-sm hover:shadow-md"
+        spotlightColor="rgb(var(--primary) / 0.10)">
         {/* Category Header */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 transition-transform duration-300 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 group-hover:scale-110">
-            <Icon className="w-7 h-7 text-cyan-400" />
+          <div className="p-3 transition-transform duration-300 rounded-xl bg-primary/10 group-hover:scale-110">
+            <Icon className="w-7 h-7 text-primary" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
+            <h3 className="text-xl font-bold font-display text-foreground">
               {category.title}
             </h3>
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-muted-foreground">
               {category.skills.length} Skills
             </p>
             {/* Pulsing underline */}
             <motion.div
-              className="h-0.5 mt-2 rounded-full w-full"
-              style={{
-                background: "linear-gradient(90deg, #00f5ff, #8b5cf6, #f0abfc)",
-              }}
+              className="h-0.5 mt-2 rounded-full w-24 bg-primary/60 origin-left"
               animate={{ opacity: [0.4, 0.8, 0.4], scaleX: [0.8, 1, 0.8] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -511,26 +508,24 @@ const FlipCard = ({ card, index }) => {
           {/* Front */}
           <div
             className="absolute inset-0 backface-hidden rounded-2xl p-6 flex flex-col items-center justify-center text-center
-              bg-white/[0.04] backdrop-blur-xl border border-white/[0.08]
-              hover:shadow-[0_0_25px_rgba(0,245,255,0.12)] transition-shadow duration-300">
+              bg-card/60 backdrop-blur border border-border shadow-sm hover:shadow-md transition-shadow duration-300">
             {card.isLive && (
-              <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] font-semibold text-emerald-400">
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="text-[10px] font-semibold text-primary">
                   Live
                 </span>
               </div>
             )}
             <div className="mb-3 text-4xl">{card.emoji}</div>
-            <p className="text-sm font-bold text-slate-200">{card.title}</p>
+            <p className="text-sm font-bold text-foreground">{card.title}</p>
           </div>
 
           {/* Back */}
           <div
             className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl p-6 flex items-center justify-center text-center
-              bg-white/[0.06] backdrop-blur-xl border border-cyan-400/20
-              shadow-[0_0_25px_rgba(0,245,255,0.08)]">
-            <p className="text-sm leading-relaxed text-slate-300">
+              bg-card/70 backdrop-blur border border-border shadow-sm">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {card.description}
             </p>
           </div>
@@ -549,23 +544,22 @@ const TechRadar = () => {
     maxR = 155;
   const rings = [40, 80, 120, 155];
   const labels = ["Learning", "Intermediate", "Advanced", "Expert"];
-  const hueBase = [185, 210, 270, 330, 150]; // per-category hue
 
   return (
     <ScrollReveal>
       <div
         ref={ref}
-        className="p-8 lg:p-12 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08]">
+        className="p-8 lg:p-12 rounded-2xl bg-card/60 backdrop-blur border border-border shadow-sm">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20">
-            <Zap className="w-6 h-6 text-cyan-400" />
+          <div className="p-3 rounded-xl bg-primary/10">
+            <Zap className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
+            <h3 className="text-2xl font-bold font-display text-foreground">
               Tech Stack Radar
             </h3>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-muted-foreground">
               Proficiency overview at a glance
             </p>
           </div>
@@ -581,13 +575,13 @@ const TechRadar = () => {
                   cy={cy}
                   r={r}
                   fill="none"
-                  stroke="rgba(255,255,255,0.06)"
+                  stroke="rgb(var(--border) / 0.8)"
                   strokeWidth="1"
                 />
                 <text
                   x={cx + 4}
                   y={cy - r + 14}
-                  fill="rgba(148,163,184,0.5)"
+                  fill="rgb(var(--muted-foreground) / 0.75)"
                   style={{ fontSize: "8px" }}>
                   {labels[i]}
                 </text>
@@ -608,7 +602,7 @@ const TechRadar = () => {
                     y1={cy}
                     x2={x2}
                     y2={y2}
-                    stroke="rgba(255,255,255,0.06)"
+                    stroke="rgb(var(--border) / 0.8)"
                     strokeWidth="1"
                   />
                   <text
@@ -616,7 +610,7 @@ const TechRadar = () => {
                     y={ly}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fill="#22d3ee"
+                    fill="rgb(var(--primary) / 0.95)"
                     fontWeight="600"
                     style={{ fontSize: "10px" }}>
                     {cat.category}
@@ -633,7 +627,6 @@ const TechRadar = () => {
                 const spread = ((si - 1.5) / 4) * 0.35;
                 const x = cx + Math.cos(angle + spread) * r;
                 const y = cy + Math.sin(angle + spread) * r;
-                const hue = hueBase[ci];
                 return (
                   <g key={`${ci}-${si}`}>
                     <motion.circle
@@ -645,7 +638,7 @@ const TechRadar = () => {
                         duration: 0.5,
                         delay: ci * 0.12 + si * 0.06,
                       }}
-                      fill={`hsl(${hue},75%,60%)`}
+                      fill="rgb(var(--primary) / 0.85)"
                       opacity={0.85}
                     />
                     <motion.circle
@@ -657,7 +650,7 @@ const TechRadar = () => {
                         duration: 0.5,
                         delay: ci * 0.12 + si * 0.06,
                       }}
-                      fill={`hsl(${hue},75%,60%)`}
+                      fill="rgb(var(--primary) / 0.12)"
                       opacity={0.12}
                     />
                     <title>
@@ -674,11 +667,10 @@ const TechRadar = () => {
         <div className="flex flex-wrap justify-center gap-4 mt-6">
           {radarData.map((cat, i) => (
             <div key={cat.category} className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: `hsl(${hueBase[i]},75%,60%)` }}
-              />
-              <span className="text-xs text-slate-400">{cat.category}</span>
+              <div className="w-3 h-3 rounded-full bg-primary" />
+              <span className="text-xs text-muted-foreground">
+                {cat.category}
+              </span>
             </div>
           ))}
         </div>
@@ -709,32 +701,34 @@ const GitHubHeatmap = () => {
   }, []);
 
   const colors = [
-    "rgba(255,255,255,0.04)",
-    "rgba(0,245,255,0.15)",
-    "rgba(0,245,255,0.3)",
-    "rgba(139,92,246,0.5)",
-    "rgba(139,92,246,0.8)",
+    "rgb(var(--muted) / 0.55)",
+    "rgb(var(--primary) / 0.16)",
+    "rgb(var(--primary) / 0.26)",
+    "rgb(var(--primary) / 0.40)",
+    "rgb(var(--primary) / 0.55)",
   ];
 
   return (
     <ScrollReveal>
       <div
         ref={ref}
-        className="p-8 lg:p-12 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08]">
+        className="p-8 lg:p-12 rounded-2xl bg-card/60 backdrop-blur border border-border shadow-sm">
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20">
-              <Code2 className="w-6 h-6 text-cyan-400" />
+            <div className="p-3 rounded-xl bg-primary/10">
+              <Code2 className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
+              <h3 className="text-2xl font-bold font-display text-foreground">
                 Coding Activity
               </h3>
-              <p className="text-sm text-slate-600">Contribution overview</p>
+              <p className="text-sm text-muted-foreground">
+                Contribution overview
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-slate-600">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span>Less</span>
             {colors.map((c, i) => (
               <div
@@ -781,9 +775,9 @@ const Skills = () => {
     <div className="relative min-h-screen">
       {/* Decorative blurs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 h-96 bg-cyan-500/5 rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/4 right-1/4 h-80 bg-purple-500/5 rounded-full blur-[128px]" />
-        <div className="absolute top-3/4 left-1/2 h-72 bg-fuchsia-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-1/4 left-1/4 h-96 bg-primary/10 rounded-full blur" />
+        <div className="absolute bottom-1/4 right-1/4 h-80 bg-primary/10 rounded-full blur" />
+        <div className="absolute top-3/4 left-1/2 h-72 bg-primary/5 rounded-full blur" />
       </div>
 
       {/* Floating tech pills */}
@@ -793,15 +787,12 @@ const Skills = () => {
         <div className="mx-auto max-w-7xl">
           {/* ── Hero Section ── */}
           <ScrollReveal className="mb-16 text-center lg:mb-20">
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium rounded-full glass text-cyan-300">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium rounded-full border border-border bg-card/60 backdrop-blur text-primary">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               Technical Expertise
             </div>
             <h2 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl font-display">
-              Skills &{" "}
-              <span className="text-transparent bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
-                Expertise
-              </span>
+              Skills & <span className="gradient-text">Expertise</span>
             </h2>
             <div className="h-8 mb-4">
               <TypeAnimation
@@ -818,10 +809,10 @@ const Skills = () => {
                 wrapper="span"
                 speed={50}
                 repeat={Infinity}
-                className="text-lg font-medium md:text-xl text-slate-400"
+                className="text-lg font-medium md:text-xl text-muted-foreground"
               />
             </div>
-            <p className="max-w-2xl mx-auto text-lg leading-relaxed text-slate-400">
+            <p className="max-w-2xl mx-auto text-lg leading-relaxed text-muted-foreground">
               Combining Electronics Engineering expertise with Full-Stack Web
               Development skills to create innovative solutions.
             </p>
@@ -843,16 +834,16 @@ const Skills = () => {
 
           {/* ── Continuous Learning ── */}
           <ScrollReveal>
-            <div className="mb-20 p-8 lg:p-12 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/[0.08]">
+            <div className="mb-20 p-8 lg:p-12 rounded-2xl bg-card/60 backdrop-blur border border-border shadow-sm">
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20">
-                  <Star className="w-6 h-6 text-cyan-400" />
+                <div className="p-3 rounded-xl bg-primary/10">
+                  <Star className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-transparent font-display bg-gradient-to-r from-cyan-400 via-purple-400 to-fuchsia-400 bg-clip-text">
+                  <h3 className="text-2xl font-bold font-display text-foreground">
                     Continuous Learning
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Always growing, always improving
                   </p>
                 </div>

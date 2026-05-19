@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { useReducedMotion } from "framer-motion";
 
 const SplitText = ({
   text = "",
@@ -16,8 +17,10 @@ const SplitText = ({
 }) => {
   const containerRef = useRef(null);
   const hasAnimated = useRef(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
     const el = containerRef.current;
     if (!el || hasAnimated.current) return;
 
@@ -26,37 +29,49 @@ const SplitText = ({
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
           const spans = el.querySelectorAll(".split-char");
-          gsap.fromTo(
-            spans,
-            from,
-            {
-              ...to,
-              duration,
-              ease,
-              stagger: delay / 1000,
-              onComplete,
-            }
-          );
+          gsap.fromTo(spans, from, {
+            ...to,
+            duration,
+            ease,
+            stagger: delay / 1000,
+            onComplete,
+          });
           observer.disconnect();
         }
       },
-      { threshold }
+      { threshold },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [text, delay, duration, ease, from, to, threshold, onComplete]);
+  }, [
+    shouldReduceMotion,
+    text,
+    delay,
+    duration,
+    ease,
+    from,
+    to,
+    threshold,
+    onComplete,
+  ]);
 
   const renderContent = () => {
     if (splitType === "words") {
       return text.split(" ").map((word, i) => (
-        <span key={i} className="split-char inline-block opacity-0" style={{ marginRight: "0.3em" }}>
+        <span
+          key={i}
+          className="split-char inline-block opacity-0"
+          style={{ marginRight: "0.3em" }}>
           {word}
         </span>
       ));
     }
     return text.split("").map((char, i) => (
-      <span key={i} className="split-char inline-block opacity-0" style={char === " " ? { width: "0.3em" } : {}}>
+      <span
+        key={i}
+        className="split-char inline-block opacity-0"
+        style={char === " " ? { width: "0.3em" } : {}}>
         {char === " " ? "\u00A0" : char}
       </span>
     ));
@@ -64,7 +79,7 @@ const SplitText = ({
 
   return (
     <Tag ref={containerRef} className={className}>
-      {renderContent()}
+      {shouldReduceMotion ? text : renderContent()}
     </Tag>
   );
 };

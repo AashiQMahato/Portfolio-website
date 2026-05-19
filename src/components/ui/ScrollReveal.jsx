@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const ScrollReveal = ({
   children,
@@ -12,6 +12,7 @@ const ScrollReveal = ({
 }) => {
   const ref = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const directions = {
     up: { y: distance, x: 0 },
@@ -21,6 +22,10 @@ const ScrollReveal = ({
   };
 
   useEffect(() => {
+    if (shouldReduceMotion) {
+      setIsVisible(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -28,11 +33,11 @@ const ScrollReveal = ({
           if (once) observer.disconnect();
         }
       },
-      { threshold: 0.1, rootMargin: "-50px" }
+      { threshold: 0.1, rootMargin: "-50px" },
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [once]);
+  }, [once, shouldReduceMotion]);
 
   const initial = { opacity: 0, ...directions[direction] };
 
@@ -42,8 +47,7 @@ const ScrollReveal = ({
       initial={initial}
       animate={isVisible ? { opacity: 1, x: 0, y: 0 } : initial}
       transition={{ duration, delay, ease: "easeOut" }}
-      className={className}
-    >
+      className={className}>
       {children}
     </motion.div>
   );

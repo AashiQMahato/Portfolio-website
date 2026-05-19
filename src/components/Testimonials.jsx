@@ -6,39 +6,44 @@ const testimonials = [
   {
     name: "Dr. Rajan Sharma",
     role: "Professor, ACEM",
-    content: "Aashiq demonstrated exceptional skills in his IoT project. His ability to bridge hardware and software is remarkable.",
+    content:
+      "Aashiq demonstrated exceptional skills in his IoT project. His ability to bridge hardware and software is remarkable.",
     avatar: "RS",
   },
   {
     name: "Bikash Thapa",
     role: "Team Lead, Smart Stick Project",
-    content: "Working with Aashiq on the Ultrasonic Blind Stick was inspiring. His technical depth in embedded systems is outstanding.",
+    content:
+      "Working with Aashiq on the Ultrasonic Blind Stick was inspiring. His technical depth in embedded systems is outstanding.",
     avatar: "BT",
   },
   {
     name: "Priya Adhikari",
     role: "Project Partner",
-    content: "His full-stack development skills and clean code practices made our Attendance System project a huge success.",
+    content:
+      "His full-stack development skills and clean code practices made our Attendance System project a huge success.",
     avatar: "PA",
   },
   {
     name: "Suman KC",
     role: "Classmate, ACEM",
-    content: "Aashiq is an incredible problem solver. He always finds elegant solutions to complex engineering challenges.",
+    content:
+      "Aashiq is an incredible problem solver. He always finds elegant solutions to complex engineering challenges.",
     avatar: "SK",
   },
   {
     name: "Anish Gurung",
     role: "Mentor",
-    content: "One of the most dedicated students I've seen. His passion for continuous learning and innovation is truly admirable.",
+    content:
+      "One of the most dedicated students I've seen. His passion for continuous learning and innovation is truly admirable.",
     avatar: "AG",
   },
 ];
 
 const TestimonialCard = ({ testimonial }) => (
-  <div className="glass rounded-2xl p-6 w-[340px] sm:w-[380px] shrink-0 hover:bg-white/[0.06] transition-all">
+  <div className="rounded-2xl p-6 w-[340px] sm:w-[380px] shrink-0 border border-border bg-card/80 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
     <Quote className="w-8 h-8 text-primary-500/30 mb-4" />
-    <p className="text-sm text-dark-300 leading-relaxed mb-6 line-clamp-4">
+    <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-4">
       "{testimonial.content}"
     </p>
     <div className="flex items-center gap-3">
@@ -46,8 +51,10 @@ const TestimonialCard = ({ testimonial }) => (
         {testimonial.avatar}
       </div>
       <div>
-        <p className="text-sm font-semibold text-dark-200">{testimonial.name}</p>
-        <p className="text-xs text-dark-500">{testimonial.role}</p>
+        <p className="text-sm font-semibold text-foreground">
+          {testimonial.name}
+        </p>
+        <p className="text-xs text-muted-foreground">{testimonial.role}</p>
       </div>
     </div>
   </div>
@@ -57,14 +64,18 @@ const Testimonials = () => {
   return (
     <div className="relative py-24">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary-500/5 rounded-full blur-[128px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[260px] bg-primary/8 rounded-full blur opacity-55" />
       </div>
 
       <div className="relative z-10">
         <div className="section-padding pb-0">
           <SectionHeader
             badge="Testimonials"
-            title={<>What People <span className="gradient-text">Say</span></>}
+            title={
+              <>
+                What People <span className="gradient-text">Say</span>
+              </>
+            }
             description="Feedback from colleagues, professors, and collaborators I've worked with."
           />
         </div>

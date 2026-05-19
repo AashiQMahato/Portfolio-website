@@ -1,20 +1,54 @@
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "framer-motion";
 
 const Magnet = ({ children, strength = 0.3, className = "" }) => {
   const ref = useRef(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const shouldReduceMotion = useReducedMotion();
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const spring = {
+    stiffness: 220,
+    damping: 22,
+    mass: 0.15,
+  };
+
+  const xSpring = useSpring(x, spring);
+  const ySpring = useSpring(y, spring);
+
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const handleMouse = (e) => {
+    if (shouldReduceMotion) return;
+    const node = ref.current;
+    if (!node) return;
+
     const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const x = (clientX - left - width / 2) * strength;
-    const y = (clientY - top - height / 2) * strength;
-    setPosition({ x, y });
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const { left, top, width, height } = node.getBoundingClientRect();
+      const nextX = (clientX - left - width / 2) * strength;
+      const nextY = (clientY - top - height / 2) * strength;
+      x.set(nextX);
+      y.set(nextY);
+    });
   };
 
   const handleLeave = () => {
-    setPosition({ x: 0, y: 0 });
+    x.set(0);
+    y.set(0);
   };
 
   return (
@@ -22,10 +56,8 @@ const Magnet = ({ children, strength = 0.3, className = "" }) => {
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={handleLeave}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      className={className}
-    >
+      style={shouldReduceMotion ? undefined : { x: xSpring, y: ySpring }}
+      className={className}>
       {children}
     </motion.div>
   );

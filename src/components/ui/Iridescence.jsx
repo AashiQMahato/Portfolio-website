@@ -51,6 +51,7 @@ export default function Iridescence({
   speed = 1.0,
   amplitude = 0.1,
   mouseReact = true,
+  quality = 0.75,
   ...rest
 }) {
   const ctnRef = useRef(null);
@@ -65,8 +66,9 @@ export default function Iridescence({
 
     let program;
 
+    const scale = Math.min(1, Math.max(0.35, quality));
+
     function resize() {
-      const scale = 1;
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
       if (program) {
         program.uniforms.uResolution.value = new Color(
@@ -107,8 +109,10 @@ export default function Iridescence({
 
     const mesh = new Mesh(gl, { geometry, program });
     let animateId;
+    let isRunning = true;
 
     function update(t) {
+      if (!isRunning) return;
       animateId = requestAnimationFrame(update);
       program.uniforms.uTime.value = t * 0.001;
       renderer.render({ scene: mesh });
@@ -116,6 +120,19 @@ export default function Iridescence({
 
     animateId = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
+
+    function handleVisibilityChange() {
+      const shouldRun = !document.hidden;
+      if (shouldRun === isRunning) return;
+      isRunning = shouldRun;
+      if (isRunning) {
+        animateId = requestAnimationFrame(update);
+      } else {
+        cancelAnimationFrame(animateId);
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     function handleMouseMove(e) {
       const rect = ctn.getBoundingClientRect();
@@ -133,13 +150,14 @@ export default function Iridescence({
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       if (mouseReact) {
         ctn.removeEventListener("mousemove", handleMouseMove);
       }
       ctn.removeChild(gl.canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [color, speed, amplitude, mouseReact]);
+  }, [color, speed, amplitude, mouseReact, quality]);
 
   return <div ref={ctnRef} className="iridescence-container" {...rest} />;
 }

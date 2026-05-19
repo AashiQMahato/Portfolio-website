@@ -40,7 +40,7 @@ const ThemeToggle = () => {
       onClick={cycleTheme}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="p-2.5 rounded-xl glass text-dark-300 hover:text-white transition-colors cursor-pointer"
+      className="p-2.5 rounded-xl border border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       title={`Theme: ${label} (click to cycle)`}
       aria-label={`Theme toggle. Current: ${label}`}>
       <Icon className="w-4 h-4" />
@@ -98,7 +98,7 @@ const Navbar = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-500 ${
           isScrolled
-            ? "py-2 glass shadow-lg shadow-primary-500/5"
+            ? "py-2 bg-background/80 backdrop-blur border-b border-border"
             : "py-4 bg-transparent"
         }`}
         style={{
@@ -124,31 +124,35 @@ const Navbar = () => {
                 </div>
                 <span className="hidden text-xl font-bold md:block font-display">
                   <span className="gradient-text">Aashiq</span>
-                  <span className="text-dark-400">.dev</span>
+                  <span className="text-muted-foreground">.dev</span>
                 </span>
               </motion.div>
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="items-center hidden lg:flex">
-              <div className="flex items-center gap-1 p-1.5 rounded-2xl glass">
+              <div className="flex items-center gap-1 p-1.5 rounded-2xl border border-border bg-card/60 backdrop-blur">
                 {navItems.map((item, index) => {
                   const Icon = item.icon;
                   const isActive = index === activeIndex;
                   return (
-                    <Link key={item.path} to={item.path}>
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                      aria-current={isActive ? "page" : undefined}>
                       <motion.div
                         className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-300 ${
                           isActive
-                            ? "text-white"
-                            : "text-dark-400 hover:text-dark-200"
+                            ? "text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}>
                         {isActive && (
                           <motion.div
                             layoutId="activeNavBg"
-                            className="absolute inset-0 shadow-lg bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl shadow-primary-500/30"
+                            className="absolute inset-0 rounded-xl border border-primary/25 bg-primary/10"
                             transition={{
                               type: "spring",
                               stiffness: 380,
@@ -175,7 +179,7 @@ const Navbar = () => {
                 <Magnet strength={0.2}>
                   <Link
                     to="/contactus"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-secondary-500 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-300 hover:-translate-y-0.5">
+                    className="flex items-center h-11 gap-2 px-6 rounded-xl text-sm font-semibold text-primary-foreground bg-primary shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
                     <Sparkles className="w-4 h-4" />
                     Hire Me
                   </Link>
@@ -186,7 +190,7 @@ const Navbar = () => {
                 onClick={toggleMenu}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="lg:hidden p-2.5 rounded-xl glass text-dark-300 hover:text-white transition-colors flex-shrink-0"
+                className="lg:hidden p-2.5 rounded-xl border border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                 aria-label="Toggle menu">
                 <AnimatePresence mode="wait">
                   {isMenuOpen ? (
@@ -224,7 +228,7 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-dark-950/80 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-background/80 backdrop-blur lg:hidden"
             />
             <motion.div
               initial={{ x: "100%" }}
@@ -237,8 +241,8 @@ const Navbar = () => {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsMenuOpen(false)}
-                    className="p-2 rounded-xl glass">
-                    <X className="w-5 h-5 text-dark-300" />
+                    className="p-2 rounded-xl border border-border bg-card/60 backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                    <X className="w-5 h-5 text-muted-foreground" />
                   </motion.button>
                 </div>
                 <nav className="flex flex-col gap-2">
@@ -254,8 +258,8 @@ const Navbar = () => {
                           whileHover={{ x: 4 }}
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                             isActive
-                              ? "bg-primary-500/20 text-primary-300 border border-primary-500/30"
-                              : "text-dark-400 hover:text-dark-200 hover:bg-white/5"
+                              ? "bg-primary/10 text-primary border border-primary/25"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                           }`}>
                           <Icon className="w-5 h-5" />
                           <span className="font-medium">{item.label}</span>
@@ -268,7 +272,7 @@ const Navbar = () => {
                   <Link
                     to="/contactus"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center w-full gap-2 px-5 py-3 text-sm font-semibold text-white shadow-lg rounded-xl bg-gradient-to-r from-primary-500 to-secondary-500 shadow-primary-500/25">
+                    className="flex items-center justify-center w-full h-11 gap-2 px-6 text-sm font-semibold rounded-xl bg-primary text-primary-foreground shadow-sm hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
                     <Sparkles className="w-4 h-4" />
                     Hire Me
                   </Link>

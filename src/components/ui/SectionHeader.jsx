@@ -4,7 +4,7 @@ const SectionHeader = ({ badge, title, description, className = "" }) => {
   return (
     <ScrollReveal className={`text-center mb-16 lg:mb-20 ${className}`}>
       {badge && (
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium rounded-full glass text-primary-300">
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium rounded-full border border-border bg-card/60 backdrop-blur text-primary">
           <span className="w-2 h-2 rounded-full bg-primary-400 animate-pulse" />
           {badge}
         </div>
@@ -13,7 +13,7 @@ const SectionHeader = ({ badge, title, description, className = "" }) => {
         {title}
       </h2>
       {description && (
-        <p className="max-w-2xl mx-auto text-lg text-dark-400 leading-relaxed">
+        <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
           {description}
         </p>
       )}

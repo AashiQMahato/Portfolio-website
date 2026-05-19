@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X, Send, Trash2, Sparkles } from "lucide-react";
 
 const AVATAR_URL =
@@ -37,41 +37,22 @@ const suggestedChips = [
 
 /* Animated avatar component */
 const AvatarImage = ({ size = 40, ring = true }) => (
-  <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+  <div className="relative shrink-0" style={{ width: size, height: size }}>
     {ring && (
       <>
         <motion.div
-          style={{
-            position: "absolute",
-            inset: -3,
-            borderRadius: "50%",
-            background: "conic-gradient(from 0deg, #f9a825, #ff6f00, #e040fb, #00bcd4, #f9a825)",
-          }}
+          className="absolute rounded-full -inset-1 bg-gradient-to-r from-primary via-accent to-primary opacity-70"
           animate={{ rotate: 360 }}
           transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
         />
-        <div
-          style={{
-            position: "absolute",
-            inset: -1,
-            borderRadius: "50%",
-            background: "#0d0d1a",
-          }}
-        />
+        <div className="absolute -inset-[1px] rounded-full bg-background" />
       </>
     )}
     <img
       src={AVATAR_URL}
       alt="AI Avatar"
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        borderRadius: "50%",
-        objectFit: "cover",
-        objectPosition: "center top",
-      }}
+      className="absolute inset-0 object-cover object-top w-full h-full rounded-full"
+      loading="lazy"
     />
   </div>
 );
@@ -84,24 +65,35 @@ const AIChatbot = () => {
   const [showChips, setShowChips] = useState(true);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, prefersReducedMotion]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 300);
+      const timeoutId = window.setTimeout(
+        () => inputRef.current?.focus(),
+        prefersReducedMotion ? 0 : 250,
+      );
+      return () => window.clearTimeout(timeoutId);
     }
-  }, [isOpen]);
+  }, [isOpen, prefersReducedMotion]);
 
   const sendMessage = async (text) => {
-    if (!text.trim()) return;
-    const userMessage = { role: "user", content: text.trim() };
+    if (isTyping) return;
+
+    const trimmed = String(text ?? "").trim();
+    if (!trimmed) return;
+
+    const userMessage = { role: "user", content: trimmed };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
@@ -112,30 +104,39 @@ const AIChatbot = () => {
       const apiKey = import.meta.env.VITE_GROQ_API_KEY;
       if (!apiKey) throw new Error("API key not configured");
 
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "llama-3.1-8b-instant",
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT },
+              ...updatedMessages
+                .slice(-10)
+                .map((m) => ({ role: m.role, content: m.content })),
+            ],
+            temperature: 0.7,
+            max_tokens: 300,
+          }),
         },
-        body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...updatedMessages.slice(-10).map((m) => ({ role: m.role, content: m.content })),
-          ],
-          temperature: 0.7,
-          max_tokens: 300,
-        }),
-      });
+      );
 
       if (!response.ok) throw new Error(`API error: ${response.status}`);
       const data = await response.json();
       const aiContent =
         data.choices?.[0]?.message?.content ||
         "I'm sorry, I couldn't process that. Please try again!";
-      setMessages((prev) => [...prev, { role: "assistant", content: aiContent }]);
-    } catch (error) {
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: aiContent },
+      ]);
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -152,6 +153,7 @@ const AIChatbot = () => {
   const clearChat = () => {
     setMessages([]);
     setShowChips(true);
+    setInput("");
   };
 
   const handleKeyDown = (e) => {
@@ -161,99 +163,44 @@ const AIChatbot = () => {
     }
   };
 
+  const canSend = input.trim().length > 0 && !isTyping;
+
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap');
-
-        .chat-scrollbar::-webkit-scrollbar { width: 4px; }
-        .chat-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .chat-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(249,168,37,0.25);
-          border-radius: 4px;
-        }
-        .chat-input::placeholder { color: rgba(255,255,255,0.25); }
-        .chip-btn:hover {
-          border-color: rgba(249,168,37,0.5) !important;
-          background: rgba(249,168,37,0.08) !important;
-          color: #f9a825 !important;
-        }
-      `}</style>
-
       {/* FAB */}
       <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          position: "fixed",
-          bottom: 28,
-          right: 28,
-          zIndex: 100,
-          width: 68,
-          height: 68,
-          borderRadius: "50%",
-          border: "none",
-          cursor: "pointer",
-          padding: 0,
-          background: "transparent",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-expanded={isOpen}
+        aria-controls="ai-chat-window"
+        className="fixed bottom-7 right-7 z-[100] w-[68px] h-[68px] rounded-full bg-transparent flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.94 }}
         title="Chat with AI Assistant">
-        {/* Outer glow pulse */}
-        <motion.div
-          style={{
-            position: "absolute",
-            inset: -6,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(249,168,37,0.35) 0%, transparent 70%)",
-          }}
-          animate={{ scale: [1, 1.25, 1], opacity: [0.7, 0.2, 0.7] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        />
+        {/* Outer glow pulse (motion-safe) */}
+        {!prefersReducedMotion && (
+          <motion.div
+            className="absolute rounded-full -inset-2"
+            style={{
+              background:
+                "radial-gradient(circle, rgb(var(--primary) / 0.35) 0%, transparent 70%)",
+            }}
+            animate={{ scale: [1, 1.25, 1], opacity: [0.7, 0.2, 0.7] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
+
         <AvatarImage size={68} ring={true} />
 
         {/* Sparkle badge */}
-        <div
-          style={{
-            position: "absolute",
-            top: 2,
-            right: 2,
-            width: 18,
-            height: 18,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #f9a825, #ff6f00)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px solid #0d0d1a",
-          }}>
-          <Sparkles size={9} color="#fff" />
+        <div className="absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground flex items-center justify-center border-2 border-background">
+          <Sparkles size={9} />
         </div>
 
         {/* Tooltip */}
-        <motion.div
-          style={{
-            position: "absolute",
-            right: "calc(100% + 14px)",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "rgba(13,13,26,0.95)",
-            border: "1px solid rgba(249,168,37,0.3)",
-            borderRadius: 10,
-            padding: "7px 13px",
-            fontSize: 12,
-            fontFamily: "'DM Sans', sans-serif",
-            color: "#f5e6c8",
-            whiteSpace: "nowrap",
-            pointerEvents: "none",
-          }}
-          initial={{ opacity: 0, x: 8 }}
-          whileHover={{ opacity: 1, x: 0 }}>
-          Chat with Aashiq&apos;s AI ✦
-        </motion.div>
+        <div className="absolute right-[calc(100%+14px)] top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg text-xs whitespace-nowrap pointer-events-none opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 border border-border bg-card/90 backdrop-blur-sm text-foreground shadow-md">
+          Chat with Aashiq&apos;s AI
+        </div>
       </motion.button>
 
       {/* Chat Window */}
@@ -266,355 +213,147 @@ const AIChatbot = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 101,
-                background: "rgba(0,0,0,0.6)",
-                backdropFilter: "blur(6px)",
-                display: "none",
-              }}
-              className="md-overlay"
+              className="fixed inset-0 z-[101] bg-black/60 backdrop-blur md:hidden"
             />
 
             <motion.div
+              id="ai-chat-window"
               initial={{ opacity: 0, y: 24, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
               transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-              style={{
-                position: "fixed",
-                bottom: 108,
-                right: 24,
-                zIndex: 102,
-                width: 400,
-                height: 580,
-                borderRadius: 24,
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                background: "linear-gradient(160deg, #12111f 0%, #0d0c1a 50%, #111020 100%)",
-                boxShadow:
-                  "0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(249,168,37,0.15), inset 0 1px 0 rgba(255,255,255,0.06)",
-                fontFamily: "'DM Sans', sans-serif",
-              }}>
-
+              className="fixed bottom-28 right-6 z-[102] w-[400px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-8rem)] rounded-2xl overflow-hidden flex flex-col border border-border bg-card/90 backdrop-blur-sm shadow-xl">
               {/* Decorative top shimmer line */}
+              <div className="absolute top-0 left-[10%] right-[10%] h-px rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
+              {/* Ambient blobs */}
               <div
+                className="absolute rounded-full pointer-events-none -top-10 -right-8 w-44 h-44"
                 style={{
-                  position: "absolute",
-                  top: 0,
-                  left: "10%",
-                  right: "10%",
-                  height: 1,
                   background:
-                    "linear-gradient(90deg, transparent, rgba(249,168,37,0.6), rgba(224,64,251,0.4), transparent)",
-                  borderRadius: 1,
+                    "radial-gradient(circle, rgb(var(--accent) / 0.10) 0%, transparent 70%)",
+                }}
+              />
+              <div
+                className="absolute rounded-full pointer-events-none bottom-16 -left-10 w-52 h-52"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgb(var(--primary) / 0.08) 0%, transparent 70%)",
                 }}
               />
 
-              {/* Ambient glow blobs */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: -40,
-                  right: -30,
-                  width: 180,
-                  height: 180,
-                  borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(224,64,251,0.08) 0%, transparent 70%)",
-                  pointerEvents: "none",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 60,
-                  left: -40,
-                  width: 200,
-                  height: 200,
-                  borderRadius: "50%",
-                  background: "radial-gradient(circle, rgba(249,168,37,0.06) 0%, transparent 70%)",
-                  pointerEvents: "none",
-                }}
-              />
-
-              {/* ── HEADER ── */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
-                  padding: "18px 20px 16px",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  background: "rgba(255,255,255,0.02)",
-                  position: "relative",
-                  zIndex: 1,
-                }}>
+              {/* Header */}
+              <div className="relative z-10 flex items-center gap-3 px-5 py-4 border-b border-border bg-card/60">
                 <AvatarImage size={46} ring={true} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontFamily: "'Playfair Display', serif",
-                      fontWeight: 700,
-                      fontSize: 15,
-                      background: "linear-gradient(90deg, #f9a825, #ffcc02, #e040fb)",
-                      WebkitBackgroundClip: "text",
-                      backgroundClip: "text",
-                      color: "transparent",
-                      letterSpacing: 0.2,
-                    }}>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold truncate font-display gradient-text">
                     Aashiq&apos;s AI Assistant
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      marginTop: 3,
-                    }}>
+                  <div className="flex items-center gap-2 mt-1">
                     <motion.div
-                      style={{
-                        width: 7,
-                        height: 7,
-                        borderRadius: "50%",
-                        background: "#4ade80",
-                        flexShrink: 0,
-                      }}
-                      animate={{ opacity: [1, 0.4, 1] }}
-                      transition={{ duration: 1.8, repeat: Infinity }}
+                      className="w-2 h-2 rounded-full bg-primary"
+                      animate={
+                        prefersReducedMotion ? {} : { opacity: [1, 0.4, 1] }
+                      }
+                      transition={
+                        prefersReducedMotion
+                          ? {}
+                          : { duration: 1.8, repeat: Infinity }
+                      }
                     />
-                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.38)", letterSpacing: 0.3 }}>
+                    <span className="text-[11px] text-muted-foreground">
                       Online · Ask me anything
                     </span>
                   </div>
                 </div>
 
                 <button
+                  type="button"
                   onClick={clearChat}
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 9,
-                    width: 32,
-                    height: 32,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    color: "rgba(255,255,255,0.4)",
-                    flexShrink: 0,
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#f9a825";
-                    e.currentTarget.style.borderColor = "rgba(249,168,37,0.3)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "rgba(255,255,255,0.4)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                  }}
+                  className="w-8 h-8 border rounded-lg border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                   title="Clear chat">
-                  <Trash2 size={14} />
+                  <Trash2 size={14} className="mx-auto" />
                 </button>
 
                 <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 9,
-                    width: 32,
-                    height: 32,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    color: "rgba(255,255,255,0.4)",
-                    flexShrink: 0,
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "#fff";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "rgba(255,255,255,0.4)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                  }}>
-                  <X size={14} />
+                  className="w-8 h-8 border rounded-lg border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                  title="Close chat">
+                  <X size={14} className="mx-auto" />
                 </button>
               </div>
 
-              {/* ── MESSAGES ── */}
-              <div
-                className="chat-scrollbar"
-                style={{
-                  flex: 1,
-                  overflowY: "auto",
-                  padding: "20px 18px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 14,
-                  position: "relative",
-                  zIndex: 1,
-                }}>
-
-                {/* Welcome state */}
+              {/* Messages */}
+              <div className="relative z-10 flex-1 px-4 py-4 space-y-3 overflow-y-auto">
+                {/* Welcome */}
                 {messages.length === 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    style={{ textAlign: "center", paddingTop: 10, paddingBottom: 8 }}>
-                    <div
-                      style={{
-                        width: 80,
-                        height: 80,
-                        margin: "0 auto 16px",
-                        position: "relative",
-                      }}>
-                      <motion.div
-                        style={{
-                          position: "absolute",
-                          inset: -8,
-                          borderRadius: "50%",
-                          background:
-                            "conic-gradient(from 0deg, #f9a825, #ff6f00, #e040fb, #00bcd4, #f9a825)",
-                          opacity: 0.35,
-                        }}
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                      />
-                      <img
-                        src={AVATAR_URL}
-                        alt="AI"
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                          objectPosition: "center top",
-                          border: "2px solid rgba(249,168,37,0.4)",
-                        }}
-                      />
+                    className="pt-2 pb-1 text-center">
+                    <div className="w-20 h-20 mx-auto mb-4">
+                      <AvatarImage size={80} ring={true} />
                     </div>
-                    <p
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: 16,
-                        fontWeight: 700,
-                        color: "#f5e6c8",
-                        marginBottom: 6,
-                      }}>
-                      Hello there! ✦
+                    <p className="mb-1 text-base font-bold font-display text-foreground">
+                      Hello there!
                     </p>
-                    <p style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>
-                      I&apos;m Aashiq&apos;s personal AI assistant.<br />
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      I&apos;m Aashiq&apos;s personal AI assistant.
+                      <br />
                       Ask me anything about his work!
                     </p>
                   </motion.div>
                 )}
 
-                {/* Suggestion chips */}
+                {/* Suggested chips */}
                 {showChips && messages.length === 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.25 }}
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 8,
-                      justifyContent: "center",
-                    }}>
+                    className="flex flex-wrap justify-center gap-2">
                     {suggestedChips.map((chip, idx) => (
                       <motion.button
                         key={chip.text}
-                        className="chip-btn"
+                        type="button"
                         onClick={() => sendMessage(chip.text)}
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + idx * 0.07 }}
                         whileTap={{ scale: 0.96 }}
-                        style={{
-                          padding: "7px 14px",
-                          fontSize: 12,
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontWeight: 500,
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          borderRadius: 20,
-                          color: "rgba(255,255,255,0.6)",
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          letterSpacing: 0.2,
-                        }}>
+                        className="px-3.5 py-1.5 text-xs font-medium rounded-full border border-border bg-card/40 text-muted-foreground hover:text-foreground hover:bg-card/60 hover:border-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                         {chip.emoji} {chip.text}
                       </motion.button>
                     ))}
                   </motion.div>
                 )}
 
-                {/* Messages */}
+                {/* Conversation */}
                 {messages.map((msg, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.28 }}
-                    style={{
-                      display: "flex",
-                      gap: 10,
-                      justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-                      alignItems: "flex-end",
-                    }}>
+                    className={`flex gap-2.5 items-end ${
+                      msg.role === "user" ? "justify-end" : "justify-start"
+                    }`}>
                     {msg.role === "assistant" && (
-                      <div style={{ flexShrink: 0, marginBottom: 2 }}>
-                        <img
-                          src={AVATAR_URL}
-                          alt="AI"
-                          style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                            objectPosition: "center top",
-                            border: "1.5px solid rgba(249,168,37,0.4)",
-                          }}
-                        />
-                      </div>
+                      <img
+                        src={AVATAR_URL}
+                        alt="AI"
+                        className="object-cover object-top border rounded-full w-7 h-7 border-primary/20 shrink-0"
+                        loading="lazy"
+                      />
                     )}
 
                     <div
-                      style={
+                      className={
                         msg.role === "user"
-                          ? {
-                              maxWidth: "78%",
-                              padding: "10px 16px",
-                              borderRadius: "18px 18px 4px 18px",
-                              fontSize: 13.5,
-                              lineHeight: 1.6,
-                              background: "linear-gradient(135deg, #f9a825, #ff6f00)",
-                              color: "#fff",
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontWeight: 400,
-                              boxShadow: "0 4px 20px rgba(249,168,37,0.25)",
-                            }
-                          : {
-                              maxWidth: "78%",
-                              padding: "10px 16px",
-                              borderRadius: "18px 18px 18px 4px",
-                              fontSize: 13.5,
-                              lineHeight: 1.6,
-                              background: "rgba(255,255,255,0.05)",
-                              border: "1px solid rgba(255,255,255,0.07)",
-                              color: "rgba(255,255,255,0.85)",
-                              fontFamily: "'DM Sans', sans-serif",
-                              fontWeight: 400,
-                            }
+                          ? "max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-br-md text-sm leading-relaxed border border-primary/30 bg-primary text-primary-foreground"
+                          : "max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-bl-md text-sm leading-relaxed border border-border bg-card/60 text-foreground"
                       }>
                       {msg.content}
                     </div>
@@ -626,45 +365,32 @@ const AIChatbot = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+                    className="flex gap-2.5 items-end">
                     <img
                       src={AVATAR_URL}
                       alt="AI"
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        objectPosition: "center top",
-                        border: "1.5px solid rgba(249,168,37,0.4)",
-                        flexShrink: 0,
-                      }}
+                      className="object-cover object-top border rounded-full w-7 h-7 border-primary/20 shrink-0"
+                      loading="lazy"
                     />
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: 5,
-                        alignItems: "center",
-                        padding: "12px 16px",
-                        borderRadius: "18px 18px 18px 4px",
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.07)",
-                      }}>
-                      {[0, 1, 2].map((i) => (
+                    <div className="flex gap-1.5 items-center px-4 py-3 rounded-[18px] rounded-bl-md border border-border bg-card/60">
+                      {[0, 1, 2].map((dot) => (
                         <motion.div
-                          key={i}
-                          style={{
-                            width: 7,
-                            height: 7,
-                            borderRadius: "50%",
-                            background: "linear-gradient(135deg, #f9a825, #e040fb)",
-                          }}
-                          animate={{ y: [-4, 4, -4], opacity: [1, 0.4, 1] }}
-                          transition={{
-                            duration: 0.7,
-                            repeat: Infinity,
-                            delay: i * 0.15,
-                          }}
+                          key={dot}
+                          className="w-2 h-2 rounded-full bg-primary"
+                          animate={
+                            prefersReducedMotion
+                              ? {}
+                              : { y: [-3, 3, -3], opacity: [1, 0.4, 1] }
+                          }
+                          transition={
+                            prefersReducedMotion
+                              ? {}
+                              : {
+                                  duration: 0.7,
+                                  repeat: Infinity,
+                                  delay: dot * 0.15,
+                                }
+                          }
                         />
                       ))}
                     </div>
@@ -674,34 +400,9 @@ const AIChatbot = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* ── INPUT ── */}
-              <div
-                style={{
-                  padding: "14px 16px 18px",
-                  borderTop: "1px solid rgba(255,255,255,0.06)",
-                  background: "rgba(0,0,0,0.2)",
-                  position: "relative",
-                  zIndex: 1,
-                }}>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 10,
-                    alignItems: "center",
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 16,
-                    padding: "6px 8px 6px 16px",
-                    transition: "border-color 0.2s, box-shadow 0.2s",
-                  }}
-                  onFocusCapture={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(249,168,37,0.45)";
-                    e.currentTarget.style.boxShadow = "0 0 20px rgba(249,168,37,0.1)";
-                  }}
-                  onBlurCapture={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}>
+              {/* Input */}
+              <div className="relative z-10 px-4 pt-3 pb-4 border-t border-border bg-card/60">
+                <div className="flex items-center gap-2 px-3 py-2 border rounded-xl border-border bg-background/40 focus-within:ring-2 focus-within:ring-ring/50 focus-within:border-primary/30">
                   <input
                     ref={inputRef}
                     type="text"
@@ -709,60 +410,25 @@ const AIChatbot = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask about skills, projects…"
-                    className="chat-input"
-                    style={{
-                      flex: 1,
-                      background: "transparent",
-                      border: "none",
-                      outline: "none",
-                      fontSize: 13.5,
-                      color: "#f5e6c8",
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: 400,
-                      padding: "6px 0",
-                    }}
+                    className="flex-1 text-sm bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
                   />
 
                   <motion.button
+                    type="button"
                     onClick={() => sendMessage(input)}
-                    disabled={!input.trim() || isTyping}
-                    whileHover={{ scale: 1.06 }}
-                    whileTap={{ scale: 0.94 }}
-                    style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: 12,
-                      border: "none",
-                      background:
-                        input.trim() && !isTyping
-                          ? "linear-gradient(135deg, #f9a825, #ff6f00)"
-                          : "rgba(255,255,255,0.07)",
-                      color: input.trim() && !isTyping ? "#fff" : "rgba(255,255,255,0.25)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: input.trim() && !isTyping ? "pointer" : "not-allowed",
-                      flexShrink: 0,
-                      transition: "all 0.25s",
-                      boxShadow:
-                        input.trim() && !isTyping
-                          ? "0 4px 14px rgba(249,168,37,0.35)"
-                          : "none",
-                    }}>
+                    disabled={!canSend}
+                    whileHover={canSend ? { scale: 1.06 } : {}}
+                    whileTap={canSend ? { scale: 0.94 } : {}}
+                    className={
+                      canSend
+                        ? "w-10 h-10 rounded-lg border border-primary/30 bg-primary text-primary-foreground flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                        : "w-10 h-10 rounded-lg border border-border bg-card/40 text-muted-foreground/50 flex items-center justify-center cursor-not-allowed"
+                    }>
                     <Send size={15} />
                   </motion.button>
                 </div>
 
-                {/* Branding */}
-                <div
-                  style={{
-                    textAlign: "center",
-                    marginTop: 10,
-                    fontSize: 10.5,
-                    color: "rgba(255,255,255,0.2)",
-                    letterSpacing: 0.5,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}>
+                <div className="text-center mt-2 text-[10.5px] text-muted-foreground/60 tracking-wide">
                   Powered by AI · Aashiq.dev
                 </div>
               </div>

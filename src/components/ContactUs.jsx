@@ -145,13 +145,13 @@ const ContactUs = () => {
   };
 
   const inputClass =
-    "w-full py-3.5 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-dark-100 placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/40 transition-all";
+    "w-full px-4 py-3 text-sm rounded-xl bg-card/60 border border-border text-foreground placeholder:text-muted-foreground/70 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:border-primary/40";
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-40 -right-40 h-80 bg-primary-500/5 rounded-full blur-[128px]" />
-        <div className="absolute -bottom-40 -left-40 h-80 bg-secondary-500/5 rounded-full blur-[128px]" />
+        <div className="absolute -top-40 -right-40 w-72 h-72 bg-primary/8 rounded-full blur opacity-60" />
+        <div className="absolute -bottom-40 -left-40 w-72 h-72 bg-primary/8 rounded-full blur opacity-50" />
       </div>
 
       <div className="relative z-10 section-padding pt-28">
@@ -183,8 +183,10 @@ const ContactUs = () => {
                           <Icon className={`w-4 h-4 ${item.color}`} />
                         </div>
                         <div>
-                          <p className="text-xs text-dark-500">{item.title}</p>
-                          <p className="text-sm font-medium text-dark-200">
+                          <p className="text-xs text-muted-foreground">
+                            {item.title}
+                          </p>
+                          <p className="text-sm font-medium text-foreground">
                             {item.content}
                           </p>
                         </div>
@@ -208,7 +210,7 @@ const ContactUs = () => {
                           href={social.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center transition-all w-11 h-11 rounded-xl glass glass-hover text-dark-400 hover:text-primary-400"
+                          className="flex items-center justify-center w-11 h-11 rounded-xl border border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-primary hover:bg-card/80 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                           title={social.label}>
                           <Icon className="w-5 h-5" />
                         </a>
@@ -219,7 +221,7 @@ const ContactUs = () => {
               </GlassCard>
 
               {/* Available Badge */}
-              <div className="p-5 text-center glass rounded-xl">
+              <div className="p-5 text-center rounded-xl border border-border bg-card/60 backdrop-blur shadow-sm">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <span className="relative flex w-3 h-3">
                     <span className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-emerald-400" />
@@ -229,7 +231,7 @@ const ContactUs = () => {
                     Currently Available
                   </span>
                 </div>
-                <p className="text-xs text-dark-500">
+                <p className="text-xs text-muted-foreground">
                   Open to freelance & full-time opportunities
                 </p>
               </div>
@@ -239,14 +241,14 @@ const ContactUs = () => {
             <ScrollReveal direction="right" className="lg:col-span-3">
               <GlassCard className="p-6 lg:p-8" hover={false}>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-secondary-500">
-                    <MessageCircle className="w-5 h-5 text-white" />
+                  <div className="p-2.5 rounded-xl border border-primary/25 bg-primary/10">
+                    <MessageCircle className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold font-display">
                       Send Message
                     </h3>
-                    <p className="text-xs text-dark-500">
+                    <p className="text-xs text-muted-foreground">
                       I’ll respond within 24 hours
                     </p>
                   </div>
@@ -272,7 +274,7 @@ const ContactUs = () => {
                     className="space-y-5">
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="relative">
-                        <User className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-dark-500" />
+                        <User className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-muted-foreground" />
                         <input
                           type="text"
                           name="user_name"
@@ -284,7 +286,7 @@ const ContactUs = () => {
                         />
                       </div>
                       <div className="relative">
-                        <AtSign className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-dark-500" />
+                        <AtSign className="absolute w-4 h-4 -translate-y-1/2 left-4 top-1/2 text-muted-foreground" />
                         <input
                           type="email"
                           name="user_email"
@@ -325,7 +327,7 @@ const ContactUs = () => {
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 disabled:opacity-50 transition-all hover:-translate-y-0.5">
+                        className="w-full flex items-center justify-center h-11 gap-2 px-6 rounded-xl font-semibold bg-primary text-primary-foreground shadow-sm hover:shadow-md disabled:opacity-60 disabled:pointer-events-none transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
                         {isSubmitting ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />{" "}

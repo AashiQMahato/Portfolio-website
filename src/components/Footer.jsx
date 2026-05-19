@@ -8,9 +8,9 @@ import {
   MapPin,
   ChevronUp,
 } from "lucide-react";
+import { useReducedMotion } from "framer-motion";
 import logo from "../assets/logo.jpeg";
 
-/* ─── Static data ─────────────────────────────────────────────────────────── */
 const NAV_LINKS = [
   { label: "Home", path: "/" },
   { label: "About", path: "/about" },
@@ -31,339 +31,121 @@ const SOCIAL = [
   { Icon: Mail, href: "mailto:aashikmahato9567@gmail.com", label: "Email" },
 ];
 
-/* ─── Component ───────────────────────────────────────────────────────────── */
-const Footer = () => (
-  <footer className="f-footer">
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 32px 0" }}>
-      {/* ── ROW 1 — 4‑Column Grid ─────────────────────────────────────────── */}
-      <div className="f-grid">
-        {/* Col 1 — Brand */}
-        <div>
-          <Link
-            to="/"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 14,
-              textDecoration: "none",
-            }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 8,
-                overflow: "hidden",
-                border: "1px solid rgba(0,245,255,0.3)",
-                flexShrink: 0,
-              }}>
-              <img
-                src={logo}
-                alt="Logo"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+const Footer = () => {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <footer className="mt-20 border-t border-border bg-background">
+      <div className="px-4 pt-16 mx-auto max-w-7xl md:px-6">
+        <div className="grid gap-10 md:grid-cols-3">
+          {/* Brand */}
+          <div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-3 no-underline">
+              <div className="overflow-hidden border rounded-lg shadow-sm w-9 h-9 border-border bg-card shrink-0">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="object-cover w-full h-full"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <span className="text-lg font-semibold">
+                <span className="gradient-text">Aashiq</span>
+                <span className="text-muted-foreground">.dev</span>
+              </span>
+            </Link>
+
+            <p className="mt-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+              Electronics Engineer &amp; Full-Stack Developer
+            </p>
+            <p className="max-w-xs mt-3 text-sm leading-relaxed text-muted-foreground">
+              Building innovative solutions at the intersection of hardware and
+              software.
+            </p>
+
+            <div className="flex gap-2 mt-5">
+              {SOCIAL.map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="inline-flex items-center justify-center transition-colors border w-9 h-9 rounded-xl border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                  <Icon size={16} />
+                </a>
+              ))}
             </div>
-            <span className="f-brand-name">
-              Aashiq<span className="f-brand-dot">.dev</span>
-            </span>
-          </Link>
+          </div>
 
-          <p
-            className="f-grad-text"
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              marginBottom: 12,
-              letterSpacing: 1,
-            }}>
-            Electronics Engineer &amp; Full-Stack Developer
-          </p>
-          <p
-            className="f-body-text"
-            style={{ lineHeight: 1.75, maxWidth: 240, marginBottom: 20 }}>
-            Building innovative solutions at the intersection of hardware and
-            software.
-          </p>
+          {/* Navigation */}
+          <div>
+            <p className="mb-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+              Explore
+            </p>
+            <nav className="flex flex-col gap-2">
+              {NAV_LINKS.map(({ label, path }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className="text-sm transition-colors rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 w-fit">
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-          <div style={{ display: "flex", gap: 8 }}>
-            {SOCIAL.map(({ Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="f-social-btn">
-                <Icon size={15} />
-              </a>
-            ))}
+          {/* Contact */}
+          <div>
+            <p className="mb-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+              Contact
+            </p>
+            <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+              Open to freelance, collaborations, and full-time opportunities.
+            </p>
+
+            <a
+              href="mailto:aashikmahato9567@gmail.com"
+              className="inline-flex items-center gap-2 text-sm transition-colors rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+              <Mail size={16} />
+              aashikmahato9567@gmail.com
+            </a>
+
+            <p className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+              <MapPin size={16} />
+              Kathmandu, Nepal
+            </p>
+
+            <div className="inline-flex items-center gap-2 mt-5 px-3 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur text-xs font-medium text-muted-foreground">
+              <span className="w-2 h-2 rounded-full bg-primary" />
+              Available for Hire
+            </div>
           </div>
         </div>
 
-        {/* Col 2 — Navigation */}
-        <div>
-          <p className="f-section-heading">Explore</p>
-          <nav style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {NAV_LINKS.map(({ label, path }) => (
-              <Link key={path} to={path} className="f-nav-link">
-                {label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Col 4 — Contact Teaser */}
-        <div>
-          <p className="f-section-heading">Get In Touch</p>
-          <p
-            className="f-body-text"
-            style={{ lineHeight: 1.75, marginBottom: 16 }}>
-            Open to freelance, collaborations, and full-time opportunities.
+        <div className="flex flex-wrap items-center justify-between gap-3 py-8 mt-10 border-t border-border">
+          <p className="text-sm text-muted-foreground">
+            &copy; 2026 Aashiq Mahato. All rights reserved.
           </p>
-          <a href="mailto:aashikmahato9567@gmail.com" className="f-email-link">
-            <Mail size={13} style={{ flexShrink: 0 }} />
-            aashikmahato9567@gmail.com
-          </a>
-          <p
-            className="f-location"
-            style={{
-              margin: "10px 0 18px",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}>
-            <MapPin
-              size={13}
-              style={{ color: "rgba(0,245,255,0.6)", flexShrink: 0 }}
-            />
-            Kathmandu, Nepal
-          </p>
-          <div className="f-avail-badge">
-            <span
-              className="f-grad-text"
-              style={{ fontSize: 12, fontWeight: 600 }}>
-              ✦ Available for Hire
-            </span>
-          </div>
+          <button
+            type="button"
+            onClick={() =>
+              window.scrollTo({
+                top: 0,
+                behavior: shouldReduceMotion ? "auto" : "smooth",
+              })
+            }
+            className="inline-flex items-center justify-center w-10 h-10 transition-colors border rounded-xl border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            aria-label="Back to top">
+            <ChevronUp size={16} />
+          </button>
         </div>
       </div>
-
-      {/* ── ROW 3 — Bottom Bar ────────────────────────────────────────────── */}
-      <div className="f-bottom-bar">
-        <p className="f-small-text">
-          &copy; 2026 Aashiq Mahato. All rights reserved.
-        </p>
-
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="f-backtop"
-          aria-label="Back to top">
-          <ChevronUp size={15} />
-        </button>
-      </div>
-    </div>
-
-    {/* ── Scoped Styles ─────────────────────────────────────────────────────── */}
-    <style>{`
-      /* ── Layout ── */
-      .f-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 40px;
-        align-items: start;
-      }
-      .f-bottom-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 12px;
-        padding: 24px 0 32px;
-      }
-
-      /* ── Gradient text (shared) ── */
-      .f-grad-text {
-        background: linear-gradient(90deg, #00f5ff, #8b5cf6, #f0abfc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      .f-section-heading {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin: 0 0 16px;
-        padding-bottom: 8px;
-        background: linear-gradient(90deg, #00f5ff, #8b5cf6, #f0abfc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        border-bottom: 1px solid;
-        border-image: linear-gradient(90deg, #00f5ff, #8b5cf6, #f0abfc) 1;
-      }
-
-      /* ── DARK MODE ──────────────────────────────────────────────────────── */
-      html.dark .f-footer, html:not(.light) .f-footer {
-        background: #030712;
-        border-top: 1px solid rgba(255,255,255,0.07);
-        margin-top: 5rem;
-      }
-      html.dark .f-brand-name, html:not(.light) .f-brand-name {
-        font-size: 18px; font-weight: inherit; color: #fff;
-      }
-      html.dark .f-brand-dot, html:not(.light) .f-brand-dot {
-        color: rgba(255,255,255,0.32);
-      }
-      html.dark .f-body-text, html:not(.light) .f-body-text {
-        font-size: 13px; color: rgba(255,255,255,0.52);
-      }
-      html.dark .f-nav-link, html:not(.light) .f-nav-link {
-        font-size: 14px; color: rgba(255,255,255,0.52);
-        text-decoration: none; padding-left: 0;
-        border-left: 2px solid transparent; line-height: 1;
-        transition: color 150ms, border-color 150ms, padding-left 150ms;
-      }
-      html.dark .f-nav-link:hover, html:not(.light) .f-nav-link:hover {
-        color: #00f5ff; border-left-color: #00f5ff; padding-left: 8px;
-      }
-      html.dark .f-social-btn, html:not(.light) .f-social-btn {
-        width: 32px; height: 32px; display: flex; align-items: center;
-        justify-content: center; border-radius: 8px;
-        border: 1px solid rgba(0,245,255,0.35);
-        color: rgba(255,255,255,0.85); text-decoration: none;
-        background: rgba(0,245,255,0.05);
-        backdrop-filter: blur(10px);
-        transition: border-color 150ms, color 150ms, background 150ms;
-      }
-      html.dark .f-social-btn:hover, html:not(.light) .f-social-btn:hover {
-        border-color: #f0abfc; color: #00f5ff; background: rgba(240,171,252,0.08);
-      }
-      /* Glassmorphism chips — visibly distinct in dark mode */
-      html.dark .f-chip, html:not(.light) .f-chip {
-        display: flex; align-items: center; gap: 6px;
-        padding: 7px 10px; border-radius: 8px;
-        background: rgba(255,255,255,0.09);
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
-        backdrop-filter: blur(12px);
-      }
-      html.dark .f-chip-label, html:not(.light) .f-chip-label {
-        font-size: 12px; color: rgba(255,255,255,0.75);
-      }
-      html.dark .f-email-link, html:not(.light) .f-email-link {
-        display: inline-flex; align-items: center; gap: 6px;
-        font-size: 13px; color: rgba(255,255,255,0.55);
-        text-decoration: none; transition: color 150ms;
-      }
-      html.dark .f-email-link:hover, html:not(.light) .f-email-link:hover {
-        color: #00f5ff;
-      }
-      html.dark .f-location, html:not(.light) .f-location {
-        font-size: 13px; color: rgba(255,255,255,0.42);
-      }
-      html.dark .f-avail-badge, html:not(.light) .f-avail-badge {
-        display: inline-block; padding: 5px 14px; border-radius: 999px;
-        background: rgba(0,245,255,0.05);
-        border: 1px solid rgba(0,245,255,0.3);
-      }
-      html.dark .f-small-text, html:not(.light) .f-small-text {
-        font-size: 12px; color: rgba(255,255,255,0.32);
-      }
-      html.dark .f-backtop, html:not(.light) .f-backtop {
-        width: 32px; height: 32px; display: flex; align-items: center;
-        justify-content: center; border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.05);
-        color: rgba(255,255,255,0.4);
-        cursor: pointer; transition: border-color 150ms, color 150ms;
-      }
-      html.dark .f-backtop:hover, html:not(.light) .f-backtop:hover {
-        border-color: #00f5ff; color: #00f5ff;
-      }
-
-      /* ── LIGHT MODE ─────────────────────────────────────────────────────── */
-      html.light .f-footer {
-        background: #f0f0f8;
-        border-top: 1px solid rgba(0,0,0,0.08);
-        margin-top: 5rem;
-      }
-      html.light .f-brand-name {
-        font-size: 18px; font-weight: inherit; color: #0f172a;
-      }
-      html.light .f-brand-dot { color: rgba(0,0,0,0.35); }
-      html.light .f-body-text { font-size: 13px; color: rgba(0,0,0,0.55); }
-      html.light .f-nav-link {
-        font-size: 14px; color: rgba(0,0,0,0.55);
-        text-decoration: none; padding-left: 0;
-        border-left: 2px solid transparent; line-height: 1;
-        transition: color 150ms, border-color 150ms, padding-left 150ms;
-      }
-      html.light .f-nav-link:hover {
-        color: #0284c7; border-left-color: #0284c7; padding-left: 8px;
-      }
-      html.light .f-social-btn {
-        width: 32px; height: 32px; display: flex; align-items: center;
-        justify-content: center; border-radius: 8px;
-        border: 1px solid rgba(0,100,200,0.3);
-        color: #334155; text-decoration: none;
-        background: rgba(255,255,255,0.7);
-        backdrop-filter: blur(10px);
-        transition: border-color 150ms, color 150ms, background 150ms;
-      }
-      html.light .f-social-btn:hover {
-        border-color: #a855f7; color: #0284c7; background: rgba(168,85,247,0.08);
-      }
-      /* Glassmorphism chips — visibly distinct in light mode */
-      html.light .f-chip {
-        display: flex; align-items: center; gap: 6px;
-        padding: 7px 10px; border-radius: 8px;
-        background: rgba(255,255,255,0.85);
-        border: 1px solid rgba(0,0,0,0.12);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.9);
-        backdrop-filter: blur(12px);
-      }
-      html.light .f-chip-label { font-size: 12px; color: rgba(0,0,0,0.65); }
-      html.light .f-email-link {
-        display: inline-flex; align-items: center; gap: 6px;
-        font-size: 13px; color: rgba(0,0,0,0.55);
-        text-decoration: none; transition: color 150ms;
-      }
-      html.light .f-email-link:hover { color: #0284c7; }
-      html.light .f-location { font-size: 13px; color: rgba(0,0,0,0.45); }
-      html.light .f-avail-badge {
-        display: inline-block; padding: 5px 14px; border-radius: 999px;
-        background: rgba(255,255,255,0.7);
-        border: 1px solid rgba(0,150,200,0.3);
-      }
-      html.light .f-small-text { font-size: 12px; color: rgba(0,0,0,0.38); }
-      html.light .f-backtop {
-        width: 32px; height: 32px; display: flex; align-items: center;
-        justify-content: center; border-radius: 8px;
-        border: 1px solid rgba(0,0,0,0.12);
-        background: rgba(255,255,255,0.7);
-        color: rgba(0,0,0,0.45);
-        cursor: pointer; transition: border-color 150ms, color 150ms;
-      }
-      html.light .f-backtop:hover { border-color: #0284c7; color: #0284c7; }
-
-      /* ── Responsive ─────────────────────────────────────────────────────── */
-      @media (max-width: 1024px) {
-        .f-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
-      }
-      @media (max-width: 640px) {
-        .f-grid { grid-template-columns: 1fr; gap: 0; }
-        .f-grid > div { padding: 28px 0; }
-        html.dark .f-grid > div, html:not(.light) .f-grid > div {
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-        html.light .f-grid > div { border-bottom: 1px solid rgba(0,0,0,0.07); }
-        .f-grid > div:first-child { padding-top: 0; }
-        .f-grid > div:last-child { border-bottom: none; }
-        .f-bottom-bar { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
-      }
-    `}</style>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;
