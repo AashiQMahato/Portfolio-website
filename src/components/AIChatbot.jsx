@@ -36,8 +36,10 @@ const suggestedChips = [
 ];
 
 /* Animated avatar component */
-const AvatarImage = ({ size = 40, ring = true }) => (
-  <div className="relative shrink-0" style={{ width: size, height: size }}>
+const AvatarImage = ({ size = 40, ring = true, className = "" }) => (
+  <div
+    className={`relative shrink-0 ${className}`}
+    style={className ? undefined : { width: size, height: size }}>
     {ring && (
       <>
         <motion.div
@@ -173,7 +175,7 @@ const AIChatbot = () => {
         onClick={() => setIsOpen((v) => !v)}
         aria-expanded={isOpen}
         aria-controls="ai-chat-window"
-        className="fixed bottom-7 right-7 z-[100] w-[68px] h-[68px] rounded-full bg-transparent flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-7 lg:right-7 z-[100] w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] rounded-full bg-transparent flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.94 }}
         title="Chat with AI Assistant">
@@ -190,11 +192,14 @@ const AIChatbot = () => {
           />
         )}
 
-        <AvatarImage size={68} ring={true} />
+        <AvatarImage
+          ring={true}
+          className="w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px]"
+        />
 
         {/* Sparkle badge */}
-        <div className="absolute top-1.5 right-1.5 w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground flex items-center justify-center border-2 border-background">
-          <Sparkles size={9} />
+        <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-[18px] sm:h-[18px] rounded-full bg-primary text-primary-foreground flex items-center justify-center border-2 border-background">
+          <Sparkles size={8} />
         </div>
 
         {/* Tooltip */}

@@ -33,14 +33,14 @@ const RouterLayout = () => {
   return (
     <ThemeProvider>
       <ActiveContextProvider>
-        <div className="relative min-h-screen transition-colors duration-300 bg-background text-foreground">
+        <div className="relative min-h-screen overflow-x-hidden transition-colors duration-300 bg-background text-foreground">
           {/* Iridescence Background - Fixed z-0 across entire site */}
           {enableIridescence && (
             <div className="fixed inset-0 z-0 opacity-25 pointer-events-none">
               <Iridescence
                 color={[0.6, 0.6, 0.8]}
                 speed={0.6}
-                amplitude={0.10}
+                amplitude={0.1}
                 quality={0.8}
                 mouseReact={false}
               />
