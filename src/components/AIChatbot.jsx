@@ -1,6 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X, Send, Trash2, Sparkles } from "lucide-react";
+import PropTypes from "prop-types";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import {
+  oneDark,
+  oneLight,
+} from "react-syntax-highlighter/dist/esm/styles/prism";
+
+import { useTheme } from "../context/ThemeContext";
 
 const AVATAR_URL =
   "https://cdn.pixabay.com/photo/2024/03/17/09/13/ai-generated-8638571_1280.png";
@@ -23,10 +33,173 @@ About Aashiq:
 Your behavior:
 - Answer questions about Aashiq's skills, experience, projects, background, and availability concisely, friendly, and professionally.
 - If asked something outside the scope of Aashiq's portfolio, politely redirect: "I'm here to tell you about Aashiq — want to know about his skills or projects?"
-- Keep responses brief (2-4 sentences typically).
+- Keep responses brief and skimmable (aim for ~2-6 short lines).
 - Be enthusiastic about Aashiq's capabilities.
 - When discussing skills, mention specific technologies and proficiency levels.
-- If asked about hiring, mention he's open to opportunities and suggest visiting the Contact page.`;
+- If asked about hiring, mention he's open to opportunities and suggest visiting the Contact page.
+
+Formatting rules (IMPORTANT):
+- Always respond in Markdown.
+- Prefer short sections with headings (use ###) and bullet lists.
+- Use bold for key facts, and links in Markdown format.
+- If you include code, use fenced code blocks with a language tag.
+- Avoid large text blobs; keep spacing readable with blank lines.`;
+
+const getResolvedIsDark = (theme) => {
+  if (theme === "dark") return true;
+  if (theme === "light") return false;
+  if (typeof window === "undefined") return true;
+  return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? true;
+};
+
+const normalizeAssistantMarkdown = (content) => {
+  const text = String(content ?? "").trim();
+  if (!text) return "";
+  // If the model returns a single dense paragraph, encourage line breaks.
+  // (We keep this conservative to avoid mangling valid Markdown.)
+  return text.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n");
+};
+
+const MarkdownMessage = ({ content, isDark }) => {
+  const markdown = useMemo(
+    () => normalizeAssistantMarkdown(content),
+    [content],
+  );
+
+  return (
+    <div className="w-full min-w-0">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: ({ children, ...props }) => (
+            <h1
+              className="mt-2 mb-2 text-base font-semibold tracking-tight"
+              {...props}>
+              {children}
+            </h1>
+          ),
+          h2: ({ children, ...props }) => (
+            <h2 className="mt-3 mb-2 text-sm font-semibold" {...props}>
+              {children}
+            </h2>
+          ),
+          h3: ({ children, ...props }) => (
+            <h3 className="text-sm font-semibold mt-3 mb-1.5" {...props}>
+              {children}
+            </h3>
+          ),
+          p: ({ children, ...props }) => (
+            <p
+              className="my-2 leading-relaxed break-words text-foreground/95"
+              {...props}>
+              {children}
+            </p>
+          ),
+          ul: ({ children, ...props }) => (
+            <ul className="pl-5 my-2 space-y-1 list-disc" {...props}>
+              {children}
+            </ul>
+          ),
+          ol: ({ children, ...props }) => (
+            <ol className="pl-5 my-2 space-y-1 list-decimal" {...props}>
+              {children}
+            </ol>
+          ),
+          li: ({ children, ...props }) => (
+            <li className="leading-relaxed break-words" {...props}>
+              {children}
+            </li>
+          ),
+          a: ({ children, href, ...props }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              className="underline text-primary underline-offset-4 hover:opacity-90"
+              {...props}>
+              {children}
+            </a>
+          ),
+          table: ({ children, ...props }) => (
+            <div className="max-w-full my-3 overflow-x-auto border rounded-xl border-border/70 bg-background/30">
+              <table className="w-full text-left border-collapse" {...props}>
+                {children}
+              </table>
+            </div>
+          ),
+          thead: ({ children, ...props }) => (
+            <thead className="bg-muted/25" {...props}>
+              {children}
+            </thead>
+          ),
+          th: ({ children, ...props }) => (
+            <th
+              className="px-3 py-2 text-[12.5px] font-semibold text-foreground border-b border-border/70"
+              {...props}>
+              {children}
+            </th>
+          ),
+          td: ({ children, ...props }) => (
+            <td
+              className="px-3 py-2 text-[12.5px] text-foreground/90 border-b border-border/40 align-top"
+              {...props}>
+              {children}
+            </td>
+          ),
+          code: ({ inline, className, children, ...props }) => {
+            const match = /language-(\w+)/.exec(className || "");
+            const language = match?.[1];
+            const codeText = String(children ?? "").replace(/\n$/, "");
+
+            if (inline) {
+              return (
+                <code
+                  className="px-1.5 py-0.5 rounded-md border border-border/60 bg-muted/30 font-mono text-[12.5px]"
+                  {...props}>
+                  {children}
+                </code>
+              );
+            }
+
+            return (
+              <div className="my-3 overflow-hidden border rounded-xl border-border/70 bg-background/30">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-border/60 bg-muted/20">
+                  <span className="text-[11px] font-medium text-muted-foreground font-mono">
+                    {language || "code"}
+                  </span>
+                </div>
+                <div className="max-w-full overflow-x-auto">
+                  <SyntaxHighlighter
+                    language={language}
+                    style={isDark ? oneDark : oneLight}
+                    PreTag="div"
+                    customStyle={{
+                      margin: 0,
+                      background: "transparent",
+                      fontSize: "12.5px",
+                      lineHeight: "1.6",
+                    }}
+                    codeTagProps={{
+                      style: { fontFamily: "var(--font-mono, monospace)" },
+                    }}
+                    {...props}>
+                    {codeText}
+                  </SyntaxHighlighter>
+                </div>
+              </div>
+            );
+          },
+        }}>
+        {markdown}
+      </ReactMarkdown>
+    </div>
+  );
+};
+
+MarkdownMessage.propTypes = {
+  content: PropTypes.string,
+  isDark: PropTypes.bool,
+};
 
 const suggestedChips = [
   { emoji: "⚡", text: "View his top skills" },
@@ -59,25 +232,45 @@ const AvatarImage = ({ size = 40, ring = true, className = "" }) => (
   </div>
 );
 
+AvatarImage.propTypes = {
+  size: PropTypes.number,
+  ring: PropTypes.bool,
+  className: PropTypes.string,
+};
+
 const AIChatbot = () => {
+  const themeContext = useTheme();
+  const theme = themeContext?.theme ?? "dark";
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showChips, setShowChips] = useState(true);
+  const [isDark, setIsDark] = useState(() => getResolvedIsDark(theme));
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
-  const scrollToBottom = () => {
+  useEffect(() => {
+    setIsDark(getResolvedIsDark(theme));
+
+    if (theme !== "system" || typeof window === "undefined") return;
+    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!mql) return;
+    const handler = (e) => setIsDark(e.matches);
+    mql.addEventListener?.("change", handler);
+    return () => mql.removeEventListener?.("change", handler);
+  }, [theme]);
+
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: prefersReducedMotion ? "auto" : "smooth",
     });
-  };
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping, prefersReducedMotion]);
+  }, [messages, isTyping, scrollToBottom]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -123,7 +316,7 @@ const AIChatbot = () => {
                 .map((m) => ({ role: m.role, content: m.content })),
             ],
             temperature: 0.7,
-            max_tokens: 300,
+            max_tokens: 520,
           }),
         },
       );
@@ -136,7 +329,7 @@ const AIChatbot = () => {
 
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: aiContent },
+        { role: "assistant", content: normalizeAssistantMarkdown(aiContent) },
       ]);
     } catch {
       setMessages((prev) => [
@@ -144,7 +337,7 @@ const AIChatbot = () => {
         {
           role: "assistant",
           content:
-            "I'm having some trouble connecting right now. Feel free to reach out via the Contact page!",
+            "### Connection issue\n\nI'm having trouble connecting right now. Feel free to reach out via the **Contact** page!",
         },
       ]);
     } finally {
@@ -357,10 +550,19 @@ const AIChatbot = () => {
                     <div
                       className={
                         msg.role === "user"
-                          ? "max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-br-md text-sm leading-relaxed border border-primary/30 bg-primary text-primary-foreground"
-                          : "max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-bl-md text-sm leading-relaxed border border-border bg-card/60 text-foreground"
+                          ? "max-w-[86%] sm:max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-br-md text-sm leading-relaxed border border-primary/30 bg-primary text-primary-foreground shadow-soft"
+                          : "max-w-[92%] sm:max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-bl-md text-[13.5px] sm:text-sm leading-relaxed border border-border/80 bg-card/60 text-foreground shadow-soft backdrop-blur-sm animate-fade-in"
                       }>
-                      {msg.content}
+                      {msg.role === "assistant" ? (
+                        <MarkdownMessage
+                          content={msg.content}
+                          isDark={isDark}
+                        />
+                      ) : (
+                        <span className="break-words whitespace-pre-wrap">
+                          {msg.content}
+                        </span>
+                      )}
                     </div>
                   </motion.div>
                 ))}
