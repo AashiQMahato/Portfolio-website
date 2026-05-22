@@ -12,7 +12,7 @@ const RouterLayout = () => {
 
   useEffect(() => {
     const reduceMql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const smallMql = window.matchMedia("(max-width: 767px)");
+    const smallMql = window.matchMedia("(max-width: 0px)");
 
     const update = () => {
       const saveData = navigator?.connection?.saveData;
@@ -38,10 +38,10 @@ const RouterLayout = () => {
           {enableIridescence && (
             <div className="fixed inset-0 z-0 opacity-25 pointer-events-none">
               <Iridescence
-                color={[0.6, 0.6, 0.8]}
+                color={[0.9, 0.8, 0.3]}
                 speed={0.6}
                 amplitude={0.1}
-                quality={0.8}
+                quality={0.7}
                 mouseReact={false}
               />
             </div>
