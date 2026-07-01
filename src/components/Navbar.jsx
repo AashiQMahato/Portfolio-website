@@ -13,10 +13,17 @@ import {
   Moon,
   Monitor,
   Sun,
+  LayoutDashboard,
+  BookOpen,
+  Compass,
+  Search,
+  Briefcase,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Magnet } from "./ui";
 import { useTheme } from "../context/ThemeContext";
+import { useRecruiterMode } from "../context/RecruiterModeContext";
+import { siteConfig, CV } from "../data/portfolioData";
 import logo from "../assets/logo.jpeg";
 
 /* ── Theme Toggle ── */
@@ -53,6 +60,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
+  const { isRecruiterMode, toggleRecruiterMode } = useRecruiterMode();
 
   const navItems = useMemo(
     () => [
@@ -61,6 +69,13 @@ const Navbar = () => {
       { path: "/skills", label: "Skills", icon: Code2 },
       { path: "/projects", label: "Projects", icon: FolderKanban },
       { path: "/education", label: "Education", icon: GraduationCap },
+      {
+        path: "/developer-dashboard",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+      },
+      { path: "/blog", label: "Blog", icon: BookOpen },
+      { path: "/now", label: "Now", icon: Compass },
       { path: "/contactus", label: "Contact", icon: Mail },
     ],
     [],
@@ -108,72 +123,110 @@ const Navbar = () => {
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex items-center justify-between min-w-0">
             {/* Logo */}
-            <Link to="/" className="relative group">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="flex items-center justify-center w-10 h-10 overflow-hidden shadow-lg rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 shadow-primary-500/30">
-                    <img
-                      src={logo}
-                      alt="Logo"
-                      className="object-cover w-full h-full"
-                    />
+            <div className="flex items-center flex-shrink-0 gap-4">
+              <Link to="/" className="relative group">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="flex items-center justify-center w-10 h-10 overflow-hidden shadow-lg rounded-xl bg-gradient-to-br from-primary-500 to-secondary-500 shadow-primary-500/30">
+                      <img
+                        src={logo}
+                        alt="Logo"
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
                   </div>
-                </div>
-                <span className="hidden text-xl font-bold md:block font-display">
-                  <span className="gradient-text">Aashiq</span>
-                  <span className="text-muted-foreground">.dev</span>
-                </span>
-              </motion.div>
-            </Link>
+                  <span className="hidden text-xl font-bold md:block font-display">
+                    <span className="gradient-text">Aashiq</span>
+                    <span className="text-muted-foreground">.dev</span>
+                  </span>
+                </motion.div>
+              </Link>
+
+              {/* Status Badge */}
+            </div>
 
             {/* Desktop Navigation */}
-            <nav className="items-center hidden lg:flex">
-              <div className="flex items-center gap-1 p-1.5 rounded-2xl border border-border bg-card/60 backdrop-blur">
-                {navItems.map((item, index) => {
-                  const Icon = item.icon;
-                  const isActive = index === activeIndex;
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                      aria-current={isActive ? "page" : undefined}>
-                      <motion.div
-                        className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-300 ${
-                          isActive
-                            ? "text-foreground"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}>
-                        {isActive && (
-                          <motion.div
-                            layoutId="activeNavBg"
-                            className="absolute inset-0 rounded-xl border border-primary/25 bg-primary/10"
-                            transition={{
-                              type: "spring",
-                              stiffness: 380,
-                              damping: 30,
-                            }}
-                          />
-                        )}
-                        <span className="relative z-10 flex items-center gap-2">
-                          <Icon className="w-4 h-4" />
-                          {item.label}
-                        </span>
-                      </motion.div>
-                    </Link>
-                  );
-                })}
+            <nav className="items-center justify-center flex-1 hidden min-w-0 px-4 lg:flex">
+              <div className="p-1.5 rounded-2xl border border-border bg-card/60 backdrop-blur max-w-full overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex items-center gap-1 min-w-max">
+                  {navItems.map((item, index) => {
+                    const Icon = item.icon;
+                    const isActive = index === activeIndex;
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                        aria-current={isActive ? "page" : undefined}>
+                        <motion.div
+                          className={`relative px-3 xl:px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-300 ${
+                            isActive
+                              ? "text-foreground"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}>
+                          {isActive && (
+                            <motion.div
+                              layoutId="activeNavBg"
+                              className="absolute inset-0 border rounded-xl border-primary/25 bg-primary/10"
+                              transition={{
+                                type: "spring",
+                                stiffness: 380,
+                                damping: 30,
+                              }}
+                            />
+                          )}
+                          <span className="relative z-10 flex items-center gap-2">
+                            <Icon className="w-4 h-4" />
+                            {item.label}
+                          </span>
+                        </motion.div>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </nav>
 
             {/* Right Section */}
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <div className="flex items-center flex-shrink-0 gap-2 sm:gap-3">
+              {/* Cmd+K Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() =>
+                  window.dispatchEvent(
+                    new KeyboardEvent("keydown", { key: "k", metaKey: true }),
+                  )
+                }
+                className="items-center hidden gap-2 px-3 py-2 text-xs font-medium transition-colors border md:flex rounded-xl border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80"
+                title="Search (Cmd+K)">
+                <Search className="w-3.5 h-3.5" />
+                <span className="flex items-center gap-1 opacity-70">
+                  <kbd className="font-sans">⌘</kbd>
+                  <kbd className="font-sans">K</kbd>
+                </span>
+              </motion.button>
+
               <ThemeToggle />
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleRecruiterMode}
+                className={`hidden md:flex p-2.5 rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ${
+                  isRecruiterMode
+                    ? "bg-primary/20 border-primary/50 text-primary"
+                    : "border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground"
+                }`}
+                title="Toggle Recruiter Mode"
+                aria-label="Toggle Recruiter Mode">
+                <Briefcase className="w-4 h-4" />
+              </motion.button>
 
               <div className="hidden md:block">
                 <Magnet strength={0.2}>
@@ -219,6 +272,40 @@ const Navbar = () => {
         </div>
       </motion.header>
 
+      {/* Recruiter Banner */}
+      <AnimatePresence>
+        {isRecruiterMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed left-0 right-0 z-40 px-4 py-3 text-sm font-medium shadow-md top-20 bg-primary text-primary-foreground border-y border-primary/30 backdrop-blur-md"
+            style={{
+              paddingLeft: "env(safe-area-inset-left)",
+              paddingRight: "env(safe-area-inset-right)",
+            }}>
+            <div className="flex flex-wrap items-center justify-center gap-4 mx-auto max-w-7xl sm:justify-between">
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4" />
+                <span>
+                  <strong>Recruiter Mode Active:</strong> Simplified layout
+                  optimized for quick scanning.
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-semibold">
+                <span>{CV.experience.length}+ YOE</span>
+                <span>Top Skills: React, Node.js, Arduino</span>
+                <Link
+                  to="/resume"
+                  className="px-3 py-1.5 bg-primary-foreground text-primary rounded-md hover:opacity-90 transition-opacity">
+                  View Resume
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
@@ -241,7 +328,7 @@ const Navbar = () => {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsMenuOpen(false)}
-                    className="p-2 rounded-xl border border-border bg-card/60 backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                    className="p-2 border rounded-xl border-border bg-card/60 backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                     <X className="w-5 h-5 text-muted-foreground" />
                   </motion.button>
                 </div>
@@ -272,7 +359,7 @@ const Navbar = () => {
                   <Link
                     to="/contactus"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center w-full h-11 gap-2 px-6 text-sm font-semibold rounded-xl bg-primary text-primary-foreground shadow-sm hover:shadow-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
+                    className="flex items-center justify-center w-full gap-2 px-6 text-sm font-semibold transition-shadow shadow-sm h-11 rounded-xl bg-primary text-primary-foreground hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60">
                     <Sparkles className="w-4 h-4" />
                     Hire Me
                   </Link>

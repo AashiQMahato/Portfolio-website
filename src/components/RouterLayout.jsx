@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { ActiveContextProvider } from "../contextState";
 import { ThemeProvider } from "../context/ThemeContext";
+import { RecruiterModeProvider } from "../context/RecruiterModeContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AIChatbot from "./AIChatbot";
 import Iridescence from "./ui/Iridescence";
+import CommandPalette from "./CommandPalette";
+import Terminal from "./Terminal";
 
 const RouterLayout = () => {
   const [enableIridescence, setEnableIridescence] = useState(false);
@@ -32,36 +35,44 @@ const RouterLayout = () => {
 
   return (
     <ThemeProvider>
-      <ActiveContextProvider>
-        <div className="relative min-h-screen overflow-x-hidden transition-colors duration-300 bg-background text-foreground">
-          {/* Iridescence Background - Fixed z-0 across entire site */}
-          {enableIridescence && (
-            <div className="fixed inset-0 z-0 opacity-25 pointer-events-none">
-              <Iridescence
-                color={[0.9, 0.8, 0.3]}
-                speed={0.6}
-                amplitude={0.1}
-                quality={0.7}
-                mouseReact={false}
-              />
-            </div>
-          )}
+      <RecruiterModeProvider>
+        <ActiveContextProvider>
+          <div className="relative min-h-screen overflow-x-hidden transition-colors duration-300 bg-background text-foreground">
+            {/* Iridescence Background - Fixed z-0 across entire site */}
+            {enableIridescence && (
+              <div className="fixed inset-0 z-0 opacity-25 pointer-events-none">
+                <Iridescence
+                  color={[0.9, 0.8, 0.3]}
+                  speed={0.6}
+                  amplitude={0.1}
+                  quality={0.7}
+                  mouseReact={false}
+                />
+              </div>
+            )}
 
-          {/* Navigation */}
-          <Navbar />
+            {/* Navigation */}
+            <Navbar />
 
-          {/* Main Content */}
-          <main className="relative">
-            <Outlet />
-          </main>
+            {/* Main Content */}
+            <main className="relative">
+              <Outlet />
+            </main>
 
-          {/* Footer */}
-          <Footer />
+            {/* Footer */}
+            <Footer />
 
-          {/* AI Chatbot FAB */}
-          <AIChatbot />
-        </div>
-      </ActiveContextProvider>
+            {/* AI Chatbot FAB */}
+            <AIChatbot />
+
+            {/* Global: Command Palette (⌘K) */}
+            <CommandPalette />
+
+            {/* Global: Terminal Mode */}
+            <Terminal />
+          </div>
+        </ActiveContextProvider>
+      </RecruiterModeProvider>
     </ThemeProvider>
   );
 };

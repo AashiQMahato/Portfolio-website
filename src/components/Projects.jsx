@@ -25,236 +25,48 @@ import {
 import { TypeAnimation } from "react-type-animation";
 import { Link } from "react-router-dom";
 import { ScrollReveal, SpotlightCard } from "./ui";
-import aams from "../assets/AAMS.png";
+import {
+  projects,
+  projectCategories as categories,
+  TECH_ICONS,
+} from "../data/portfolioData";
 
-/* ════════════════════════ CONSTANTS ═══════════════════════════ */
-
-const DEVICON = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
-
-const TECH_ICONS = {
-  Arduino: `${DEVICON}/arduino/arduino-original.svg`,
-  "GSM Module": null,
-  GPS: null,
-  Sensors: null,
-  Python: `${DEVICON}/python/python-original.svg`,
-  "Face Recognition": null,
-  React: `${DEVICON}/react/react-original.svg`,
-  "React.js": `${DEVICON}/react/react-original.svg`,
-  MongoDB: `${DEVICON}/mongodb/mongodb-original.svg`,
-  "Next.js": `${DEVICON}/nextjs/nextjs-original.svg`,
-  C: `${DEVICON}/c/c-original.svg`,
-  "Raspberry Pi": `${DEVICON}/raspberrypi/raspberrypi-original.svg`,
-  HTML: `${DEVICON}/html5/html5-original.svg`,
-  CSS: `${DEVICON}/css3/css3-original.svg`,
-  "VS Code": `${DEVICON}/vscode/vscode-original.svg`,
-  "Framer Motion": null,
-  MQTT: null,
-  "REST API": null,
+const getProjectImageSrc = (project) => {
+  const img = project?.image;
+  if (img) return img;
+  const gallery = project?.gallery;
+  if (Array.isArray(gallery) && gallery.length > 0) {
+    const first = gallery[0];
+    if (typeof first === "string") return first;
+    return first?.src || first?.url || "";
+  }
+  return "";
 };
 
-const projects = [
-  {
-    title: "Ultrasonic Blind Stick with GSM/GPS",
-    shortDesc:
-      "An innovative assistive technology device that helps visually impaired individuals navigate safely with real-time obstacle detection and emergency alerts.",
-    fullDesc:
-      "An Arduino-based smart blind stick that combines ultrasonic obstacle detection with GSM + GPS modules for emergency assistance. It provides real-time obstacle alerts via haptic feedback, supports location tracking, and is designed for everyday reliability with a weather-resistant build and rechargeable battery.",
-    image:
-      "https://media.springernature.com/lw685/springer-static/image/chp%3A10.1007%2F978-981-33-4866-0_23/MediaObjects/498359_1_En_23_Fig2_HTML.png",
-    tags: ["Arduino", "GSM Module", "GPS", "Sensors"],
-    features: [
-      "2m ultrasonic obstacle detection",
-      "12-hour rechargeable battery",
-      "Haptic vibration feedback",
-      "Weatherproof enclosure design",
-    ],
-    github:
-      "https://github.com/Aashik9567/Arduino-projects-/tree/main/Ultrasonic-Blindstick-with-GSM-and-GPS-tracking-main",
-    live: null,
-    category: "Hardware",
-    cats: ["Hardware", "IoT"],
-    status: "live",
-    stars: 12,
-    forks: 5,
-    views: 340,
-    year: "2023",
-    teamSize: 3,
-    featured: false,
-    highlights: [
-      "Custom PCB design for compact form factor",
-      "Power-efficient sleep mode for extended battery",
-      "Waterproof ultrasonic sensor housing",
-    ],
-  },
-  {
-    title: "Automated Attendance System",
-    shortDesc:
-      "A web-integrated attendance management system using facial recognition that streamlines tracking for educational institutions.",
-    fullDesc:
-      "Built to eliminate manual attendance headaches in educational institutions, this system uses a Python-based facial recognition engine powered by the face_recognition library. Students register once with a photo, and the system recognizes them in real-time via webcam. The React frontend provides a clean dashboard for teachers, while the MongoDB backend stores all attendance data with timestamps. Reports can be generated as CSV exports with filtering by date, class, and student.",
-    image: aams,
-    tags: ["Python", "Face Recognition", "React", "MongoDB"],
-    features: [
-      "99.5% facial recognition accuracy",
-      "Real-time webcam-based attendance capture",
-      "Auto-generated CSV attendance reports",
-      "Admin dashboard with analytics",
-      "Multi-class and multi-section support",
-      "Secure student data storage",
-    ],
-    github:
-      "https://github.com/Aashik9567/Automated_Attendance_Management_System",
-    live: "https://aams-frontend.onrender.com/",
-    category: "Full-Stack",
-    cats: ["Full-Stack", "AI/ML"],
-    status: "live",
-    stars: 24,
-    forks: 8,
-    views: 580,
-    year: "2024",
-    teamSize: 4,
-    featured: true,
-    highlights: [
-      "Face encoding stored as 128-d vectors for fast lookup",
-      "Batch processing handles 50+ students in under 3 seconds",
-      "Role-based access control for admins and teachers",
-    ],
-  },
-  {
-    title: "WeatherApp - AI Weather Dashboard",
-    shortDesc:
-      "A modern weather application built with Next.js 14 featuring OpenAI integration for intelligent weather insights.",
-    fullDesc:
-      "A fully responsive Progressive Web App built with Next.js 14 that goes beyond basic weather data. It integrates OpenAI to provide natural language weather summaries and actionable suggestions like 'Bring an umbrella today' or 'Great day for a run.' Data is sourced from OpenWeatherMap API with accurate 10-day forecasts, hourly breakdowns, and interactive radar maps. The PWA capabilities allow offline cached access to the last fetched data.",
-    image:
-      "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    tags: ["Next.js", "React", "OpenAI", "TypeScript"],
-    features: [
-      "AI-powered weather summaries in natural language",
-      "10-day forecast with hourly breakdowns",
-      "Interactive radar and satellite maps",
-      "PWA with offline cached data",
-      "Location-based auto-detection",
-      "Beautiful animated weather icons",
-    ],
-    github: "https://github.com/Aashik9567/weather-app-NextJs",
-    live: null,
-    category: "Web Dev",
-    cats: ["Web Dev", "AI/ML"],
-    status: "live",
-    stars: 18,
-    forks: 6,
-    views: 420,
-    year: "2023",
-    teamSize: 2,
-    featured: false,
-    highlights: [
-      "Server-side rendering for instant first paint",
-      "OpenAI integration for human-like weather analysis",
-      "Geolocation API for automatic city detection",
-    ],
-  },
-  {
-    title: "Smart School Management System",
-    shortDesc:
-      "A modern role-based school management platform for managing academics, attendance, schedules, fees, and student performance.",
-    fullDesc:
-      "Developed a full-stack Smart School Management System to streamline academic and administrative workflows for educational institutions. The platform features separate dashboards for Admin, Teacher, Student, and Parent with secure role-based authentication. Admins can manage users, schedules, fees, notifications, and academic structures, while teachers can handle attendance and marks. Students and parents can monitor academic progress, schedules, attendance, and announcements in real-time. The system also integrates AI-powered analytics and insights for performance monitoring and smart educational management.",
-    image:
-      "https://img.freepik.com/premium-photo/3d-cartoon-back-school_1268653-382.jpg",
-    tags: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS", "JWT"],
-    features: [
-      "Role-based dashboards for Admin, Teacher, Student, and Parent",
-      "Advanced class schedule and timetable management",
-      "Attendance and marks management system",
-      "Parent-child academic monitoring",
-      "Responsive modern dashboard UI",
-      "AI-powered analytics and student insights",
-    ],
-    github: "https://github.com/Aashik9567/Smart_School_Management_System",
-    live: "https://smart-school-management-system-frontend.onrender.com/",
-    category: "Full-Stack",
-    cats: ["Full-Stack", "Web Dev", "AI/ML"],
-    status: "live",
-    stars: 32,
-    forks: 11,
-    views: 920,
-    year: "2025",
-    teamSize: 4,
-    featured: true,
-    highlights: [
-      "Strict role-based access with profile-linked architecture",
-      "Centralized schedule management with dynamic timetable views",
-      "Modern responsive dashboard optimized for all devices",
-    ],
-  },
-  {
-    title: "Raghunathpur Cable Network Website",
-    shortDesc:
-      "A modern and responsive ISP website built for showcasing internet services, plans, coverage areas, and customer engagement.",
-
-    fullDesc:
-      "Designed and developed a premium ISP business website for Raghunathpur Cable Network using Next.js, Tailwind CSS, TypeScript, and Ant Design. The platform features a highly modern UI with responsive layouts, animated sections, dark/light/system theme support, interactive pricing plans, service coverage pages, FAQs, and advanced hero animations powered by Framer Motion and React Three Fiber. The project focuses heavily on user experience, scalability, and modern frontend architecture.",
-
-    image:
-      "https://i.ytimg.com/vi/wbBFNa1bTOQ/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBZkhFMn_FEh8DWV-gJI-uDJLeYiw",
-
-    tags: [
-      "Next.js",
-      "TypeScript",
-      "Tailwind CSS",
-      "Ant Design",
-      "Framer Motion",
-      "React Three Fiber",
-    ],
-
-    features: [
-      "Modern responsive ISP landing pages",
-      "Dark, light, and system theme support",
-      "Animated hero section with 3D visuals",
-      "Interactive pricing and coverage pages",
-      "Smooth animations and micro-interactions",
-      "Reusable scalable component architecture",
-    ],
-
-    github: "https://github.com/yourusername/raghunathpur-cable-network",
-
-    live: "https://raghunathpurcable.com.np/",
-
-    category: "Frontend",
-
-    cats: ["Frontend", "Web Dev"],
-
-    status: "live",
-
-    stars: 18,
-
-    forks: 5,
-
-    views: 420,
-
-    year: "2026",
-
-    teamSize: 1,
-
-    featured: true,
-
-    highlights: [
-      "Implemented modern SaaS-inspired ISP UI with advanced responsiveness",
-      "Integrated Framer Motion and React Three Fiber for immersive animations",
-      "Built scalable folder architecture with reusable components and theme system",
-    ],
-  },
-];
-
-const categories = [
-  "All",
-  "Web Dev",
-  "Hardware",
-  "IoT",
-  "Full-Stack",
-  "AI/ML",
-];
+const ProjectImage = ({ project, alt, className }) => {
+  const src = getProjectImageSrc(project);
+  if (!src) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-gradient-to-br from-primary/10 via-card/40 to-secondary/10 ${className}`}
+        role="img"
+        aria-label={alt}>
+        <Code2 className="w-7 h-7 text-muted-foreground" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading="lazy"
+      onError={(e) => {
+        e.currentTarget.style.display = "none";
+      }}
+    />
+  );
+};
 
 /* ═══════════════════ HELPER: counter hook ════════════════════ */
 
@@ -453,11 +265,10 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
           style={{ transition: "transform 0.3s ease, box-shadow 0.3s ease" }}>
           {/* ── Visual Header (~40%) ── */}
           <div className="relative overflow-hidden h-52">
-            <img
-              src={project.image}
+            <ProjectImage
+              project={project}
               alt={project.title}
               className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
             />
             {/* Dark overlay gradient */}
             <div
@@ -560,11 +371,11 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
 
             {/* Bottom action strip */}
             <div className="flex items-center justify-between pt-3 border-t border-border/60">
-              <button
-                onClick={() => onOpenDetail(project)}
+              <Link
+                to={`/projects/${project.slug}`}
                 className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200 rounded-md cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 Learn More <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
               <div className="flex items-center gap-2">
                 <a
                   href={project.github}
@@ -604,11 +415,10 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
     <div className="flex flex-col md:flex-row">
       {/* Image */}
       <div className="relative flex-shrink-0 w-full h-48 overflow-hidden md:w-64 md:h-auto">
-        <img
-          src={project.image}
+        <ProjectImage
+          project={project}
           alt={project.title}
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/80" />
         <div className="absolute top-3 left-3">
@@ -646,11 +456,11 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
               {project.year}
             </span>
           </div>
-          <button
-            onClick={() => onOpenDetail(project)}
+          <Link
+            to={`/projects/${project.slug}`}
             className="flex items-center gap-1 text-xs font-semibold rounded-md cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
             Details <ArrowRight className="w-3 h-3" />
-          </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -756,7 +566,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                 </div>
               </div>
               <img
-                src={project.image}
+                src={getProjectImageSrc(project)}
                 alt={project.title}
                 className="object-cover w-full aspect-video"
               />
@@ -1019,7 +829,6 @@ const Projects = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("grid");
-  const [modalProject, setModalProject] = useState(null);
 
   const filteredProjects = useMemo(() => {
     let result = projects;
@@ -1207,14 +1016,12 @@ const Projects = () => {
                       key={project.title}
                       project={project}
                       index={i}
-                      onOpenDetail={setModalProject}
                     />
                   ) : (
                     <ProjectCardList
                       key={project.title}
                       project={project}
                       index={i}
-                      onOpenDetail={setModalProject}
                     />
                   ),
                 )
@@ -1229,18 +1036,6 @@ const Projects = () => {
           <BottomCTA />
         </div>
       </div>
-
-      {/* ══════ PROJECT MODAL ══════ */}
-      <AnimatePresence>
-        {modalProject && (
-          <ProjectModal
-            project={modalProject}
-            onClose={() => setModalProject(null)}
-            onNavigate={setModalProject}
-            allProjects={projects}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 };

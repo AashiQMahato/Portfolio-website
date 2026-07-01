@@ -38,7 +38,7 @@ const CV = {
   contact: {
     location: "Shantinagar, Kathmandu",
     phone: "9808711811",
-    email: "aashikmahato9567@gmail.com",
+    email: "aashikkrmahatoo@gmail.com",
     github: "https://github.com/Aashik9567",
     linkedin: "https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/",
   },
@@ -872,7 +872,7 @@ const HomePage = () => {
       href: "https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/",
       label: "LinkedIn",
     },
-    { icon: Mail, href: "mailto:aashikmahato9567@gmail.com", label: "Email" },
+    { icon: Mail, href: "mailto:aashikkrmahatoo@gmail.com", label: "Email" },
   ];
 
   const hardwareSkills = [

@@ -17,6 +17,9 @@ const NAV_LINKS = [
   { label: "Skills", path: "/skills" },
   { label: "Projects", path: "/projects" },
   { label: "Education", path: "/education" },
+  { label: "Dashboard", path: "/developer-dashboard" },
+  { label: "Blog", path: "/blog" },
+  { label: "Now", path: "/now" },
   { label: "Contact", path: "/contactus" },
 ];
 
@@ -28,7 +31,7 @@ const SOCIAL = [
     label: "LinkedIn",
   },
   { Icon: Twitter, href: "https://twitter.com/", label: "Twitter" },
-  { Icon: Mail, href: "mailto:aashikmahato9567@gmail.com", label: "Email" },
+  { Icon: Mail, href: "mailto:aashikkrmahatoo@gmail.com", label: "Email" },
 ];
 
 const Footer = () => {
@@ -108,10 +111,10 @@ const Footer = () => {
             </p>
 
             <a
-              href="mailto:aashikmahato9567@gmail.com"
+              href="mailto:aashikkrmahatoo@gmail.com"
               className="inline-flex items-center gap-2 text-sm transition-colors rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
               <Mail size={16} />
-              aashikmahato9567@gmail.com
+              aashikkrmahatoo@gmail.com
             </a>
 
             <p className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
@@ -130,18 +133,6 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">
             &copy; 2026 Aashiq Mahato. All rights reserved.
           </p>
-          <button
-            type="button"
-            onClick={() =>
-              window.scrollTo({
-                top: 0,
-                behavior: shouldReduceMotion ? "auto" : "smooth",
-              })
-            }
-            className="inline-flex items-center justify-center w-10 h-10 transition-colors border rounded-xl border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            aria-label="Back to top">
-            <ChevronUp size={16} />
-          </button>
         </div>
       </div>
     </footer>
