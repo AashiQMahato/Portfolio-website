@@ -454,7 +454,7 @@ const AIChatbot = () => {
               <div className="relative z-10 flex items-center gap-3 px-5 py-4 border-b border-border bg-card/60">
                 <AvatarImage size={46} ring={true} />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold truncate font-display gradient-text">
+                  <div className="text-sm font-bold truncate font-display text-accent-ink">
                     Aashiq&apos;s AI Assistant
                   </div>
                   <div className="flex items-center gap-2 mt-1">

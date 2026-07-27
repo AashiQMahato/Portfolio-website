@@ -100,7 +100,7 @@ const Blog = () => {
             Technical Writing
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-display mb-4">
-            Blog &amp; <span className="gradient-text">Insights</span>
+            Blog &amp; <span className="text-accent-ink">Insights</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Engineering articles, tutorials, and technical deep dives from my

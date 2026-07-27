@@ -256,7 +256,7 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
       transition={{ duration: 0.4, delay: index * 0.08 }}
       layout>
       <SpotlightCard
-        className="h-full overflow-hidden transition-all duration-300 rounded-2xl group glass"
+        className="h-full overflow-hidden transition-all duration-300 rounded-2xl group panel"
         spotlightColor="rgb(var(--primary) / 0.08)">
         <div
           className="flex flex-col h-full"
@@ -599,7 +599,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
               </span>
             </div>
 
-            <h2 className="mb-4 text-xl font-bold sm:text-2xl lg:text-3xl font-display gradient-text">
+            <h2 className="mb-4 text-xl font-bold sm:text-2xl lg:text-3xl font-display text-accent-ink">
               {project.title}
             </h2>
 
@@ -712,13 +712,13 @@ const TechUsageSection = () => {
 
   return (
     <ScrollReveal>
-      <div ref={ref} className="p-8 mb-16 lg:p-12 rounded-2xl glass">
+      <div ref={ref} className="p-8 mb-16 lg:p-12 rounded-2xl panel">
         <div className="flex items-center gap-4 mb-8">
           <div className="p-3 border rounded-xl bg-primary/10 border-primary/15">
             <Zap className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold font-display gradient-text">
+            <h3 className="text-2xl font-bold font-display text-accent-ink">
               Technologies I Build With
             </h3>
             <p className="text-sm text-muted-foreground">Across all projects</p>
@@ -778,7 +778,7 @@ const BottomCTA = () => {
 
   return (
     <ScrollReveal>
-      <div className="relative p-10 overflow-hidden text-center rounded-2xl lg:p-16 glass">
+      <div className="relative p-10 overflow-hidden text-center rounded-2xl lg:p-16 panel">
         {/* Soft orbs (motion-safe) */}
         {!prefersReducedMotion && (
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -798,7 +798,7 @@ const BottomCTA = () => {
         )}
 
         <div className="relative z-10">
-          <h3 className="mb-4 text-3xl font-bold lg:text-4xl font-display gradient-text">
+          <h3 className="mb-4 text-3xl font-bold lg:text-4xl font-display text-accent-ink">
             Have a Project in Mind?
           </h3>
           <p className="max-w-lg mx-auto mb-8 text-muted-foreground">
@@ -900,7 +900,7 @@ const Projects = () => {
                 Portfolio
               </div>
               <h2 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl font-display">
-                Featured <span className="gradient-text">Projects</span>
+                Featured <span className="text-accent-ink">Projects</span>
               </h2>
               <div className="h-8 mb-3">
                 <TypeAnimation
@@ -936,7 +936,7 @@ const Projects = () => {
 
           {/* ══════ FILTER BAR ══════ */}
           <div className="sticky top-[72px] z-30 mb-10">
-            <div className="flex flex-col items-stretch gap-3 p-3 glass rounded-2xl md:flex-row md:items-center">
+            <div className="flex flex-col items-stretch gap-3 p-3 panel rounded-2xl md:flex-row md:items-center">
               {/* Category pills */}
               <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0 flex-1 min-w-0 scrollbar-hide">
                 {categories.map((cat) => (

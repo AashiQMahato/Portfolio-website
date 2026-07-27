@@ -192,60 +192,6 @@
     border: 1px solid rgb(var(--line));
   }
 
-  .glass {
-    background: rgb(var(--card) / 0.62);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgb(var(--border) / 0.8);
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.04),
-      0 10px 30px rgb(0 0 0 / 0.1);
-    transition:
-      background 0.2s ease,
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .glass-hover:hover {
-    background: rgb(var(--card) / 0.72);
-    border-color: rgb(var(--border));
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.04),
-      0 14px 38px rgb(0 0 0 / 0.12);
-  }
-
-  .glass-strong {
-    background: rgb(var(--card) / 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgb(var(--border));
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.04),
-      0 18px 50px rgb(0 0 0 / 0.14);
-  }
-
-  .gradient-text {
-    background: linear-gradient(
-      135deg,
-      rgb(var(--primary)),
-      rgb(var(--secondary)),
-      rgb(var(--accent))
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-
-  .glow-primary {
-    box-shadow: 0 10px 35px rgb(var(--primary) / 0.1);
-  }
-  .glow-secondary {
-    box-shadow: 0 10px 35px rgb(var(--secondary) / 0.1);
-  }
-  .glow-accent {
-    box-shadow: 0 10px 35px rgb(var(--accent) / 0.1);
-  }
-
   .section-padding {
     padding: 4rem 1rem;
   }
@@ -269,24 +215,6 @@
       transparent 1px
     );
     background-size: 24px 24px;
-  }
-
-  /* Blueprint grid texture (legacy — removed once old sections are gone) */
-  .schematic-grid {
-    background-image:
-      linear-gradient(rgb(var(--line) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--line) / 0.4) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(
-      ellipse 85% 75% at 55% 40%,
-      black 25%,
-      transparent 78%
-    );
-    -webkit-mask-image: radial-gradient(
-      ellipse 85% 75% at 55% 40%,
-      black 25%,
-      transparent 78%
-    );
   }
 
   /* ── CssSky: pure-CSS sky fallback / secondary-page background ── */

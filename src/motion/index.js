@@ -7,9 +7,6 @@ export {
   stagger,
   utils,
   engine,
-  eases,
-  svg,
-  text,
   ANIME,
 } from "./animeSetup";
 export { default as usePrefersReducedMotion } from "./usePrefersReducedMotion";

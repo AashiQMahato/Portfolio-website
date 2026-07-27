@@ -17,6 +17,9 @@
 // here — it would drag three.js into the entry bundle. It lives at the top
 // of src/scene/SkyScene.jsx only, inside the lazy three chunk.
 
+// Only re-export what the site actually uses — the namespace exports
+// (utils, svg, text, eases) are whole-module objects that defeat
+// tree-shaking, so add them here only when something imports them.
 export {
   animate,
   createTimeline,
@@ -24,9 +27,6 @@ export {
   stagger,
   utils,
   engine,
-  eases,
-  svg,
-  text,
 } from "animejs";
 
 // anime-side motion tokens (milliseconds — anime uses ms, GSAP uses s).
