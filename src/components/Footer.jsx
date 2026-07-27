@@ -1,7 +1,14 @@
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { CV } from "../data/portfolioData";
-import { useScrollToSection } from "../motion";
+import {
+  animate,
+  stagger,
+  ANIME,
+  usePrefersReducedMotion,
+  useScrollToSection,
+} from "../motion";
 import { ClockBadge, FrameLabel } from "./canvas";
 
 const SECTION_LINKS = [
@@ -32,6 +39,36 @@ const Footer = () => {
   const { pathname } = useLocation();
   const scrollTo = useScrollToSection();
   const onHome = pathname === "/";
+  const wordmarkRef = useRef(null);
+  const reduced = usePrefersReducedMotion();
+
+  // Letter-by-letter cascade the first time the wordmark scrolls into view
+  // (IntersectionObserver detects, anime performs).
+  useEffect(() => {
+    const el = wordmarkRef.current;
+    if (!el || reduced) return undefined;
+    let anim = null;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        anim = animate(el.querySelectorAll("[data-footer-letter]"), {
+          opacity: [0, 1],
+          translateY: ["0.35em", "0"],
+          rotate: [8, 0],
+          duration: ANIME.dur.md,
+          ease: ANIME.ease.pop,
+          delay: stagger(45),
+        });
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      anim?.pause();
+    };
+  }, [reduced]);
 
   const colHeading =
     "mb-5 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim";
@@ -122,6 +159,7 @@ const Footer = () => {
 
           {/* Giant letter-by-letter wordmark */}
           <p
+            ref={wordmarkRef}
             aria-label={WORDMARK}
             className="mt-14 select-none whitespace-nowrap text-center font-display font-bold leading-none tracking-tight text-ink/90"
             style={{ fontSize: "clamp(2.5rem, 9.5vw, 8rem)" }}

@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "../../motion";
+import { ScrollTrigger } from "../../motion";
 import { useRecruiterMode } from "../../context/RecruiterModeContext";
 import ClockBadge from "./ClockBadge";
 

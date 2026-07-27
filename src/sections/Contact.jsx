@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { ArrowUpRight, CheckCircle, Loader2 } from "lucide-react";
 import { CV } from "../data/portfolioData";
-import SectionHeading from "../components/schematic/SectionHeading";
-import { Magnetic, Reveal } from "../motion";
+import { Reveal } from "../motion";
+import {
+  FrameLabel,
+  SelectionBox,
+  PillButton,
+  ClockBadge,
+} from "../components/canvas";
+import NothingButton from "./NothingButton";
 
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 const WEB3FORMS_ACCESS_KEY =
@@ -86,170 +92,200 @@ const Contact = () => {
   };
 
   const inputClass =
-    "w-full border-0 border-b border-line bg-transparent px-0 py-3 text-sm text-ink placeholder:text-ink-dim/50 transition-colors focus:border-signal focus:outline-none focus:ring-0";
+    "w-full rounded-xl border border-line bg-background/60 px-4 py-3 text-sm text-ink placeholder:text-ink-dim/50 transition-colors focus:border-signal focus:outline-none focus:ring-0";
 
   return (
     <section
       id="contact"
       data-section
       aria-labelledby="contact-heading"
-      className="relative px-5 py-[clamp(6rem,14vh,11rem)] md:px-10 lg:pl-28 lg:pr-16"
+      className="relative px-5 py-[clamp(6rem,14vh,11rem)] md:px-10"
     >
       <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          index="05"
-          label="Contact"
-          title={<span id="contact-heading">Open a connection<span className="text-signal">.</span></span>}
-          blurb="Freelance, full-time, or a hardware idea that needs software — I respond within 24 hours."
-        />
+        <Reveal>
+          <FrameLabel index="07" name="contact.fig" />
+          <h2
+            id="contact-heading"
+            className="mt-8 font-display text-display-2 uppercase text-ink"
+          >
+            Still building
+            <span className="text-signal">.</span>
+          </h2>
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            <ClockBadge />
+            <p className="max-w-xl text-lg text-ink-dim">
+              The best ideas always seem to land about now. Freelance,
+              full-time, or a hardware idea that needs software — I respond
+              within 24 hours.
+            </p>
+          </div>
+        </Reveal>
 
-        <div className="grid gap-12 lg:grid-cols-12">
-          {/* Terminal card */}
+        <div className="mt-14 grid gap-12 lg:grid-cols-12">
+          {/* Channel card */}
           <Reveal className="lg:col-span-5">
-            <div className="border border-line bg-panel/60">
-              <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-                <span className="h-2 w-2 rounded-full bg-line" aria-hidden="true" />
-                <span className="h-2 w-2 rounded-full bg-line" aria-hidden="true" />
-                <span className="h-2 w-2 rounded-full bg-signal/70" aria-hidden="true" />
+            <div className="panel overflow-hidden rounded-3xl" data-poi="contact">
+              <div className="flex items-center gap-2 border-b border-line px-5 py-3.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-ember" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-line" aria-hidden="true" />
                 <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">
-                  contact.sh
+                  reach-me.frame
                 </span>
               </div>
-              <div className="space-y-4 p-5 font-mono text-xs leading-relaxed md:text-[13px]">
-                <p className="text-ink-dim">
-                  <span className="text-signal">$</span> contact --list
-                </p>
-                <dl className="space-y-2.5 pl-4">
-                  <div className="flex flex-wrap gap-x-4">
-                    <dt className="w-20 uppercase tracking-[0.15em] text-ink-dim">Email</dt>
-                    <dd>
+              <dl className="space-y-5 p-6 font-mono text-[13px]">
+                <div>
+                  <dt className="text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+                    Email
+                  </dt>
+                  <dd className="mt-1">
+                    <a
+                      href={`mailto:${CV.contact.email}`}
+                      className="break-all text-accent-ink underline-offset-4 hover:underline"
+                    >
+                      {CV.contact.email}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+                    Phone
+                  </dt>
+                  <dd className="mt-1 text-ink">{CV.contact.phone}</dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+                    Base
+                  </dt>
+                  <dd className="mt-1 text-ink">Kathmandu, Nepal · UTC+5:45</dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+                    Status
+                  </dt>
+                  <dd className="mt-1 flex items-center gap-2 text-ink">
+                    <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                      <span className="absolute h-full w-full animate-ping rounded-full bg-signal opacity-60 motion-reduce:hidden" />
+                      <span className="relative h-1.5 w-1.5 rounded-full bg-signal" />
+                    </span>
+                    open to freelance &amp; full-time
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+                    Elsewhere
+                  </dt>
+                  <dd className="mt-2 flex flex-wrap gap-2">
+                    {SOCIALS.map((social) => (
                       <a
-                        href={`mailto:${CV.contact.email}`}
-                        className="text-ink underline-offset-4 hover:text-signal hover:underline"
-                      >
-                        {CV.contact.email}
-                      </a>
-                    </dd>
-                  </div>
-                  <div className="flex flex-wrap gap-x-4">
-                    <dt className="w-20 uppercase tracking-[0.15em] text-ink-dim">Phone</dt>
-                    <dd className="text-ink">{CV.contact.phone}</dd>
-                  </div>
-                  <div className="flex flex-wrap gap-x-4">
-                    <dt className="w-20 uppercase tracking-[0.15em] text-ink-dim">Base</dt>
-                    <dd className="text-ink">Kathmandu, Nepal · UTC+5:45</dd>
-                  </div>
-                </dl>
-                <p className="text-ink-dim">
-                  <span className="text-signal">$</span> status
-                </p>
-                <p className="pl-4 text-ink">
-                  <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-signal align-middle" aria-hidden="true" />
-                  open to freelance &amp; full-time — response &lt; 24h
-                </p>
-                <p className="text-ink-dim">
-                  <span className="text-signal">$</span> links
-                </p>
-                <ul className="flex flex-wrap gap-x-6 gap-y-2 pl-4">
-                  {SOCIALS.map((social) => (
-                    <li key={social.label}>
-                      <a
+                        key={social.label}
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 uppercase tracking-[0.15em] text-ink-dim transition-colors hover:text-signal"
+                        className="pill flex items-center gap-1 px-3 py-1.5 text-[11px] uppercase tracking-[0.15em] text-ink-dim transition-colors hover:border-signal hover:text-accent-ink"
                       >
                         {social.label}
                         <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
                       </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                    ))}
+                  </dd>
+                </div>
+              </dl>
             </div>
           </Reveal>
 
-          {/* Form */}
+          {/* Form in a selection frame */}
           <Reveal className="lg:col-span-7" y={36}>
-            {submitted ? (
-              <div
-                role="status"
-                className="flex h-full min-h-[280px] flex-col items-center justify-center border border-signal/40 bg-signal/5 p-10 text-center"
-              >
-                <CheckCircle className="mb-4 h-10 w-10 text-signal" aria-hidden="true" />
-                <p className="font-display text-xl font-semibold text-ink">Message sent.</p>
-                <p className="mt-2 text-sm text-ink-dim">
-                  Thanks for reaching out — I&apos;ll get back to you soon.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
-                  {FIELDS.map((field) => (
-                    <div key={field.name} className={field.name === "subject" ? "md:col-span-2" : ""}>
-                      <label
-                        htmlFor={`contact-${field.name}`}
-                        className="mb-1 block font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim"
+            <SelectionBox
+              name="say-hello.fig"
+              note="zero hoops"
+              tone="accent"
+              className="panel rounded-3xl border-solid p-6 md:p-8"
+            >
+              {submitted ? (
+                <div
+                  role="status"
+                  className="flex h-full min-h-[280px] flex-col items-center justify-center text-center"
+                >
+                  <CheckCircle className="mb-4 h-10 w-10 text-signal" aria-hidden="true" />
+                  <p className="font-display text-xl font-bold text-ink">
+                    Message sent.
+                  </p>
+                  <p className="mt-2 text-sm text-ink-dim">
+                    Thanks for reaching out — I&apos;ll get back to you soon.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid gap-x-6 gap-y-6 md:grid-cols-2">
+                    {FIELDS.map((field) => (
+                      <div
+                        key={field.name}
+                        className={field.name === "subject" ? "md:col-span-2" : ""}
                       >
-                        {field.label} <span className="text-signal">*</span>
+                        <label
+                          htmlFor={`contact-${field.name}`}
+                          className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim"
+                        >
+                          {field.label} <span className="text-accent-ink">*</span>
+                        </label>
+                        <input
+                          id={`contact-${field.name}`}
+                          type={field.type}
+                          name={field.name}
+                          autoComplete={field.autoComplete}
+                          value={formData[field.name]}
+                          onChange={handleChange}
+                          required
+                          className={inputClass}
+                        />
+                      </div>
+                    ))}
+                    <div className="md:col-span-2">
+                      <label
+                        htmlFor="contact-message"
+                        className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim"
+                      >
+                        Message <span className="text-accent-ink">*</span>
                       </label>
-                      <input
-                        id={`contact-${field.name}`}
-                        type={field.type}
-                        name={field.name}
-                        autoComplete={field.autoComplete}
-                        value={formData[field.name]}
+                      <textarea
+                        id="contact-message"
+                        name="message"
+                        value={formData.message}
                         onChange={handleChange}
                         required
-                        className={inputClass}
+                        rows={5}
+                        className={`${inputClass} resize-none`}
                       />
                     </div>
-                  ))}
-                  <div className="md:col-span-2">
-                    <label
-                      htmlFor="contact-message"
-                      className="mb-1 block font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim"
-                    >
-                      Message <span className="text-signal">*</span>
-                    </label>
-                    <textarea
-                      id="contact-message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      rows={5}
-                      className={`${inputClass} resize-none`}
-                    />
                   </div>
-                </div>
 
-                {error ? (
-                  <p role="alert" className="border border-ember/40 bg-ember/5 px-4 py-3 text-sm text-ember">
-                    {error}
-                  </p>
-                ) : null}
+                  {error ? (
+                    <p
+                      role="alert"
+                      className="rounded-xl border border-ember/40 bg-ember/5 px-4 py-3 text-sm text-ember"
+                    >
+                      {error}
+                    </p>
+                  ) : null}
 
-                <Magnetic strength={0.2}>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex h-12 items-center gap-3 border border-signal px-8 font-mono text-xs uppercase tracking-[0.25em] text-signal transition-colors hover:bg-signal hover:text-background disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-                  >
+                  <PillButton type="submit" disabled={isSubmitting} className="disabled:pointer-events-none disabled:opacity-50">
                     {isSubmitting ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                        Transmitting…
+                        Sending…
                       </>
                     ) : (
                       <>Send message →</>
                     )}
-                  </button>
-                </Magnetic>
-              </form>
-            )}
+                  </PillButton>
+                </form>
+              )}
+            </SelectionBox>
           </Reveal>
         </div>
+
+        <NothingButton />
       </div>
     </section>
   );

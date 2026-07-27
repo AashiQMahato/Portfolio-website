@@ -6,9 +6,11 @@ import ProcessChat from "../sections/ProcessChat";
 import SkillsCanvas from "../sections/SkillsCanvas";
 import FeaturedProjects from "../sections/FeaturedProjects";
 import TestimonialsSection from "../sections/TestimonialsSection";
+import Faq from "../sections/Faq";
 import Contact from "../sections/Contact";
 import SchematicRail from "../components/schematic/SchematicRail";
 import { HOME_SECTIONS } from "../components/schematic/Nav";
+import { FakeCursor } from "../components/canvas";
 import { useWebGLSupport } from "../scene";
 import { useMediaQuery, usePrefersReducedMotion } from "../motion";
 
@@ -43,7 +45,9 @@ const Home = () => {
         <SkillsCanvas />
         <FeaturedProjects />
         <TestimonialsSection />
+        <Faq />
         <Contact />
+        <FakeCursor />
       </div>
     </div>
   );
