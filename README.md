@@ -28,7 +28,7 @@ This is the professional portfolio website of **Aashik Kumar Mahato**—an Elect
 Clone the repository and run locally:
 
 ```bash
-git clone https://github.com/Aashik9567/Portfolio-website.git
+git clone https://github.com/AashiQMahato/Portfolio-website.git
 cd Portfolio-website
 npm install
 npm run dev

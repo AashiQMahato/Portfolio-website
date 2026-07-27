@@ -38,7 +38,7 @@ const CV = {
     location: "Shantinagar, Kathmandu",
     phone: "9808711811",
     email: "aashikkrmahatoo@gmail.com",
-    github: "https://github.com/Aashik9567",
+    github: "https://github.com/AashiQMahato",
     linkedin: "https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/",
   },
   summary:
@@ -91,7 +91,7 @@ const CV = {
     {
       name: "Automated Attendance Management System",
       stack: "YOLOv8, FaceNet, React, Node.js, MongoDB",
-      url: "https://github.com/Aashik9567/Automated_Attendance_Management_System",
+      url: "https://github.com/AashiQMahato/Automated_Attendance_Management_System",
       bullets: [
         "Automated attendance using YOLOv8 and FaceNet for real-time face recognition.",
         "Built a web platform with React, Node.js, and MongoDB for live tracking.",
@@ -101,7 +101,7 @@ const CV = {
     {
       name: "WeatherApp – AI-Enhanced Weather Dashboard",
       stack: "Next.js, OpenAI, Responsive UI",
-      url: "https://github.com/Aashik9567/weather-app-NextJs",
+      url: "https://github.com/AashiQMahato/weather-app-NextJs",
       bullets: [
         "Real-time weather data with auto-refresh and AI-powered analysis.",
         "Interactive location search with GPS support and 10-day forecast.",
@@ -111,7 +111,7 @@ const CV = {
     {
       name: "Smart School Management System",
       stack: "React, Node.js, Express, MongoDB",
-      url: "https://github.com/Aashik9567/Smart-School-management-system-Frontend",
+      url: "https://github.com/AashiQMahato/Smart-School-management-system-Frontend",
       bullets: [
         "Role-based dashboards for Admin, Teacher, Student, and Parent.",
         "Modules for attendance, timetable, marks, fee monitoring, and notifications.",
@@ -212,7 +212,7 @@ const ResumeDocument = ({ zoom, isMobile }) => {
             <div>📍 {CV.contact.location}</div>
             <div>📞 {CV.contact.phone}</div>
             <div>✉️ {CV.contact.email}</div>
-            <div>🔗 github.com/Aashik9567</div>
+            <div>🔗 github.com/AashiQMahato</div>
             <div>🔗 linkedin/aashiq-mahato</div>
           </div>
         </div>
@@ -954,7 +954,7 @@ const About = () => {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                          <span className="text-xs font-medium tracking-wide uppercase text-green-700 dark:text-green-400">
+                          <span className="text-xs font-medium tracking-wide text-green-700 uppercase dark:text-green-400">
                             Open to opportunities
                           </span>
                         </div>

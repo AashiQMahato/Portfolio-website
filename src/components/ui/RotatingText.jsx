@@ -1,9 +1,13 @@
-import { useMemo, useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import PropTypes from "prop-types";
+import { gsap } from "../../motion/gsapSetup";
+import usePrefersReducedMotion from "../../motion/usePrefersReducedMotion";
 
+/** Cycles through words with a rise/fade swap. GSAP-based (framer-free). */
 const RotatingText = ({ words = [], interval = 3000, className = "" }) => {
   const [index, setIndex] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
+  const spanRef = useRef(null);
+  const reduced = usePrefersReducedMotion();
 
   const safeWords = useMemo(
     () => (Array.isArray(words) ? words.filter(Boolean) : []),
@@ -11,35 +15,43 @@ const RotatingText = ({ words = [], interval = 3000, className = "" }) => {
   );
 
   useEffect(() => {
-    if (shouldReduceMotion) return;
-    if (safeWords.length <= 1) return;
+    if (reduced || safeWords.length <= 1) return undefined;
     const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % safeWords.length);
+      const el = spanRef.current;
+      if (!el) return;
+      gsap.to(el, {
+        y: -18,
+        autoAlpha: 0,
+        duration: 0.22,
+        ease: "power2.in",
+        onComplete: () => {
+          setIndex((prev) => (prev + 1) % safeWords.length);
+          gsap.fromTo(
+            el,
+            { y: 18, autoAlpha: 0 },
+            { y: 0, autoAlpha: 1, duration: 0.3, ease: "power2.out" },
+          );
+        },
+      });
     }, interval);
     return () => clearInterval(timer);
-  }, [shouldReduceMotion, safeWords, interval]);
+  }, [reduced, safeWords, interval]);
 
   const current = safeWords.length ? safeWords[index % safeWords.length] : "";
 
   return (
     <span className={`inline-block relative ${className}`}>
-      {shouldReduceMotion ? (
-        <span className="inline-block">{current}</span>
-      ) : (
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={current}
-            initial={{ y: 18, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -18, opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="inline-block will-change-transform">
-            {current}
-          </motion.span>
-        </AnimatePresence>
-      )}
+      <span ref={spanRef} className="inline-block will-change-transform">
+        {current}
+      </span>
     </span>
   );
+};
+
+RotatingText.propTypes = {
+  words: PropTypes.arrayOf(PropTypes.string),
+  interval: PropTypes.number,
+  className: PropTypes.string,
 };
 
 export default RotatingText;

@@ -5,9 +5,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ["Inter", "system-ui", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "Fira Code", "monospace"],
+        display: ["Space Grotesk Variable", "Space Grotesk", "system-ui", "sans-serif"],
+        sans: ["Space Grotesk Variable", "Space Grotesk", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "monospace"],
       },
       colors: {
         background: "rgb(var(--background) / <alpha-value>)",
@@ -18,6 +18,15 @@ export default {
         muted: "rgb(var(--muted) / <alpha-value>)",
         "muted-foreground": "rgb(var(--muted-foreground) / <alpha-value>)",
         ring: "rgb(var(--ring) / <alpha-value>)",
+        // "Schematic" design tokens (see :root in index.css)
+        panel: "rgb(var(--panel) / <alpha-value>)",
+        line: "rgb(var(--line) / <alpha-value>)",
+        ink: {
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          dim: "rgb(var(--ink-dim) / <alpha-value>)",
+        },
+        signal: "rgb(var(--signal) / <alpha-value>)",
+        ember: "rgb(var(--ember) / <alpha-value>)",
         // Premium color palette
         primary: {
           DEFAULT: "rgb(var(--primary) / <alpha-value>)",
@@ -118,6 +127,10 @@ export default {
         "scale-in": "scaleIn 0.3s ease-out",
         "spin-slow": "spin 8s linear infinite",
         "bounce-slow": "bounce 3s ease-in-out infinite",
+        "slide-down-loop": "slideDownLoop 1.6s ease-in-out infinite",
+        marquee: "marquee var(--marquee-duration, 30s) linear infinite",
+        "marquee-reverse":
+          "marquee var(--marquee-duration, 30s) linear infinite reverse",
       },
       keyframes: {
         gradient: {
@@ -157,6 +170,14 @@ export default {
         scaleIn: {
           "0%": { transform: "scale(0.95)", opacity: "0" },
           "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        slideDownLoop: {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(200%)" },
         },
       },
       spacing: {

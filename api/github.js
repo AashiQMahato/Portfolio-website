@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate=86400");
 
   const username =
-    (req?.query?.username && String(req.query.username)) || "Aashik9567";
+    (req?.query?.username && String(req.query.username)) || "AashiQMahato";
 
   const token = process.env.GITHUB_TOKEN || "";
 

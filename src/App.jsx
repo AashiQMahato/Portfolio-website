@@ -1,15 +1,10 @@
-import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import RouterLayout from "./components/RouterLayout";
-import HomePage from "./components/HomePage";
-import ContactUs from "./components/ContactUs";
-import Projects from "./components/Projects";
-import Education from "./components/Education";
-import About from "./components/About";
-import Skills from "./components/Skills";
-import Testimonials from "./components/Testimonials";
+import Home from "./pages/Home";
 
 // Lazy-loaded pages
+const Projects = lazy(() => import("./components/Projects"));
 const ProjectCaseStudy = lazy(() => import("./pages/ProjectCaseStudy"));
 const GitHubDashboard = lazy(() => import("./pages/GitHubDashboard"));
 const Blog = lazy(() => import("./pages/Blog"));
@@ -25,14 +20,16 @@ const App = () => {
       <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
         <Routes>
           <Route path="/" element={<RouterLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path="about" element={<About />} />
+            <Route index element={<Home />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:slug" element={<ProjectCaseStudy />} />
-            <Route path="contactus" element={<ContactUs />} />
-            <Route path="education" element={<Education />} />
-            <Route path="skills" element={<Skills />} />
-            <Route path="testimonials" element={<Testimonials />} />
+
+            {/* Old section routes → home anchors (no dead links) */}
+            <Route path="about" element={<Navigate to={{ pathname: "/", hash: "#about" }} replace />} />
+            <Route path="skills" element={<Navigate to={{ pathname: "/", hash: "#skills" }} replace />} />
+            <Route path="education" element={<Navigate to={{ pathname: "/", hash: "#about" }} replace />} />
+            <Route path="testimonials" element={<Navigate to={{ pathname: "/", hash: "#testimonials" }} replace />} />
+            <Route path="contactus" element={<Navigate to={{ pathname: "/", hash: "#contact" }} replace />} />
             
             {/* New Routes */}
             <Route path="developer-dashboard" element={<GitHubDashboard />} />

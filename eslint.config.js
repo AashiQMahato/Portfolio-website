@@ -35,4 +35,11 @@ export default [
       ],
     },
   },
+  {
+    // react-three-fiber JSX (position, args, intensity, …) is not DOM JSX
+    files: ['src/scene/**/*.{js,jsx}'],
+    rules: {
+      'react/no-unknown-property': 'off',
+    },
+  },
 ]

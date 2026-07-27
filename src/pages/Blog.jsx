@@ -1,25 +1,29 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Calendar, Clock, ArrowRight, BookOpen, Tag } from 'lucide-react';
-import { ScrollReveal } from '../components/ui';
-import { blogPosts } from '../data/blogPosts';
+import React from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Calendar, Clock, ArrowRight, BookOpen, Tag } from "lucide-react";
+import { ScrollReveal } from "../components/ui";
+import { blogPosts } from "../data/blogPosts";
 
 const CATEGORY_COLORS = {
-  IoT: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-  Frontend: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  React: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-  AI: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-  Architecture: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-  Performance: 'bg-green-500/10 text-green-400 border-green-500/20',
+  IoT: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+  Frontend: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  React: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+  AI: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+  Architecture: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+  Performance: "bg-green-500/10 text-green-400 border-green-500/20",
 };
 
 const getCategoryClass = (cat) =>
-  CATEGORY_COLORS[cat] || 'bg-primary/10 text-primary border-primary/20';
+  CATEGORY_COLORS[cat] || "bg-primary/10 text-primary border-primary/20";
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
 const BlogCard = ({ post, index, featured }) => (
@@ -28,18 +32,19 @@ const BlogCard = ({ post, index, featured }) => (
       <motion.article
         whileHover={{ y: -4 }}
         transition={{ duration: 0.2 }}
-        className={`h-full flex flex-col p-6 rounded-2xl border border-border bg-card/40 backdrop-blur hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 ${featured ? 'md:p-8' : ''}`}
-      >
+        className={`h-full flex flex-col p-6 rounded-2xl border border-border bg-card/40 backdrop-blur hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 ${featured ? "md:p-8" : ""}`}>
         {/* Category */}
         <div className="flex items-center justify-between mb-4">
-          <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getCategoryClass(post.category)}`}>
+          <span
+            className={`px-3 py-1 text-xs font-semibold rounded-full border ${getCategoryClass(post.category)}`}>
             {post.category}
           </span>
           <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
         </div>
 
         {/* Title */}
-        <h2 className={`font-bold font-display text-foreground group-hover:text-primary transition-colors mb-3 leading-snug ${featured ? 'text-xl md:text-2xl' : 'text-lg'}`}>
+        <h2
+          className={`font-bold font-display text-foreground group-hover:text-primary transition-colors mb-3 leading-snug ${featured ? "text-xl md:text-2xl" : "text-lg"}`}>
           {post.title}
         </h2>
 
@@ -65,13 +70,17 @@ const BlogCard = ({ post, index, featured }) => (
 );
 
 const Blog = () => {
-  const [activeCategory, setActiveCategory] = React.useState('All');
+  const [activeCategory, setActiveCategory] = React.useState("All");
 
-  const categories = ['All', ...Array.from(new Set(blogPosts.map(p => p.category)))];
+  const categories = [
+    "All",
+    ...Array.from(new Set(blogPosts.map((p) => p.category))),
+  ];
 
-  const filtered = activeCategory === 'All'
-    ? blogPosts
-    : blogPosts.filter(p => p.category === activeCategory);
+  const filtered =
+    activeCategory === "All"
+      ? blogPosts
+      : blogPosts.filter((p) => p.category === activeCategory);
 
   const [featured, ...rest] = filtered;
 
@@ -94,23 +103,23 @@ const Blog = () => {
             Blog &amp; <span className="gradient-text">Insights</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Engineering articles, tutorials, and technical deep dives from my journey building across web, hardware, and AI.
+            Engineering articles, tutorials, and technical deep dives from my
+            journey building across web, hardware, and AI.
           </p>
         </ScrollReveal>
 
         {/* Category Filter */}
         <ScrollReveal delay={0.1}>
           <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${
                   activeCategory === cat
-                    ? 'bg-primary text-primary-foreground border-primary/30 shadow-sm'
-                    : 'border-border bg-card/40 text-muted-foreground hover:text-foreground hover:bg-card/60'
-                }`}
-              >
+                    ? "bg-primary text-primary-foreground border-primary/30 shadow-sm"
+                    : "border-border bg-card/40 text-muted-foreground hover:text-foreground hover:bg-card/60"
+                }`}>
                 {cat}
               </button>
             ))}
@@ -118,7 +127,9 @@ const Blog = () => {
         </ScrollReveal>
 
         {filtered.length === 0 ? (
-          <div className="py-24 text-center text-muted-foreground">No posts in this category yet.</div>
+          <div className="py-24 text-center text-muted-foreground">
+            No posts in this category yet.
+          </div>
         ) : (
           <>
             {/* Featured post */}
@@ -143,16 +154,17 @@ const Blog = () => {
         <ScrollReveal delay={0.2}>
           <div className="mt-20 py-12 text-center rounded-2xl border border-border bg-card/30">
             <BookOpen className="w-10 h-10 mx-auto mb-4 text-primary" />
-            <h3 className="text-xl font-bold font-display mb-2">More articles coming soon</h3>
+            <h3 className="text-xl font-bold font-display mb-2">
+              More articles coming soon
+            </h3>
             <p className="text-muted-foreground text-sm">
               Follow my GitHub for project updates and engineering notes.
             </p>
             <a
-              href="https://github.com/Aashik9567"
+              href="https://github.com/AashiQMahato"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
-            >
+              className="inline-flex items-center gap-2 mt-6 px-6 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
               Follow on GitHub <ArrowRight className="w-4 h-4" />
             </a>
           </div>

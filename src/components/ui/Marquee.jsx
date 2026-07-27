@@ -10,7 +10,7 @@ const Marquee = ({
   return (
     <div className={`overflow-hidden ${className}`}>
       <div
-        className={`flex ${animationClass} ${pauseOnHover ? "hover:[animation-play-state:paused]" : ""}`}
+        className={`flex w-max ${animationClass} motion-reduce:animate-none ${pauseOnHover ? "hover:[animation-play-state:paused]" : ""}`}
         style={{ animationDuration: `${speed}s` }}
       >
         <div className="flex shrink-0 gap-8">{children}</div>

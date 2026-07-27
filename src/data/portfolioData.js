@@ -32,7 +32,7 @@ export const CV = {
     location: "Shantinagar, Kathmandu",
     phone: "+977-9808711811",
     email: "aashikkrmahatoo@gmail.com",
-    github: "https://github.com/Aashik9567",
+    github: "https://github.com/AashiQMahato",
     linkedin: "https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/",
   },
   summary:
@@ -85,7 +85,7 @@ export const CV = {
     {
       name: "Automated Attendance Management System",
       stack: "YOLOv8, FaceNet, React, Node.js, MongoDB",
-      url: "https://github.com/Aashik9567/Automated_Attendance_Management_System",
+      url: "https://github.com/AashiQMahato/Automated_Attendance_Management_System",
       bullets: [
         "Automated attendance using YOLOv8 and FaceNet for real-time face recognition.",
         "Built a web platform with React, Node.js, and MongoDB for live tracking.",
@@ -95,7 +95,7 @@ export const CV = {
     {
       name: "WeatherApp – AI-Enhanced Weather Dashboard",
       stack: "Next.js, OpenAI, Responsive UI",
-      url: "https://github.com/Aashik9567/weather-app-NextJs",
+      url: "https://github.com/AashiQMahato/weather-app-NextJs",
       bullets: [
         "Real-time weather data with auto-refresh and AI-powered analysis.",
         "Interactive location search with GPS support and 10-day forecast.",
@@ -105,7 +105,7 @@ export const CV = {
     {
       name: "Smart School Management System",
       stack: "React, Node.js, Express, MongoDB",
-      url: "https://github.com/Aashik9567/Smart-School-management-system-Frontend",
+      url: "https://github.com/AashiQMahato/Smart-School-management-system-Frontend",
       bullets: [
         "Role-based dashboards for Admin, Teacher, Student, and Parent.",
         "Modules for attendance, timetable, marks, fee monitoring, and notifications.",
@@ -320,10 +320,10 @@ export const projects = [
       },
     ],
     gallery: [
-      "https://github.com/Aashik9567/Automated_Attendance_Management_System/raw/main/screenshots/dash.png",
+      "https://github.com/AashiQMahato/Automated_Attendance_Management_System/raw/main/screenshots/dash.png",
     ],
     image:
-      "https://github.com/Aashik9567/Automated_Attendance_Management_System/raw/main/screenshots/dash.png",
+      "https://github.com/AashiQMahato/Automated_Attendance_Management_System/raw/main/screenshots/dash.png",
     tags: ["Python", "Face Recognition", "React", "MongoDB"],
     features: [
       "Real-time webcam-based attendance capture",
@@ -331,7 +331,7 @@ export const projects = [
       "Role-based access for teachers/admins",
     ],
     github:
-      "https://github.com/Aashik9567/Automated_Attendance_Management_System",
+      "https://github.com/AashiQMahato/Automated_Attendance_Management_System",
     live: "https://aams-frontend.onrender.com/",
     category: "Full-Stack",
     cats: ["Full-Stack", "AI/ML"],
@@ -411,7 +411,7 @@ export const projects = [
       "Location-based auto-detection",
       "Beautiful animated weather icons",
     ],
-    github: "https://github.com/Aashik9567/weather-app-NextJs",
+    github: "https://github.com/AashiQMahato/weather-app-NextJs",
     live: null,
     category: "Web Dev",
     cats: ["Web Dev", "AI/ML"],
@@ -491,7 +491,7 @@ export const projects = [
       "Responsive modern dashboard UI",
       "AI-powered analytics and student insights",
     ],
-    github: "https://github.com/Aashik9567/Smart_School_Management_System",
+    github: "https://github.com/AashiQMahato/Smart_School_Management_System",
     live: "https://smart-school-management-system-frontend.onrender.com/",
     category: "Full-Stack",
     cats: ["Full-Stack", "Web Dev", "AI/ML"],
@@ -581,7 +581,7 @@ export const projects = [
       "Smooth animations and micro-interactions",
       "Reusable scalable component architecture",
     ],
-    github: "https://github.com/Aashik9567/raghunathpur-cable-network",
+    github: "https://github.com/AashiQMahato/raghunathpur-cable-network",
     live: "https://raghunathpurcable.com.np/",
     category: "Frontend",
     cats: ["Frontend", "Web Dev"],

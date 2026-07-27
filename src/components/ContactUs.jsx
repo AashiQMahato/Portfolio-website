@@ -46,7 +46,7 @@ const contactInfo = [
 ];
 
 const socialLinks = [
-  { icon: Github, href: "https://github.com/aashik9567", label: "GitHub" },
+  { icon: Github, href: "https://github.com/AashiQMahato", label: "GitHub" },
   {
     icon: Linkedin,
     href: "https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/",

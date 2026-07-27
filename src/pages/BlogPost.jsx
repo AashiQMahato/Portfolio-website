@@ -4,8 +4,27 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, ChevronRight, BookOpen, Share2, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import jsxLang from 'react-syntax-highlighter/dist/esm/languages/prism/jsx';
+import jsLang from 'react-syntax-highlighter/dist/esm/languages/prism/javascript';
+import tsLang from 'react-syntax-highlighter/dist/esm/languages/prism/typescript';
+import pyLang from 'react-syntax-highlighter/dist/esm/languages/prism/python';
+import bashLang from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
+import jsonLang from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+import cssLang from 'react-syntax-highlighter/dist/esm/languages/prism/css';
+import cLang from 'react-syntax-highlighter/dist/esm/languages/prism/c';
+
+[
+  ['jsx', jsxLang],
+  ['javascript', jsLang],
+  ['typescript', tsLang],
+  ['python', pyLang],
+  ['bash', bashLang],
+  ['json', jsonLang],
+  ['css', cssLang],
+  ['c', cLang],
+].forEach(([name, lang]) => SyntaxHighlighter.registerLanguage(name, lang));
 import { blogPosts } from '../data/blogPosts';
 
 const formatDate = (d) =>

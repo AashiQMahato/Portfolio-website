@@ -4,13 +4,32 @@ import { X, Send, Trash2, Sparkles } from "lucide-react";
 import PropTypes from "prop-types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import jsxLang from "react-syntax-highlighter/dist/esm/languages/prism/jsx";
+import jsLang from "react-syntax-highlighter/dist/esm/languages/prism/javascript";
+import tsLang from "react-syntax-highlighter/dist/esm/languages/prism/typescript";
+import pyLang from "react-syntax-highlighter/dist/esm/languages/prism/python";
+import bashLang from "react-syntax-highlighter/dist/esm/languages/prism/bash";
+import jsonLang from "react-syntax-highlighter/dist/esm/languages/prism/json";
+import cssLang from "react-syntax-highlighter/dist/esm/languages/prism/css";
+import cLang from "react-syntax-highlighter/dist/esm/languages/prism/c";
 import {
   oneDark,
   oneLight,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useTheme } from "../context/ThemeContext";
+
+[
+  ["jsx", jsxLang],
+  ["javascript", jsLang],
+  ["typescript", tsLang],
+  ["python", pyLang],
+  ["bash", bashLang],
+  ["json", jsonLang],
+  ["css", cssLang],
+  ["c", cLang],
+].forEach(([name, lang]) => SyntaxHighlighter.registerLanguage(name, lang));
 
 const AVATAR_URL =
   "https://cdn.pixabay.com/photo/2024/03/17/09/13/ai-generated-8638571_1280.png";
@@ -474,7 +493,7 @@ const AIChatbot = () => {
               </div>
 
               {/* Messages */}
-              <div className="relative z-10 flex-1 px-4 py-4 space-y-3 overflow-y-auto">
+              <div data-lenis-prevent className="relative z-10 flex-1 px-4 py-4 space-y-3 overflow-y-auto">
                 {/* Welcome */}
                 {messages.length === 0 && (
                   <motion.div

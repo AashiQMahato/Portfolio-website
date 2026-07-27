@@ -1,138 +1,142 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import {
-  Github,
-  Linkedin,
-  Twitter,
-  Mail,
-  MapPin,
-  ChevronUp,
-} from "lucide-react";
-import { useReducedMotion } from "framer-motion";
-import logo from "../assets/logo.jpeg";
+import { Link, useLocation } from "react-router-dom";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
+import { CV } from "../data/portfolioData";
+import { useScrollToSection } from "../motion";
 
-const NAV_LINKS = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Skills", path: "/skills" },
+const SECTION_LINKS = [
+  { label: "About", hash: "#about" },
+  { label: "Skills", hash: "#skills" },
+  { label: "Work", hash: "#work" },
+  { label: "Contact", hash: "#contact" },
+];
+
+const PAGE_LINKS = [
   { label: "Projects", path: "/projects" },
-  { label: "Education", path: "/education" },
-  { label: "Dashboard", path: "/developer-dashboard" },
   { label: "Blog", path: "/blog" },
+  { label: "Dashboard", path: "/developer-dashboard" },
+  { label: "Timeline", path: "/timeline" },
   { label: "Now", path: "/now" },
-  { label: "Contact", path: "/contactus" },
+  { label: "Resume", path: "/resume" },
 ];
 
 const SOCIAL = [
-  { Icon: Github, href: "https://github.com/aashik9567", label: "GitHub" },
-  {
-    Icon: Linkedin,
-    href: "https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/",
-    label: "LinkedIn",
-  },
-  { Icon: Twitter, href: "https://twitter.com/", label: "Twitter" },
-  { Icon: Mail, href: "mailto:aashikkrmahatoo@gmail.com", label: "Email" },
+  { href: CV.contact.github, label: "GitHub" },
+  { href: CV.contact.linkedin, label: "LinkedIn" },
+  { href: "https://www.instagram.com/aashiq__mahato/", label: "Instagram" },
 ];
 
 const Footer = () => {
-  const shouldReduceMotion = useReducedMotion();
+  const { pathname } = useLocation();
+  const scrollTo = useScrollToSection();
+  const onHome = pathname === "/";
+
+  const colHeading =
+    "mb-5 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim";
+  const linkClass =
+    "block w-fit whitespace-nowrap font-mono text-xs uppercase tracking-[0.1em] text-ink-dim transition-colors hover:text-signal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60";
 
   return (
-    <footer className="mt-20 border-t border-border bg-background">
-      <div className="px-4 pt-16 mx-auto max-w-7xl md:px-6">
-        <div className="grid gap-10 md:grid-cols-3">
-          {/* Brand */}
-          <div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-3 no-underline">
-              <div className="overflow-hidden border rounded-lg shadow-sm w-9 h-9 border-border bg-card shrink-0">
-                <img
-                  src={logo}
-                  alt="Logo"
-                  className="object-cover w-full h-full"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <span className="text-lg font-semibold">
-                <span className="gradient-text">Aashiq</span>
-                <span className="text-muted-foreground">.dev</span>
-              </span>
-            </Link>
-
-            <p className="mt-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-              Electronics Engineer &amp; Full-Stack Developer
+    <footer className="relative border-t border-line bg-background px-5 md:px-10 lg:pl-28 lg:pr-16">
+      {/* Extra bottom clearance on small screens so the fixed FABs
+          (terminal, chatbot) never sit on top of footer content */}
+      <div className="mx-auto max-w-6xl pb-40 pt-16 sm:pb-28">
+        <div className="grid gap-12 md:grid-cols-12">
+          {/* Identity + CTA */}
+          <div className="md:col-span-5">
+            <p className="font-mono text-sm tracking-[0.18em] text-ink">
+              <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-signal align-middle" aria-hidden="true" />
+              AASHIQ<span className="text-ink-dim">.DEV</span>
             </p>
-            <p className="max-w-xs mt-3 text-sm leading-relaxed text-muted-foreground">
-              Building innovative solutions at the intersection of hardware and
-              software.
+            <p className="mt-5 max-w-sm font-display text-2xl font-semibold leading-tight tracking-tight text-ink">
+              Have a system that needs building?
             </p>
-
-            <div className="flex gap-2 mt-5">
-              {SOCIAL.map(({ Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="inline-flex items-center justify-center transition-colors border w-9 h-9 rounded-xl border-border bg-card/60 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <div>
-            <p className="mb-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-              Explore
-            </p>
-            <nav className="flex flex-col gap-2">
-              {NAV_LINKS.map(({ label, path }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  className="text-sm transition-colors rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 w-fit">
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <p className="mb-4 text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-              Contact
-            </p>
-            <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
-              Open to freelance, collaborations, and full-time opportunities.
-            </p>
-
             <a
-              href="mailto:aashikkrmahatoo@gmail.com"
-              className="inline-flex items-center gap-2 text-sm transition-colors rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-              <Mail size={16} />
-              aashikkrmahatoo@gmail.com
+              href={`mailto:${CV.contact.email}`}
+              className="group mt-5 inline-flex items-center gap-2 border-b border-signal/40 pb-1 font-mono text-xs uppercase tracking-[0.15em] text-signal transition-colors hover:border-signal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+            >
+              {CV.contact.email}
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transition-none" aria-hidden="true" />
             </a>
-
-            <p className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-              <MapPin size={16} />
-              Kathmandu, Nepal
+            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim">
+              {CV.contact.location} · UTC+5:45
             </p>
+          </div>
 
-            <div className="inline-flex items-center gap-2 mt-5 px-3 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur text-xs font-medium text-muted-foreground">
-              <span className="w-2 h-2 rounded-full bg-primary" />
-              Available for Hire
-            </div>
+          {/* Link groups share the remaining columns so none get squeezed */}
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:col-span-7">
+          {/* Sections */}
+          <nav aria-label="Sections">
+            <p className={colHeading}>
+              <span className="text-signal">{"//"}</span> Sections
+            </p>
+            <ul className="flex flex-col gap-3">
+              {SECTION_LINKS.map((link) => (
+                <li key={link.hash}>
+                  <Link
+                    to={{ pathname: "/", hash: link.hash }}
+                    onClick={() => onHome && scrollTo(link.hash)}
+                    className={linkClass}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Pages */}
+          <nav aria-label="Pages">
+            <p className={colHeading}>
+              <span className="text-signal">{"//"}</span> Pages
+            </p>
+            <ul className="flex flex-col gap-3">
+              {PAGE_LINKS.map((link) => (
+                <li key={link.path}>
+                  <Link to={link.path} className={linkClass}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Elsewhere */}
+          <nav aria-label="Social">
+            <p className={colHeading}>
+              <span className="text-signal">{"//"}</span> Elsewhere
+            </p>
+            <ul className="flex flex-col gap-3">
+              {SOCIAL.map((social) => (
+                <li key={social.label}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={linkClass}
+                  >
+                    {social.label} <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 py-8 mt-10 border-t border-border">
-          <p className="text-sm text-muted-foreground">
-            &copy; 2026 Aashiq Mahato. All rights reserved.
+        {/* Baseline */}
+        {/* pl clears the fixed terminal FAB, which sits bottom-left below lg */}
+        <div className="mt-14 flex flex-wrap items-center justify-between gap-4 border-t border-line pl-12 pt-6 lg:pl-0">
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+            © {new Date().getFullYear()} {CV.name} — built with React, GSAP &amp; Three.js
           </p>
+          <button
+            type="button"
+            onClick={() => scrollTo("body")}
+            className="group flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim transition-colors hover:text-signal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+          >
+            Back to top
+            <ArrowUp className="h-3 w-3 transition-transform group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
+          </button>
         </div>
       </div>
     </footer>

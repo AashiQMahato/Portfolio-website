@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { X, Minus, Square, Terminal as TerminalIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { projects } from '../data/portfolioData';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { X, Minus, Square, Terminal as TerminalIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { projects } from "../data/portfolioData";
 
-const PROMPT = 'aashiq@portfolio:~$';
+const PROMPT = "aashiq@portfolio:~$";
 
 const HELP_TEXT = `
 Available commands:
@@ -54,24 +54,24 @@ Get in touch:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Email    : aashikkrmahatoo@gmail.com
 Phone    : +977-9808711811
-GitHub   : github.com/Aashik9567
+GitHub   : github.com/AashiQMahato
 LinkedIn : linkedin.com/in/aashiq-mahato-9a343b2b4/
 Location : Shantinagar, Kathmandu
 `;
 
 const BOOT_SEQUENCE = [
-  '> Initializing Aashiq OS v2026...',
-  '> Loading modules: [react] [node] [arduino] [python] ✓',
-  '> Establishing secure connection...',
-  '> Portfolio loaded successfully.',
+  "> Initializing Aashiq OS v2026...",
+  "> Loading modules: [react] [node] [arduino] [python] ✓",
+  "> Establishing secure connection...",
+  "> Portfolio loaded successfully.",
   '> Type "help" for available commands.',
-  '',
+  "",
 ];
 
 const Terminal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [lines, setLines] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [history, setHistory] = useState([]);
   const [histIdx, setHistIdx] = useState(-1);
   const [booted, setBooted] = useState(false);
@@ -80,16 +80,19 @@ const Terminal = () => {
   const bottomRef = useRef(null);
   const navigate = useNavigate();
 
-  const addLine = useCallback((content, type = 'output') => {
-    setLines(prev => [...prev, { content, type, id: Date.now() + Math.random() }]);
+  const addLine = useCallback((content, type = "output") => {
+    setLines((prev) => [
+      ...prev,
+      { content, type, id: Date.now() + Math.random() },
+    ]);
   }, []);
 
   const boot = useCallback(async () => {
     if (booted) return;
     setIsBooting(true);
     for (const line of BOOT_SEQUENCE) {
-      await new Promise(r => setTimeout(r, 120));
-      addLine(line, 'boot');
+      await new Promise((r) => setTimeout(r, 120));
+      addLine(line, "boot");
     }
     setIsBooting(false);
     setBooted(true);
@@ -102,7 +105,7 @@ const Terminal = () => {
   }, [isOpen, booted, boot]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [lines]);
 
   useEffect(() => {
@@ -112,95 +115,121 @@ const Terminal = () => {
   // Listen for custom event from command palette
   useEffect(() => {
     const handler = () => setIsOpen(true);
-    window.addEventListener('open-terminal', handler);
-    return () => window.removeEventListener('open-terminal', handler);
+    window.addEventListener("open-terminal", handler);
+    return () => window.removeEventListener("open-terminal", handler);
   }, []);
 
-  const processCommand = useCallback((cmd) => {
-    const trimmed = cmd.trim().toLowerCase();
-    addLine(`${PROMPT} ${cmd}`, 'prompt');
+  const processCommand = useCallback(
+    (cmd) => {
+      const trimmed = cmd.trim().toLowerCase();
+      addLine(`${PROMPT} ${cmd}`, "prompt");
 
-    switch (trimmed) {
-      case 'help':
-        addLine(HELP_TEXT);
-        break;
-      case 'whoami':
-        addLine(WHOAMI_TEXT);
-        break;
-      case 'skills':
-        addLine(SKILLS_TEXT);
-        break;
-      case 'about':
-        addLine(ABOUT_TEXT);
-        break;
-      case 'contact':
-        addLine(CONTACT_TEXT);
-        break;
-      case 'resume':
-        addLine('> Opening resume...', 'success');
-        setTimeout(() => { navigate('/resume'); setIsOpen(false); }, 500);
-        break;
-      case 'github':
-        addLine('> Opening GitHub profile...', 'success');
-        setTimeout(() => window.open('https://github.com/Aashik9567', '_blank'), 300);
-        break;
-      case 'projects': {
-        const list = projects.map((p, i) => `  ${i + 1}. ${p.title} [${p.category}]`).join('\n');
-        addLine(`\nProjects (${projects.length}):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${list}\n\nRun "projects <number>" to view details.`);
-        break;
-      }
-      case 'clear':
-        setLines([]);
-        return;
-      case '':
-        break;
-      default: {
-        // Handle "projects <n>"
-        const projMatch = trimmed.match(/^projects\s+(\d+)$/);
-        if (projMatch) {
-          const idx = parseInt(projMatch[1]) - 1;
-          if (projects[idx]) {
-            const p = projects[idx];
-            addLine(`\n${p.title}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${p.shortDesc}\nTech: ${p.tags.join(', ')}\nGitHub: ${p.github || 'N/A'}\nLive: ${p.live || 'N/A'}`);
+      switch (trimmed) {
+        case "help":
+          addLine(HELP_TEXT);
+          break;
+        case "whoami":
+          addLine(WHOAMI_TEXT);
+          break;
+        case "skills":
+          addLine(SKILLS_TEXT);
+          break;
+        case "about":
+          addLine(ABOUT_TEXT);
+          break;
+        case "contact":
+          addLine(CONTACT_TEXT);
+          break;
+        case "resume":
+          addLine("> Opening resume...", "success");
+          setTimeout(() => {
+            navigate("/resume");
+            setIsOpen(false);
+          }, 500);
+          break;
+        case "github":
+          addLine("> Opening GitHub profile...", "success");
+          setTimeout(
+            () => window.open("https://github.com/AashiQMahato", "_blank"),
+            300,
+          );
+          break;
+        case "projects": {
+          const list = projects
+            .map((p, i) => `  ${i + 1}. ${p.title} [${p.category}]`)
+            .join("\n");
+          addLine(
+            `\nProjects (${projects.length}):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${list}\n\nRun "projects <number>" to view details.`,
+          );
+          break;
+        }
+        case "clear":
+          setLines([]);
+          return;
+        case "":
+          break;
+        default: {
+          // Handle "projects <n>"
+          const projMatch = trimmed.match(/^projects\s+(\d+)$/);
+          if (projMatch) {
+            const idx = parseInt(projMatch[1]) - 1;
+            if (projects[idx]) {
+              const p = projects[idx];
+              addLine(
+                `\n${p.title}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${p.shortDesc}\nTech: ${p.tags.join(", ")}\nGitHub: ${p.github || "N/A"}\nLive: ${p.live || "N/A"}`,
+              );
+            } else {
+              addLine(
+                `> Project ${projMatch[1]} not found. Run "projects" for the list.`,
+                "error",
+              );
+            }
           } else {
-            addLine(`> Project ${projMatch[1]} not found. Run "projects" for the list.`, 'error');
+            addLine(
+              `> Command not found: "${trimmed}". Type "help" for options.`,
+              "error",
+            );
           }
-        } else {
-          addLine(`> Command not found: "${trimmed}". Type "help" for options.`, 'error');
         }
       }
-    }
-  }, [addLine, navigate]);
+    },
+    [addLine, navigate],
+  );
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       if (!booted || isBooting) return;
       if (input.trim()) {
-        setHistory(h => [input, ...h]);
+        setHistory((h) => [input, ...h]);
         setHistIdx(-1);
       }
       processCommand(input);
-      setInput('');
-    } else if (e.key === 'ArrowUp') {
+      setInput("");
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       const next = Math.min(histIdx + 1, history.length - 1);
       setHistIdx(next);
-      setInput(history[next] || '');
-    } else if (e.key === 'ArrowDown') {
+      setInput(history[next] || "");
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
       const next = Math.max(histIdx - 1, -1);
       setHistIdx(next);
-      setInput(next === -1 ? '' : history[next] || '');
+      setInput(next === -1 ? "" : history[next] || "");
     }
   };
 
   const lineColor = (type) => {
     switch (type) {
-      case 'prompt': return 'text-primary';
-      case 'error': return 'text-red-400';
-      case 'success': return 'text-green-400';
-      case 'boot': return 'text-cyan-400/80';
-      default: return 'text-foreground/80';
+      case "prompt":
+        return "text-primary";
+      case "error":
+        return "text-red-400";
+      case "success":
+        return "text-green-400";
+      case "boot":
+        return "text-cyan-400/80";
+      default:
+        return "text-foreground/80";
     }
   };
 
@@ -209,8 +238,7 @@ const Terminal = () => {
       <button
         onClick={() => setIsOpen(true)}
         title="Open Terminal (developer mode)"
-        className="fixed bottom-28 left-4 sm:left-6 z-[90] w-10 h-10 rounded-xl border border-border bg-card/80 backdrop-blur text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card transition-all flex items-center justify-center shadow-sm"
-      >
+        className="fixed bottom-28 left-4 sm:left-6 lg:left-16 z-[90] w-10 h-10 rounded-xl border border-border bg-card/80 backdrop-blur text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card transition-all flex items-center justify-center shadow-sm">
         <TerminalIcon className="w-4 h-4" />
       </button>
     );
@@ -225,8 +253,7 @@ const Terminal = () => {
         exit={{ opacity: 0, y: 24, scale: 0.97 }}
         transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
         className="fixed bottom-4 left-4 sm:left-6 z-[150] w-[92vw] sm:w-[560px] rounded-2xl overflow-hidden border border-border bg-[#0d1117]/95 backdrop-blur-xl shadow-2xl shadow-black/50"
-        style={{ maxHeight: '420px' }}
-      >
+        style={{ maxHeight: "420px" }}>
         {/* Title bar */}
         <div className="flex items-center gap-2 px-4 py-3 bg-[#161b22] border-b border-white/5">
           <div className="flex gap-1.5">
@@ -242,22 +269,20 @@ const Terminal = () => {
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="text-white/20 hover:text-white/60 transition-colors"
-          >
+            className="text-white/20 hover:text-white/60 transition-colors">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {/* Output area */}
         <div
+          data-lenis-prevent
           className="h-64 overflow-y-auto p-4 font-mono text-xs leading-relaxed cursor-text"
-          onClick={() => inputRef.current?.focus()}
-        >
-          {lines.map(line => (
+          onClick={() => inputRef.current?.focus()}>
+          {lines.map((line) => (
             <pre
               key={line.id}
-              className={`whitespace-pre-wrap break-words ${lineColor(line.type)}`}
-            >
+              className={`whitespace-pre-wrap break-words ${lineColor(line.type)}`}>
               {line.content}
             </pre>
           ))}
@@ -266,12 +291,14 @@ const Terminal = () => {
 
         {/* Input row */}
         <div className="flex items-center gap-2 px-4 py-3 border-t border-white/5 bg-[#0d1117]">
-          <span className="font-mono text-xs text-primary shrink-0">{PROMPT}</span>
+          <span className="font-mono text-xs text-primary shrink-0">
+            {PROMPT}
+          </span>
           <input
             ref={inputRef}
             type="text"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isBooting}
             className="flex-1 bg-transparent font-mono text-xs text-foreground/90 outline-none caret-primary"

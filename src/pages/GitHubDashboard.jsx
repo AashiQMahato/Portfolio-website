@@ -21,7 +21,7 @@ import {
 } from "recharts";
 import { ScrollReveal } from "../components/ui";
 
-const GITHUB_USERNAME = "Aashik9567";
+const GITHUB_USERNAME = "AashiQMahato";
 
 const levelToIndex = (level) => {
   const map = {
@@ -264,7 +264,7 @@ const GitHubDashboard = () => {
               <img
                 src={
                   profile?.avatarUrl ||
-                  "https://github.com/identicons/Aashik9567.png"
+                  "https://github.com/identicons/AashiQMahato.png"
                 }
                 alt="GitHub Avatar"
                 className="w-full h-full rounded-full object-cover"
