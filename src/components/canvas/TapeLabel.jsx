@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 const TapeLabel = ({ children, className = "", rotate = -3, tone = "accent" }) => (
   <span
     className={`inline-block rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] ${
-      tone === "accent" ? "bg-signal text-white" : "bg-ember text-white"
+      tone === "accent" ? "bg-signal text-primary-foreground" : "bg-ember text-white"
     } ${className}`}
     style={{ transform: `rotate(${rotate}deg)` }}
   >

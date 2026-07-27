@@ -8,7 +8,7 @@ const TONES = {
   },
   accent: {
     border: "border-signal/70",
-    chip: "bg-signal text-white",
+    chip: "bg-signal text-primary-foreground",
     handle: "border-signal/70",
   },
   dim: {

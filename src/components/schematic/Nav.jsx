@@ -199,7 +199,7 @@ const Nav = () => {
               <Link
                 to={{ pathname: "/", hash: "#contact" }}
                 onClick={() => anchorClicked("#contact")}
-                className="flex h-9 items-center rounded-full bg-signal px-4 font-display text-sm font-bold tracking-tight text-white transition-[filter] hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
+                className="flex h-9 items-center rounded-full bg-signal px-4 font-display text-sm font-bold tracking-tight text-primary-foreground transition-[filter] hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel"
               >
                 Hire me
               </Link>

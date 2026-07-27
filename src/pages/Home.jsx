@@ -13,6 +13,7 @@ import { HOME_SECTIONS } from "../components/schematic/Nav";
 import { FakeCursor } from "../components/canvas";
 import { useWebGLSupport } from "../scene";
 import { useMediaQuery, usePrefersReducedMotion } from "../motion";
+import { useRecruiterMode } from "../context/RecruiterModeContext";
 
 // Lazy so three.js (and the anime three adapter) live in their own async
 // chunk and never block first paint.
@@ -23,8 +24,13 @@ const Home = () => {
   const reduced = usePrefersReducedMotion();
   const isWide = useMediaQuery("(min-width: 768px)");
   const webglOk = useWebGLSupport();
+  const { isRecruiterMode } = useRecruiterMode();
   const showSky =
-    !reduced && isWide && webglOk && !navigator?.connection?.saveData;
+    !reduced &&
+    !isRecruiterMode &&
+    isWide &&
+    webglOk &&
+    !navigator?.connection?.saveData;
 
   return (
     <div className="relative text-ink">

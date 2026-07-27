@@ -22,7 +22,7 @@
     --muted: 232 226 213; /* #E8E2D5 muted cream */
     --muted-foreground: 68 80 92; /* #44505C */
     --primary: 232 98 44; /* #E8622C brand orange */
-    --primary-foreground: 255 255 255;
+    --primary-foreground: 20 24 29; /* ink labels on orange fills (AA) */
     --ring: 184 74 22; /* focus ring: darker orange, visible on cream */
 
     /* Non-semantic accents */
@@ -36,7 +36,7 @@
     --ink: 20 24 29; /* primary text */
     --ink-dim: 68 80 92; /* secondary text (AA on sky + cream) */
     --signal: 232 98 44; /* #E8622C the accent — large/bold/chrome only */
-    --accent-ink: 184 74 22; /* #B84A16 small orange text (AA) */
+    --accent-ink: 160 63 15; /* #A03F0F small orange text (AA even on sky) */
     --ember: 29 78 216; /* deep blue rare emphasis */
 
     /* Sky gradient stops — shared by CssSky and the WebGL scene uniforms */

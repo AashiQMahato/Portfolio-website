@@ -3,7 +3,7 @@ import Magnetic from "../../motion/Magnetic";
 
 const VARIANTS = {
   primary:
-    "bg-signal text-white border border-signal shadow-[0_10px_24px_rgb(var(--signal)/0.35)] hover:brightness-105",
+    "bg-signal text-primary-foreground border border-signal shadow-[0_10px_24px_rgb(var(--signal)/0.35)] hover:brightness-105",
   outline:
     "bg-panel text-ink border border-ink/50 hover:bg-ink hover:text-panel",
   ghost:
@@ -11,8 +11,8 @@ const VARIANTS = {
 };
 
 /**
- * Rounded pill CTA in the canvas voice. `primary` is the orange fill with a
- * white bold label (AA-large); `outline` is the ink hairline pill.
+ * Rounded pill CTA in the canvas voice. `primary` is the orange fill with an
+ * ink bold label (AA in both themes); `outline` is the ink hairline pill.
  * Magnetic lean on fine pointers via the existing Magnetic wrapper.
  */
 const PillButton = ({

@@ -111,7 +111,7 @@ const Cursor = () => {
       {/* Lagging name-tag pill (offset below-right of the hotspot) */}
       <div
         ref={tagRef}
-        className="fixed left-0 top-0 origin-top-left rounded-full bg-signal/90 px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-white"
+        className="fixed left-0 top-0 origin-top-left rounded-full bg-signal/90 px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-primary-foreground"
         style={{ marginLeft: 14, marginTop: 18 }}
       >
         <span ref={tagTextRef}>aashiq</span>

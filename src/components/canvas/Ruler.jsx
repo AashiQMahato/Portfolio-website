@@ -45,7 +45,7 @@ const Ruler = () => {
       className="pointer-events-none fixed inset-x-0 top-0 z-[70] hidden h-7 select-none items-center border-b border-line/70 bg-panel/90 backdrop-blur md:flex"
     >
       {/* scroll % chip */}
-      <span className="ml-3 mr-2 inline-flex min-w-[3.25rem] items-center justify-center rounded-md bg-signal px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-white">
+      <span className="ml-3 mr-2 inline-flex min-w-[3.25rem] items-center justify-center rounded-md bg-signal px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-primary-foreground">
         <span ref={pctRef}>0%</span>
       </span>
 
