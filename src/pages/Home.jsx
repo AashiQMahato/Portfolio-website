@@ -2,7 +2,8 @@ import { lazy, Suspense } from "react";
 import Hero from "../sections/Hero";
 import About from "../sections/About";
 import TechTicker from "../sections/TechTicker";
-import Skills from "../sections/Skills";
+import ProcessChat from "../sections/ProcessChat";
+import SkillsCanvas from "../sections/SkillsCanvas";
 import FeaturedProjects from "../sections/FeaturedProjects";
 import TestimonialsSection from "../sections/TestimonialsSection";
 import Contact from "../sections/Contact";
@@ -38,7 +39,8 @@ const Home = () => {
         <Hero />
         <About />
         <TechTicker />
-        <Skills />
+        <ProcessChat />
+        <SkillsCanvas />
         <FeaturedProjects />
         <TestimonialsSection />
         <Contact />
