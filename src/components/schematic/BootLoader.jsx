@@ -3,18 +3,12 @@ import { useGSAP } from "@gsap/react";
 import { gsap, usePrefersReducedMotion } from "../../motion";
 import { isBootActive, markBootDone } from "../../motion/bootGate";
 
-const LINES = [
-  "> aashiq.dev — boot v2.0",
-  "> modules ............ ok",
-  "> signal check ....... ok",
-  "> render :: ready",
-];
-
 /**
- * Brief boot sequence (~1.2s): mono self-test lines + a drawing hairline,
- * then a wipe. Skippable via click or any key; auto-skipped for reduced
- * motion and repeat visits this session. Content renders underneath the
- * whole time — nothing is gated on it.
+ * Quick (~0.9s) "opening portfolio.fig" intro: a cream file card with a
+ * filling progress pill on the sky ground, then a wipe. Keeps the bootGate
+ * contract (hero choreography waits for BOOT_DONE_EVENT). Skippable via
+ * click or any key; auto-skipped for reduced motion and repeat visits this
+ * session. Content renders underneath the whole time.
  */
 const BootLoader = () => {
   const ref = useRef(null);
@@ -40,17 +34,21 @@ const BootLoader = () => {
         },
       });
       tl.fromTo(
-        "[data-boot-line]",
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.01, stagger: 0.16, ease: "none" },
+        "[data-boot-card]",
+        { autoAlpha: 0, y: 14, scale: 0.96 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.3, ease: "power3.out" },
       )
         .fromTo(
           "[data-boot-bar]",
           { scaleX: 0 },
-          { scaleX: 1, duration: 0.7, ease: "power1.inOut" },
-          0,
+          { scaleX: 1, duration: 0.55, ease: "power1.inOut" },
+          0.1,
         )
-        .to(ref.current, { yPercent: -100, duration: 0.45, ease: "power3.inOut" }, 0.85);
+        .to(
+          ref.current,
+          { yPercent: -100, duration: 0.45, ease: "power3.inOut" },
+          0.75,
+        );
       tlRef.current = tl;
     },
     { dependencies: [show, reduced], scope: ref },
@@ -75,27 +73,30 @@ const BootLoader = () => {
       ref={ref}
       role="status"
       aria-label="Loading. Press any key to skip."
-      className="fixed inset-0 z-[95] flex items-center justify-center bg-background"
+      className="fixed inset-0 z-[95] flex items-center justify-center"
+      style={{
+        background:
+          "linear-gradient(to bottom, rgb(var(--sky-high)), rgb(var(--sky-low)))",
+      }}
     >
-      <div className="w-72 px-6">
-        <div className="space-y-2 font-mono text-xs leading-relaxed text-ink-dim">
-          {LINES.map((line) => (
-            <p key={line} data-boot-line className="opacity-0">
-              {line.includes("ok") || line.includes("ready") ? (
-                <>
-                  {line.split(/(ok|ready)$/)[0]}
-                  <span className="text-signal">{line.match(/(ok|ready)$/)?.[0]}</span>
-                </>
-              ) : (
-                line
-              )}
-            </p>
-          ))}
+      <div
+        data-boot-card
+        className="panel w-72 px-6 py-5 opacity-0"
+      >
+        <div className="flex items-center gap-2.5 font-mono text-xs text-ink">
+          <span className="h-2 w-2 rounded-full bg-signal" aria-hidden="true" />
+          portfolio<span className="-ml-2 text-ink-dim">.fig</span>
+          <span className="ml-auto text-[10px] uppercase tracking-[0.2em] text-ink-dim">
+            opening
+          </span>
         </div>
-        <div className="mt-6 h-px w-full bg-line">
-          <div data-boot-bar className="h-full w-full origin-left bg-signal" />
+        <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            data-boot-bar
+            className="h-full w-full origin-left rounded-full bg-signal"
+          />
         </div>
-        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim/60">
+        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink-dim/70">
           Click to skip
         </p>
       </div>

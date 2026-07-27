@@ -1,23 +1,62 @@
+import { lazy, Suspense } from "react";
 import Hero from "../sections/Hero";
 import About from "../sections/About";
-import Skills from "../sections/Skills";
+import TechTicker from "../sections/TechTicker";
+import ProcessChat from "../sections/ProcessChat";
+import SkillsCanvas from "../sections/SkillsCanvas";
 import FeaturedProjects from "../sections/FeaturedProjects";
 import TestimonialsSection from "../sections/TestimonialsSection";
+import Faq from "../sections/Faq";
 import Contact from "../sections/Contact";
 import SchematicRail from "../components/schematic/SchematicRail";
 import { HOME_SECTIONS } from "../components/schematic/Nav";
+import { FakeCursor } from "../components/canvas";
+import { useWebGLSupport } from "../scene";
+import { useMediaQuery, usePrefersReducedMotion } from "../motion";
+import { useRecruiterMode } from "../context/RecruiterModeContext";
+
+// Lazy so three.js (and the anime three adapter) live in their own async
+// chunk and never block first paint.
+const SkyScene = lazy(() => import("../scene/SkyScene"));
 
 /** The scroll-driven one-pager: hero → about → skills → work → voices → contact. */
-const Home = () => (
-  <div className="relative bg-background text-ink">
-    <SchematicRail sections={HOME_SECTIONS} />
-    <Hero />
-    <About />
-    <Skills />
-    <FeaturedProjects />
-    <TestimonialsSection />
-    <Contact />
-  </div>
-);
+const Home = () => {
+  const reduced = usePrefersReducedMotion();
+  const isWide = useMediaQuery("(min-width: 768px)");
+  const webglOk = useWebGLSupport();
+  const { isRecruiterMode } = useRecruiterMode();
+  const showSky =
+    !reduced &&
+    !isRecruiterMode &&
+    isWide &&
+    webglOk &&
+    !navigator?.connection?.saveData;
+
+  return (
+    <div className="relative text-ink">
+      {/* WebGL sky above the CssSky fallback (which RouterLayout mounts
+          globally) — same palette, so the handoff is seamless. */}
+      {showSky && (
+        <Suspense fallback={null}>
+          <SkyScene />
+        </Suspense>
+      )}
+
+      <div className="relative z-10">
+        <SchematicRail sections={HOME_SECTIONS} />
+        <Hero />
+        <About />
+        <TechTicker />
+        <ProcessChat />
+        <SkillsCanvas />
+        <FeaturedProjects />
+        <TestimonialsSection />
+        <Faq />
+        <Contact />
+        <FakeCursor />
+      </div>
+    </div>
+  );
+};
 
 export default Home;

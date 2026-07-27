@@ -3,30 +3,45 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * ── "Canvas" design tokens (RGB triplets for Tailwind alpha support) ──
+   * Light-first: :root is the DAY palette (sky + cream + orange),
+   * html.dark is the DUSK palette (night navy + cream ink).
+   *
+   * Contrast rule: raw orange (--signal) is only for large/bold display
+   * text (≥24px bold), fills behind white bold labels, borders, and
+   * decorative chrome. All SMALL orange text must use --accent-ink
+   * (darkened orange, ≥4.5:1 on cream and sky).
+   */
   :root {
-    /* Semantic theme tokens (RGB triplets for Tailwind alpha support) */
-    --background: 10 12 16; /* #0A0C10 schematic ground */
-    --foreground: 248 250 252;
-    --card: 15 23 42;
-    --card-foreground: 248 250 252;
-    --border: 30 41 59;
-    --muted: 30 41 59;
-    --muted-foreground: 203 213 225;
-    --primary: 50 139 246;
-    --primary-foreground: 248 250 252;
-    --ring: 59 130 246;
+    --background: 184 220 245; /* #B8DCF5 sky-blue canvas ground */
+    --foreground: 20 24 29; /* #14181D ink */
+    --card: 253 250 243; /* #FDFAF3 cream panels */
+    --card-foreground: 20 24 29;
+    --border: 198 207 216; /* #C6CFD8 hairlines */
+    --muted: 232 226 213; /* #E8E2D5 muted cream */
+    --muted-foreground: 68 80 92; /* #44505C */
+    --primary: 232 98 44; /* #E8622C brand orange */
+    --primary-foreground: 20 24 29; /* ink labels on orange fills (AA) */
+    --ring: 184 74 22; /* focus ring: darker orange, visible on cream */
 
-    /* Non-semantic accents (only for small highlights/gradient text) */
-    --secondary: 168 85 247;
-    --accent: 6 182 212;
+    /* Non-semantic accents */
+    --secondary: 29 78 216; /* #1D4ED8 deep blue (chat bubbles, links) */
+    --accent: 232 98 44; /* orange, same as --primary */
 
-    /* ── "Schematic" design tokens (RGB triplets) ─────────────── */
-    --panel: 17 21 28; /* #11151C surfaces */
-    --line: 35 42 53; /* #232A35 hairlines/traces */
-    --ink: 232 237 242; /* #E8EDF2 primary text */
-    --ink-dim: 138 148 166; /* #8A94A6 secondary text */
-    --signal: 83 233 197; /* #53E9C5 phosphor accent */
-    --ember: 255 180 84; /* #FFB454 rare amber emphasis */
+    /* Canvas tokens (names kept from the schematic system so every
+       text-ink / bg-panel / border-line / text-signal class recolors) */
+    --panel: 253 250 243; /* cream surfaces */
+    --line: 198 207 216; /* hairlines / dashed selection strokes */
+    --ink: 20 24 29; /* primary text */
+    --ink-dim: 68 80 92; /* secondary text (AA on sky + cream) */
+    --signal: 232 98 44; /* #E8622C the accent — large/bold/chrome only */
+    --accent-ink: 160 63 15; /* #A03F0F small orange text (AA even on sky) */
+    --ember: 29 78 216; /* deep blue rare emphasis */
+
+    /* Sky gradient stops — shared by CssSky and the WebGL scene uniforms */
+    --sky-high: 143 199 239; /* #8FC7EF */
+    --sky-low: 215 237 251; /* #D7EDFB */
 
     /* Global typography (self-hosted variable fonts) */
     --app-font-sans:
@@ -38,25 +53,31 @@
     --app-font-weight: 500;
   }
 
-  html.light {
-    --background: 241 245 249;
-    --foreground: 15 23 42;
-    --card: 255 255 255;
-    --card-foreground: 15 23 42;
-    --border: 203 213 225;
-    --muted: 226 232 240;
-    --muted-foreground: 71 85 105;
-    --primary: 37 99 235;
-    --primary-foreground: 248 250 252;
-    --ring: 37 99 235;
+  html.dark {
+    --background: 16 22 36; /* #101624 night navy */
+    --foreground: 242 237 226; /* #F2EDE2 cream ink */
+    --card: 26 34 51; /* #1A2233 */
+    --card-foreground: 242 237 226;
+    --border: 44 56 80; /* #2C3850 */
+    --muted: 34 44 66;
+    --muted-foreground: 168 176 190; /* #A8B0BE */
+    --primary: 255 122 69; /* #FF7A45 brighter orange on navy */
+    --primary-foreground: 26 20 16;
+    --ring: 255 160 122;
 
-    /* Schematic tokens — light theme (contrast-checked on light ground) */
-    --panel: 255 255 255;
-    --line: 216 222 230; /* #D8DEE6 */
-    --ink: 16 21 28; /* #10151C */
-    --ink-dim: 90 100 114; /* #5A6472 */
-    --signal: 11 122 96; /* #0B7A60 */
-    --ember: 158 90 12; /* #9E5A0C */
+    --secondary: 108 155 255; /* #6C9BFF */
+    --accent: 255 122 69;
+
+    --panel: 26 34 51;
+    --line: 44 56 80;
+    --ink: 242 237 226;
+    --ink-dim: 168 176 190;
+    --signal: 255 122 69;
+    --accent-ink: 255 160 122; /* #FFA07A small orange text on navy */
+    --ember: 108 155 255;
+
+    --sky-high: 11 16 32; /* #0B1020 */
+    --sky-low: 42 53 80; /* #2A3550 */
   }
 
   * {
@@ -66,11 +87,11 @@
   }
   html {
     scroll-behavior: smooth;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
-  html.light {
-    color-scheme: light;
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
@@ -88,26 +109,6 @@
       color 0.25s ease;
   }
 
-  html.light body {
-    background-image:
-      radial-gradient(
-        900px circle at 15% 10%,
-        rgb(var(--primary) / 0.08),
-        transparent 55%
-      ),
-      radial-gradient(
-        800px circle at 85% 20%,
-        rgb(var(--accent) / 0.07),
-        transparent 55%
-      ),
-      radial-gradient(
-        900px circle at 70% 90%,
-        rgb(var(--secondary) / 0.06),
-        transparent 60%
-      );
-    background-attachment: fixed;
-  }
-
   h1,
   h2,
   h3,
@@ -120,7 +121,7 @@
   }
 
   ::selection {
-    background-color: rgb(var(--primary) / 0.22);
+    background-color: rgb(var(--signal) / 0.28);
     color: rgb(var(--foreground));
   }
 
@@ -175,58 +176,20 @@
 }
 
 @layer components {
-  .glass {
-    background: rgb(var(--card) / 0.62);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgb(var(--border) / 0.8);
+  /* ── Canvas primitives ─────────────────────────────────────── */
+  .panel {
+    background: rgb(var(--panel));
+    border: 1px solid rgb(var(--line));
+    border-radius: 1.5rem;
     box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.04),
-      0 10px 30px rgb(0 0 0 / 0.1);
-    transition:
-      background 0.2s ease,
-      border-color 0.2s ease,
-      box-shadow 0.2s ease,
-      transform 0.2s ease;
+      0 1px 2px rgb(var(--ink) / 0.04),
+      0 12px 32px rgb(var(--ink) / 0.07);
   }
 
-  .glass-hover:hover {
-    background: rgb(var(--card) / 0.72);
-    border-color: rgb(var(--border));
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.04),
-      0 14px 38px rgb(0 0 0 / 0.12);
-  }
-
-  .glass-strong {
-    background: rgb(var(--card) / 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgb(var(--border));
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.04),
-      0 18px 50px rgb(0 0 0 / 0.14);
-  }
-
-  .gradient-text {
-    background: linear-gradient(
-      135deg,
-      rgb(var(--primary)),
-      rgb(var(--secondary)),
-      rgb(var(--accent))
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-
-  .glow-primary {
-    box-shadow: 0 10px 35px rgb(var(--primary) / 0.1);
-  }
-  .glow-secondary {
-    box-shadow: 0 10px 35px rgb(var(--secondary) / 0.1);
-  }
-  .glow-accent {
-    box-shadow: 0 10px 35px rgb(var(--accent) / 0.1);
+  .pill {
+    border-radius: 9999px;
+    background: rgb(var(--panel));
+    border: 1px solid rgb(var(--line));
   }
 
   .section-padding {
@@ -245,22 +208,95 @@
 }
 
 @layer utilities {
-  /* Blueprint grid texture (hero + section backdrops) */
-  .schematic-grid {
+  /* Figma-canvas dot grid texture (content section backdrops) */
+  .canvas-dots {
+    background-image: radial-gradient(
+      rgb(var(--ink) / 0.08) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+
+  /* ── CssSky: pure-CSS sky fallback / secondary-page background ── */
+  .cssky-cloud {
+    position: absolute;
+    left: 0;
+    width: 42vw;
+    height: 11vw;
+    min-width: 320px;
+    min-height: 90px;
+    background:
+      radial-gradient(
+        closest-side at 35% 60%,
+        rgb(255 255 255 / 0.9),
+        rgb(255 255 255 / 0) 72%
+      ),
+      radial-gradient(
+        closest-side at 65% 40%,
+        rgb(255 255 255 / 0.75),
+        rgb(255 255 255 / 0) 70%
+      );
+    filter: blur(8px);
+    animation-name: cloud-drift;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  html.dark .cssky-cloud {
+    opacity: 0.12;
+  }
+  @keyframes cloud-drift {
+    from {
+      transform: translateX(-50vw);
+    }
+    to {
+      transform: translateX(105vw);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cssky-cloud {
+      animation: none;
+      transform: translateX(10vw);
+    }
+  }
+
+  .cssky-stars {
+    opacity: 0;
+    transition: opacity 0.6s ease;
     background-image:
-      linear-gradient(rgb(var(--line) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--line) / 0.4) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(
-      ellipse 85% 75% at 55% 40%,
-      black 25%,
-      transparent 78%
-    );
-    -webkit-mask-image: radial-gradient(
-      ellipse 85% 75% at 55% 40%,
-      black 25%,
-      transparent 78%
-    );
+      radial-gradient(
+        1px 1px at 22% 28%,
+        rgb(255 255 255 / 0.9),
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 68% 12%,
+        rgb(255 255 255 / 0.7),
+        transparent 100%
+      ),
+      radial-gradient(
+        1.5px 1.5px at 45% 62%,
+        rgb(255 255 255 / 0.8),
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 85% 45%,
+        rgb(255 255 255 / 0.6),
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 10% 80%,
+        rgb(255 255 255 / 0.7),
+        transparent 100%
+      );
+    background-size:
+      260px 260px,
+      340px 340px,
+      300px 300px,
+      220px 220px,
+      380px 380px;
+  }
+  html.dark .cssky-stars {
+    opacity: 0.55;
   }
 
   .perspective-1000 {
@@ -297,6 +333,6 @@
 
 .recruiter-mode body {
   background-image: none !important;
-  background: hsl(var(--background)) !important;
+  background: rgb(var(--background)) !important;
 }
 

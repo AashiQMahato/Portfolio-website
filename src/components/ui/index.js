@@ -1,11 +1,3 @@
-export { default as Particles } from "./Particles";
-export { default as SplitText } from "./SplitText";
 export { default as RotatingText } from "./RotatingText";
-export { default as Magnet } from "./Magnet";
-export { default as TiltCard } from "./TiltCard";
 export { default as SpotlightCard } from "./SpotlightCard";
 export { default as ScrollReveal } from "./ScrollReveal";
-export { default as Marquee } from "./Marquee";
-export { default as GlassCard } from "./GlassCard";
-export { default as SectionHeader } from "./SectionHeader";
-export { default as Iridescence } from "./Iridescence";
