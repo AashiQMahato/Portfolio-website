@@ -1,18 +1,17 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import { useGSAP } from "@gsap/react";
 import {
-  gsap,
-  DUR,
-  EASE,
-  Magnetic,
+  createTimeline,
+  utils,
+  ANIME,
   usePrefersReducedMotion,
   useScrollToSection,
 } from "../motion";
 import { BOOT_DONE_EVENT, isBootActive } from "../motion/bootGate";
 import { CV } from "../data/portfolioData";
 import RotatingText from "../components/ui/RotatingText";
+import { SelectionBox, PillButton, HUDLabel, ClockBadge } from "../components/canvas";
 
 const ROLES = [
   "Electronics Engineer",
@@ -28,146 +27,185 @@ const SOCIALS = [
 ];
 
 /**
- * Typographic hero. The [data-hero-canvas] layer is reserved for the
- * Phase-5 WebGL circuit board; until then it carries the blueprint grid.
+ * Centered canvas hero over the sky scene. Entrance is an anime.js
+ * timeline (time-indexed work) held until the BootLoader releases the
+ * bootGate; reduced motion renders everything immediately.
  */
 const Hero = () => {
   const ref = useRef(null);
   const reduced = usePrefersReducedMotion();
   const scrollTo = useScrollToSection();
 
-  useGSAP(
-    () => {
-      if (reduced) return undefined;
-      // Hold the entrance until the boot overlay clears.
-      const tl = gsap.timeline({
-        defaults: { ease: EASE.out },
-        paused: isBootActive(),
-      });
-      const onBootDone = () => tl.play();
-      if (isBootActive()) {
-        window.addEventListener(BOOT_DONE_EVENT, onBootDone, { once: true });
-      }
-      tl.fromTo(
-        "[data-hero-status]",
-        { autoAlpha: 0, y: 12 },
-        { autoAlpha: 1, y: 0, duration: DUR.sm },
+  useEffect(() => {
+    if (reduced) return undefined;
+    const scope = ref.current;
+    if (!scope) return undefined;
+    const $ = (sel) => scope.querySelectorAll(sel);
+
+    // Hide everything up front (utils.set applies immediately), then build
+    // the entrance and hold it until the boot overlay clears.
+    utils.set($("[data-hero-status], [data-hero-sub], [data-hero-cta], [data-hero-cue], [data-hero-box]"), {
+      opacity: 0,
+    });
+    utils.set($("[data-hero-line]"), { translateY: "112%" });
+
+    const tl = createTimeline({
+      autoplay: false,
+      defaults: { ease: ANIME.ease.out },
+    });
+    tl.add($("[data-hero-status]"), {
+      opacity: [0, 1],
+      translateY: [12, 0],
+      duration: ANIME.dur.sm,
+    })
+      .add(
+        $("[data-hero-line]"),
+        {
+          translateY: ["112%", "0%"],
+          duration: ANIME.dur.lg,
+          delay: (el, i) => i * 120,
+        },
+        "-=200",
       )
-        .fromTo(
-          "[data-hero-line]",
-          { yPercent: 110 },
-          { yPercent: 0, duration: DUR.lg, stagger: 0.12 },
-          "-=0.2",
-        )
-        .fromTo(
-          "[data-hero-sub]",
-          { autoAlpha: 0, y: 16 },
-          { autoAlpha: 1, y: 0, duration: DUR.md, stagger: 0.1 },
-          "-=0.55",
-        )
-        .fromTo(
-          "[data-hero-cta]",
-          { autoAlpha: 0, y: 14 },
-          { autoAlpha: 1, y: 0, duration: DUR.sm, stagger: 0.08 },
-          "-=0.45",
-        )
-        .fromTo(
-          "[data-hero-cue]",
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: DUR.sm },
-          "-=0.2",
-        );
-      return () => window.removeEventListener(BOOT_DONE_EVENT, onBootDone);
-    },
-    { dependencies: [reduced], scope: ref },
-  );
+      .add(
+        $("[data-hero-sub]"),
+        {
+          opacity: [0, 1],
+          translateY: [16, 0],
+          duration: ANIME.dur.md,
+          delay: (el, i) => i * 100,
+        },
+        "-=550",
+      )
+      .add(
+        $("[data-hero-box]"),
+        { opacity: [0, 1], duration: ANIME.dur.md },
+        "-=400",
+      )
+      .add(
+        $("[data-hero-cta]"),
+        {
+          opacity: [0, 1],
+          scale: [0.9, 1],
+          duration: ANIME.dur.sm,
+          ease: ANIME.ease.pop,
+          delay: (el, i) => i * 80,
+        },
+        "-=350",
+      )
+      .add(
+        $("[data-hero-cue]"),
+        { opacity: [0, 1], duration: ANIME.dur.sm },
+        "-=150",
+      );
+
+    const play = () => tl.play();
+    if (isBootActive()) {
+      window.addEventListener(BOOT_DONE_EVENT, play, { once: true });
+    } else {
+      play();
+    }
+    return () => {
+      window.removeEventListener(BOOT_DONE_EVENT, play);
+      tl.pause();
+    };
+  }, [reduced]);
 
   return (
     <section
       ref={ref}
       id="hero"
       aria-label="Introduction"
-      className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden px-5 pt-16 md:px-10 lg:pl-28 lg:pr-16"
+      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-5 pb-24 pt-28 text-center md:px-10 md:pt-36"
     >
-      <div className="relative mx-auto w-full max-w-6xl">
-        <p
-          data-hero-status
-          className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] uppercase tracking-[0.25em] text-ink-dim md:text-xs"
+      {/* Status pill */}
+      <p
+        data-hero-status
+        className="pill mb-8 flex items-center gap-2.5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim"
+      >
+        <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+          <span className="absolute h-full w-full animate-ping rounded-full bg-signal opacity-60 motion-reduce:hidden" />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-signal" />
+        </span>
+        <span className="text-accent-ink">Open to opportunities</span>
+        <span aria-hidden="true" className="text-line">|</span>
+        Kathmandu · Remote
+      </p>
+
+      <h1 className="font-display text-display font-bold uppercase text-ink">
+        <span className="block overflow-hidden pb-[0.06em]">
+          <span data-hero-line className="block">
+            Aashiq
+          </span>
+        </span>
+        <span className="block overflow-hidden pb-[0.06em]">
+          <span data-hero-line className="block">
+            Mahato
+            <span className="text-signal">.</span>
+          </span>
+        </span>
+      </h1>
+
+      <p
+        data-hero-sub
+        className="mt-6 font-mono text-sm uppercase tracking-[0.2em] text-accent-ink md:text-base"
+      >
+        <RotatingText words={ROLES} />
+      </p>
+
+      {/* Sub-copy in a Figma selection frame */}
+      <div data-hero-box className="mt-8 max-w-2xl">
+        <SelectionBox
+          note="do not drag"
+          tone="ember"
+          className="rounded-xl px-6 py-5"
         >
-          <span className="flex items-center gap-2 text-signal">
-            <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-              <span className="absolute h-full w-full animate-ping rounded-full bg-signal opacity-60 motion-reduce:hidden" />
-              <span className="relative h-1.5 w-1.5 rounded-full bg-signal" />
-            </span>
-            Open to opportunities
-          </span>
-          <span aria-hidden="true">{"//"}</span>
-          Kathmandu · Remote
-        </p>
+          <p className="text-balance text-base leading-relaxed text-ink-dim md:text-lg">
+            Engineering the invisible, building the visible — from sensor
+            traces and microcontrollers to full-stack products your eyes
+            don&apos;t scroll past.
+          </p>
+        </SelectionBox>
+      </div>
 
-        <h1 className="font-display text-[clamp(3.25rem,11vw,8.5rem)] font-bold uppercase leading-[0.95] tracking-[-0.03em] text-ink">
-          <span className="block overflow-hidden pb-[0.05em]">
-            <span data-hero-line className="block">
-              Aashiq
-            </span>
-          </span>
-          <span className="block overflow-hidden pb-[0.05em]">
-            <span data-hero-line className="block">
-              Mahato
-              <span className="text-signal">.</span>
-            </span>
-          </span>
-        </h1>
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <span data-hero-cta>
+          <PillButton onClick={() => scrollTo("#contact")}>
+            Hire me
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </PillButton>
+        </span>
+        <span data-hero-cta>
+          <PillButton variant="outline" onClick={() => scrollTo("#work")}>
+            See the work
+            <ArrowDown className="h-4 w-4" aria-hidden="true" />
+          </PillButton>
+        </span>
+      </div>
 
-        <p
-          data-hero-sub
-          className="mt-6 font-mono text-sm uppercase tracking-[0.2em] text-signal md:text-base"
-        >
-          <RotatingText words={ROLES} />
-        </p>
+      <p data-hero-cta className="mt-8 flex items-center gap-6">
+        {SOCIALS.map((social) => (
+          <a
+            key={social.label}
+            href={social.href}
+            target={social.href.startsWith("http") ? "_blank" : undefined}
+            rel="noopener noreferrer"
+            className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim underline-offset-4 transition-colors hover:text-accent-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
+          >
+            {social.label}
+          </a>
+        ))}
+      </p>
 
-        <p data-hero-sub className="mt-5 max-w-xl text-base text-ink-dim md:text-lg">
-          Engineering the invisible, building the visible — from sensor traces
-          and microcontrollers to full-stack products in the React ecosystem.
-        </p>
-
-        <div className="mt-10 flex flex-wrap items-center gap-4">
-          <Magnetic>
-            <button
-              data-hero-cta
-              type="button"
-              onClick={() => scrollTo("#work")}
-              className="group flex h-12 items-center gap-3 border border-signal px-6 font-mono text-xs uppercase tracking-[0.2em] text-signal transition-colors hover:bg-signal hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-            >
-              View work
-              <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" aria-hidden="true" />
-            </button>
-          </Magnetic>
-          <Magnetic>
-            <Link
-              data-hero-cta
-              to="/resume"
-              className="flex h-12 items-center gap-3 border border-line px-6 font-mono text-xs uppercase tracking-[0.2em] text-ink-dim transition-colors hover:border-ink-dim hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-            >
-              Resume
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Magnetic>
-
-          <span data-hero-cta className="ml-1 flex items-center gap-5">
-            {SOCIALS.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target={social.href.startsWith("http") ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim underline-offset-4 transition-colors hover:text-signal hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-              >
-                {social.label}
-              </a>
-            ))}
-          </span>
-        </div>
+      {/* Corner HUD */}
+      <HUDLabel
+        className="absolute bottom-8 left-6 hidden text-left lg:block"
+        title="Based in Kathmandu"
+        sub="Works everywhere"
+      />
+      <div className="absolute bottom-8 right-6 hidden text-right lg:block">
+        <HUDLabel title="Open for 2026" sub="Your timezone, handled" />
+        <ClockBadge className="mt-2" pill={false} seconds={false} />
       </div>
 
       {/* Scroll cue */}
@@ -179,7 +217,7 @@ const Hero = () => {
         <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink-dim">
           Scroll
         </span>
-        <span className="block h-10 w-px overflow-hidden bg-line">
+        <span className="block h-10 w-px overflow-hidden bg-ink/20">
           <span className="block h-1/2 w-full animate-slide-down-loop bg-signal motion-reduce:hidden" />
         </span>
       </div>

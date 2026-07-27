@@ -1,134 +1,113 @@
-import PropTypes from "prop-types";
-import { CV, projects } from "../data/portfolioData";
-import SectionHeading from "../components/schematic/SectionHeading";
+import { CV, projects, techPills } from "../data/portfolioData";
 import { Reveal } from "../motion";
+import {
+  FrameLabel,
+  SelectionBox,
+  CountUp,
+  TapeLabel,
+} from "../components/canvas";
 
-const STATS = [
-  { value: String(projects.length).padStart(2, "0"), label: "Projects shipped" },
-  { value: String(CV.experience.length).padStart(2, "0"), label: "Industry roles" },
-  { value: "B.E.", label: "Electronics, Comm. & Info. Eng." },
-  { value: CV.languages.join(" · "), label: "Languages" },
+const METRICS = [
+  { value: projects.length, label: "Projects shipped", suffix: "" },
+  { value: CV.experience.length, label: "Industry roles", suffix: "" },
+  { value: techPills.length, label: "Technologies in rotation", suffix: "+" },
+  { value: 2, label: "Languages spoken", suffix: "" },
 ];
 
-const TimelineItem = ({ period, title, subtitle, bullets }) => (
-  <li data-timeline-item className="relative border-l border-line pb-9 pl-6 last:pb-0">
-    <span
-      className="absolute -left-[3.5px] top-1.5 block h-[7px] w-[7px] rounded-full border border-signal bg-background"
-      aria-hidden="true"
-    />
-    <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-signal">
-      {period}
-    </p>
-    <h4 className="mt-2 font-display text-lg font-semibold text-ink">{title}</h4>
-    <p className="mt-0.5 text-sm text-ink-dim">{subtitle}</p>
-    {bullets?.length ? (
-      <ul className="mt-3 space-y-1.5 text-sm text-ink-dim">
-        {bullets.map((bullet) => (
-          <li key={bullet} className="flex gap-2.5">
-            <span className="mt-[0.55em] block h-px w-3 shrink-0 bg-line" aria-hidden="true" />
-            {bullet}
-          </li>
-        ))}
-      </ul>
-    ) : null}
-  </li>
-);
+const CAPABILITIES = [
+  "Electronics",
+  "IoT Systems",
+  "React / Next.js",
+  "Node.js APIs",
+  "Firmware",
+  "UI Engineering",
+];
 
-TimelineItem.propTypes = {
-  period: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string,
-  bullets: PropTypes.arrayOf(PropTypes.string),
-};
-
+/**
+ * statement.txt — who this is, in one confident line, with count-up
+ * metrics and capability chips on the canvas.
+ */
 const About = () => (
   <section
     id="about"
     data-section
     aria-labelledby="about-heading"
-    className="relative px-5 py-[clamp(6rem,14vh,11rem)] md:px-10 lg:pl-28 lg:pr-16"
+    className="relative px-5 py-[clamp(6rem,14vh,11rem)] md:px-10"
   >
-    <div className="mx-auto max-w-6xl">
-      <SectionHeading
-        index="01"
-        label="About"
-        title={
-          <span id="about-heading">
-            From copper traces
-            <br />
-            to interfaces<span className="text-signal">.</span>
-          </span>
-        }
-      />
+    <div className="mx-auto max-w-5xl">
+      <Reveal>
+        <FrameLabel index="01" name="statement.txt" />
+      </Reveal>
 
-      <div className="grid gap-14 lg:grid-cols-12">
-        {/* Bio + stats */}
-        <Reveal className="lg:col-span-5" selector="[data-about-block]">
-          <p data-about-block className="text-lg leading-relaxed text-ink">
-            {CV.summary}
-          </p>
-          <p data-about-block className="mt-5 leading-relaxed text-ink-dim">
-            I started on the hardware side — sensors, microcontrollers, and the
-            physics of making things work in the real world — and grew into
-            building the software above it. The common thread is systems
-            thinking: whether it&apos;s a GSM module or a React tree, I care
-            about how the whole signal path behaves.
-          </p>
+      <Reveal selector="[data-about-line]" className="mt-8">
+        <h2
+          id="about-heading"
+          data-about-line
+          className="max-w-3xl font-display text-display-2 text-ink"
+        >
+          I make hardware and software stop talking past each other
+          <span className="text-signal">.</span>
+        </h2>
+        <p data-about-line className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-dim">
+          {CV.summary}
+        </p>
+        <p data-about-line className="mt-4 max-w-2xl leading-relaxed text-ink-dim">
+          I started on the hardware side — sensors, microcontrollers, and the
+          physics of making things work in the real world — and grew into
+          building the software above it. Whether it&apos;s a GSM module or a
+          React tree, I care about how the whole signal path behaves.
+        </p>
+        <p
+          data-about-line
+          className="mt-6 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim"
+        >
+          <span data-poi="about">Aashiq Mahato, since 2021 · {CV.contact.location}</span>
+        </p>
+      </Reveal>
 
-          <dl data-about-block className="mt-10 grid grid-cols-2 gap-px border border-line bg-line">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="bg-background p-5">
-                <dd className="font-display text-2xl font-semibold text-signal">
-                  {stat.value}
+      {/* Metrics strip */}
+      <Reveal className="mt-14">
+        <SelectionBox name="metrics" tone="accent" className="panel rounded-2xl border-solid">
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line md:grid-cols-4">
+            {METRICS.map((metric) => (
+              <div key={metric.label} className="bg-panel p-6 text-center">
+                <dd className="font-display text-4xl font-bold text-ink">
+                  <CountUp
+                    value={metric.value}
+                    suffix={metric.suffix}
+                    format={(v) => String(Math.round(v)).padStart(2, "0")}
+                  />
                 </dd>
-                <dt className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim">
-                  {stat.label}
+                <dt className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim">
+                  {metric.label}
                 </dt>
               </div>
             ))}
           </dl>
+        </SelectionBox>
+      </Reveal>
 
-          <p data-about-block className="mt-6 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim">
-            Based in {CV.contact.location}
-          </p>
-        </Reveal>
-
-        {/* Experience + education timelines */}
-        <div className="grid gap-14 sm:grid-cols-2 lg:col-span-7">
-          <Reveal as="div" selector="[data-timeline-item]">
-            <h3 className="mb-8 font-mono text-xs uppercase tracking-[0.25em] text-ink">
-              <span className="text-signal">{"//"}</span> Experience
-            </h3>
-            <ul>
-              {CV.experience.map((job) => (
-                <TimelineItem
-                  key={job.role + job.company}
-                  period={job.period}
-                  title={job.role}
-                  subtitle={`${job.company} — ${job.location}`}
-                  bullets={job.bullets}
-                />
-              ))}
-            </ul>
-          </Reveal>
-
-          <Reveal as="div" selector="[data-timeline-item]">
-            <h3 className="mb-8 font-mono text-xs uppercase tracking-[0.25em] text-ink">
-              <span className="text-signal">{"//"}</span> Education
-            </h3>
-            <ul>
-              {CV.education.map((entry) => (
-                <TimelineItem
-                  key={entry.degree}
-                  period={entry.period}
-                  title={entry.degree}
-                  subtitle={`${entry.institution} — ${entry.location}`}
-                />
-              ))}
-            </ul>
-          </Reveal>
+      {/* Capabilities */}
+      <Reveal className="mt-16" selector="[data-capability]">
+        <div className="mb-6 flex items-center gap-4">
+          <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-ink">
+            Capabilities
+          </h3>
+          <TapeLabel rotate={2}>no templates, ever</TapeLabel>
         </div>
-      </div>
+        <ul className="flex flex-wrap gap-3">
+          {CAPABILITIES.map((capability) => (
+            <li
+              key={capability}
+              data-capability
+              data-poi="capability"
+              className="pill px-5 py-2.5 font-display text-sm font-semibold text-ink transition-colors hover:border-signal"
+            >
+              {capability}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
     </div>
   </section>
 );

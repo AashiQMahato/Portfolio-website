@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import Hero from "../sections/Hero";
 import About from "../sections/About";
+import TechTicker from "../sections/TechTicker";
 import Skills from "../sections/Skills";
 import FeaturedProjects from "../sections/FeaturedProjects";
 import TestimonialsSection from "../sections/TestimonialsSection";
@@ -36,6 +37,7 @@ const Home = () => {
         <SchematicRail sections={HOME_SECTIONS} />
         <Hero />
         <About />
+        <TechTicker />
         <Skills />
         <FeaturedProjects />
         <TestimonialsSection />
