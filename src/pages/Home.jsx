@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import Hero from "../sections/Hero";
 import About from "../sections/About";
 import Skills from "../sections/Skills";
@@ -6,18 +7,42 @@ import TestimonialsSection from "../sections/TestimonialsSection";
 import Contact from "../sections/Contact";
 import SchematicRail from "../components/schematic/SchematicRail";
 import { HOME_SECTIONS } from "../components/schematic/Nav";
+import { useWebGLSupport } from "../scene";
+import { useMediaQuery, usePrefersReducedMotion } from "../motion";
+
+// Lazy so three.js (and the anime three adapter) live in their own async
+// chunk and never block first paint.
+const SkyScene = lazy(() => import("../scene/SkyScene"));
 
 /** The scroll-driven one-pager: hero → about → skills → work → voices → contact. */
-const Home = () => (
-  <div className="relative bg-background text-ink">
-    <SchematicRail sections={HOME_SECTIONS} />
-    <Hero />
-    <About />
-    <Skills />
-    <FeaturedProjects />
-    <TestimonialsSection />
-    <Contact />
-  </div>
-);
+const Home = () => {
+  const reduced = usePrefersReducedMotion();
+  const isWide = useMediaQuery("(min-width: 768px)");
+  const webglOk = useWebGLSupport();
+  const showSky =
+    !reduced && isWide && webglOk && !navigator?.connection?.saveData;
+
+  return (
+    <div className="relative text-ink">
+      {/* WebGL sky above the CssSky fallback (which RouterLayout mounts
+          globally) — same palette, so the handoff is seamless. */}
+      {showSky && (
+        <Suspense fallback={null}>
+          <SkyScene />
+        </Suspense>
+      )}
+
+      <div className="relative z-10">
+        <SchematicRail sections={HOME_SECTIONS} />
+        <Hero />
+        <About />
+        <Skills />
+        <FeaturedProjects />
+        <TestimonialsSection />
+        <Contact />
+      </div>
+    </div>
+  );
+};
 
 export default Home;

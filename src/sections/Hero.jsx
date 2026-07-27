@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { useGSAP } from "@gsap/react";
@@ -7,17 +7,12 @@ import {
   DUR,
   EASE,
   Magnetic,
-  useMediaQuery,
   usePrefersReducedMotion,
   useScrollToSection,
 } from "../motion";
 import { BOOT_DONE_EVENT, isBootActive } from "../motion/bootGate";
-import { useWebGLSupport } from "../scene";
 import { CV } from "../data/portfolioData";
 import RotatingText from "../components/ui/RotatingText";
-
-// Lazy so three.js lives in its own async chunk and never blocks first paint.
-const HeroScene = lazy(() => import("../scene/HeroScene"));
 
 const ROLES = [
   "Electronics Engineer",
@@ -40,10 +35,6 @@ const Hero = () => {
   const ref = useRef(null);
   const reduced = usePrefersReducedMotion();
   const scrollTo = useScrollToSection();
-  const isWide = useMediaQuery("(min-width: 768px)");
-  const webglOk = useWebGLSupport();
-  const showScene =
-    !reduced && isWide && webglOk && !navigator?.connection?.saveData;
 
   useGSAP(
     () => {
@@ -98,17 +89,6 @@ const Hero = () => {
       aria-label="Introduction"
       className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden px-5 pt-16 md:px-10 lg:pl-28 lg:pr-16"
     >
-      {/* WebGL layer over the blueprint grid; grid doubles as the static
-          fallback (reduced motion / no WebGL / small screens / Save-Data) */}
-      <div data-hero-canvas className="absolute inset-0" aria-hidden="true">
-        <div className="schematic-grid absolute inset-0 opacity-60" />
-        {showScene ? (
-          <Suspense fallback={null}>
-            <HeroScene />
-          </Suspense>
-        ) : null}
-      </div>
-
       <div className="relative mx-auto w-full max-w-6xl">
         <p
           data-hero-status
