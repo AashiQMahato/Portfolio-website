@@ -7,9 +7,9 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     try {
-      return localStorage.getItem("portfolio-theme") || "dark";
+      return localStorage.getItem("portfolio-theme-v2") || "light";
     } catch {
-      return "dark";
+      return "light";
     }
   });
 
@@ -29,13 +29,13 @@ export const ThemeProvider = ({ children }) => {
       const handler = (e) => applyTheme(e.matches);
       mql.addEventListener("change", handler);
       try {
-        localStorage.setItem("portfolio-theme", theme);
+        localStorage.setItem("portfolio-theme-v2", theme);
       } catch {}
       return () => mql.removeEventListener("change", handler);
     } else {
       applyTheme(theme === "dark");
       try {
-        localStorage.setItem("portfolio-theme", theme);
+        localStorage.setItem("portfolio-theme-v2", theme);
       } catch {}
     }
   }, [theme]);

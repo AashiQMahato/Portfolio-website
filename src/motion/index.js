@@ -1,5 +1,17 @@
 export { gsap, ScrollTrigger } from "./gsapSetup";
 export { EASE, DUR, STAGGER } from "./tokens";
+export {
+  animate,
+  createTimeline,
+  createTimer,
+  stagger,
+  utils,
+  engine,
+  eases,
+  svg,
+  text,
+  ANIME,
+} from "./animeSetup";
 export { default as usePrefersReducedMotion } from "./usePrefersReducedMotion";
 export { default as useMediaQuery } from "./useMediaQuery";
 export { default as SmoothScroll, useLenis } from "./SmoothScroll";

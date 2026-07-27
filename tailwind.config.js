@@ -27,6 +27,10 @@ export default {
         },
         signal: "rgb(var(--signal) / <alpha-value>)",
         ember: "rgb(var(--ember) / <alpha-value>)",
+        // Canvas tokens
+        "accent-ink": "rgb(var(--accent-ink) / <alpha-value>)",
+        "sky-high": "rgb(var(--sky-high) / <alpha-value>)",
+        "sky-low": "rgb(var(--sky-low) / <alpha-value>)",
         // Premium color palette
         primary: {
           DEFAULT: "rgb(var(--primary) / <alpha-value>)",
@@ -57,6 +61,7 @@ export default {
           950: "#3b0764",
         },
         accent: {
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
           50: "#fdf4ff",
           100: "#fae8ff",
           200: "#f5d0fe",
@@ -95,6 +100,20 @@ export default {
           900: "#0f172a",
           950: "#020617",
         },
+      },
+      fontSize: {
+        // Hero display headline ("IMPOSSIBLE TO IGNORE." scale)
+        display: [
+          "clamp(3.25rem, 10vw, 8.5rem)",
+          { lineHeight: "0.95", letterSpacing: "-0.03em", fontWeight: "700" },
+        ],
+        // Section title scale
+        "display-2": [
+          "clamp(2.25rem, 6vw, 4.5rem)",
+          { lineHeight: "1.02", letterSpacing: "-0.02em", fontWeight: "700" },
+        ],
+        // Mono HUD micro-labels
+        hud: ["0.6875rem", { lineHeight: "1.3", letterSpacing: "0.2em" }],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
