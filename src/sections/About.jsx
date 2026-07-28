@@ -61,7 +61,7 @@ const About = () => (
           data-about-line
           className="mt-6 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim"
         >
-          <span data-poi="about">Aashiq Mahato, since 2021 · {CV.contact.location}</span>
+          <span>Aashiq Mahato, since 2021 · {CV.contact.location}</span>
         </p>
       </Reveal>
 
@@ -100,7 +100,6 @@ const About = () => (
             <li
               key={capability}
               data-capability
-              data-poi="capability"
               className="pill px-5 py-2.5 font-display text-sm font-semibold text-ink transition-colors hover:border-signal"
             >
               {capability}

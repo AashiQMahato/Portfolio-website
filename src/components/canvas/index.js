@@ -5,7 +5,6 @@ export { default as HUDLabel } from "./HUDLabel";
 export { default as TapeLabel } from "./TapeLabel";
 export { default as ClockBadge } from "./ClockBadge";
 export { default as Ruler } from "./Ruler";
-export { default as FakeCursor } from "./FakeCursor";
 export { default as CountUp } from "./CountUp";
 export { default as Ticker } from "./Ticker";
 export { default as CssSky } from "./CssSky";

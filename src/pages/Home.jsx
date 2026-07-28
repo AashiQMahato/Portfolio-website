@@ -8,9 +8,8 @@ import FeaturedProjects from "../sections/FeaturedProjects";
 import TestimonialsSection from "../sections/TestimonialsSection";
 import Faq from "../sections/Faq";
 import Contact from "../sections/Contact";
-import SchematicRail from "../components/schematic/SchematicRail";
-import { HOME_SECTIONS } from "../components/schematic/Nav";
-import { FakeCursor } from "../components/canvas";
+import CanvasRail from "../components/chrome/CanvasRail";
+import { HOME_SECTIONS } from "../components/chrome/Nav";
 import { useWebGLSupport } from "../scene";
 import { useMediaQuery, usePrefersReducedMotion } from "../motion";
 import { useRecruiterMode } from "../context/RecruiterModeContext";
@@ -43,7 +42,7 @@ const Home = () => {
       )}
 
       <div className="relative z-10">
-        <SchematicRail sections={HOME_SECTIONS} />
+        <CanvasRail sections={HOME_SECTIONS} />
         <Hero />
         <About />
         <TechTicker />
@@ -53,7 +52,6 @@ const Home = () => {
         <TestimonialsSection />
         <Faq />
         <Contact />
-        <FakeCursor />
       </div>
     </div>
   );

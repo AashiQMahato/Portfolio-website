@@ -145,7 +145,7 @@ const ProcessChat = () => {
           </p>
         </Reveal>
 
-        <div className="panel mt-12 overflow-hidden rounded-3xl" data-poi="process">
+        <div className="panel mt-12 overflow-hidden rounded-3xl">
           {/* Channel header */}
           <div className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-4">
             <span className="font-mono text-sm font-bold text-ink">

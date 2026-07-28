@@ -45,7 +45,6 @@ const ProjectRow = ({ project, index }) => {
             aria-label={`${project.title} case study`}
             tabIndex={-1}
             data-cursor="view"
-            data-poi="work"
             className="relative block overflow-hidden rounded-xl"
           >
             <span data-project-img className="relative block aspect-video">

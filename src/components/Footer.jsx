@@ -181,7 +181,7 @@ const Footer = () => {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60 motion-reduce:hidden" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
               </span>
-              2 cursors online
+              1 cursor online
             </p>
             <button
               type="button"

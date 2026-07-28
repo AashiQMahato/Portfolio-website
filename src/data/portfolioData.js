@@ -1,3 +1,4 @@
+import AAMS from "../assets/AAMS.png";
 const DEVICON = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 export const TECH_ICONS = {
@@ -319,11 +320,8 @@ export const projects = [
         improvement: "Eliminated",
       },
     ],
-    gallery: [
-      "https://github.com/AashiQMahato/Automated_Attendance_Management_System/raw/main/screenshots/dash.png",
-    ],
-    image:
-      "https://github.com/AashiQMahato/Automated_Attendance_Management_System/raw/main/screenshots/dash.png",
+    gallery: [AAMS],
+    image: AAMS,
     tags: ["Python", "Face Recognition", "React", "MongoDB"],
     features: [
       "Real-time webcam-based attendance capture",
@@ -732,54 +730,6 @@ export const skillCategories = [
   },
 ];
 
-export const radarData = [
-  {
-    category: "Frontend",
-    skills: [
-      { name: "React", level: 95 },
-      { name: "HTML/CSS", level: 90 },
-      { name: "Tailwind", level: 88 },
-      { name: "Framer Motion", level: 85 },
-    ],
-  },
-  {
-    category: "Backend",
-    skills: [
-      { name: "Node.js", level: 88 },
-      { name: "Express", level: 85 },
-      { name: "MongoDB", level: 80 },
-      { name: "REST APIs", level: 90 },
-    ],
-  },
-  {
-    category: "Hardware",
-    skills: [
-      { name: "Arduino", level: 92 },
-      { name: "RPi", level: 85 },
-      { name: "PCB", level: 78 },
-      { name: "IoT", level: 75 },
-    ],
-  },
-  {
-    category: "Tools",
-    skills: [
-      { name: "Git", level: 88 },
-      { name: "VS Code", level: 95 },
-      { name: "Linux", level: 80 },
-      { name: "Docker", level: 70 },
-    ],
-  },
-  {
-    category: "Languages",
-    skills: [
-      { name: "JavaScript", level: 90 },
-      { name: "Python", level: 85 },
-      { name: "C/C++", level: 82 },
-      { name: "TypeScript", level: 75 },
-    ],
-  },
-];
-
 export const techPills = [
   "React",
   "Python",
@@ -804,18 +754,6 @@ export const siteConfig = {
   statusColor: "bg-primary",
   availability: "Open to opportunities",
 };
-
-export const navItems = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Skills", path: "/skills" },
-  { label: "Projects", path: "/projects" },
-  { label: "Education", path: "/education" },
-  { label: "Contact", path: "/contactus" },
-  { label: "Dashboard", path: "/developer-dashboard" },
-  { label: "Blog", path: "/blog" },
-  { label: "Now", path: "/now" },
-];
 
 export const nowPageData = {
   currentFocus:

@@ -26,7 +26,6 @@ const ReviewCard = ({ testimonial, index }) => (
   >
     <figure
       data-review-card
-      data-poi="review"
       className="p-6"
       style={{ transform: `rotate(${ROTATIONS[index % ROTATIONS.length]}deg)` }}
     >

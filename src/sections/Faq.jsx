@@ -38,7 +38,6 @@ const Faq = () => {
               <div
                 key={item.file}
                 data-faq-row
-                data-poi="faq"
                 className={`panel rounded-2xl transition-colors ${
                   isOpen ? "border-signal/60" : ""
                 }`}

@@ -9,11 +9,11 @@ import {
 } from "../../motion";
 
 /**
- * The schematic "main bus": a fixed hairline down the left margin whose
- * phosphor fill draws with scroll progress. Section indices act as both
+ * The canvas "layers panel": a fixed hairline down the left margin whose
+ * orange fill draws with scroll progress. Section indices act as both
  * wayfinding and shortcuts. Desktop only.
  */
-const SchematicRail = ({ sections }) => {
+const CanvasRail = ({ sections }) => {
   const fillRef = useRef(null);
   const reduced = usePrefersReducedMotion();
   const active = useActiveSection(sections.map((s) => s.id));
@@ -67,8 +67,8 @@ const SchematicRail = ({ sections }) => {
                 onClick={() => scrollTo(`#${section.id}`)}
                 aria-label={`Go to ${section.label}`}
                 aria-current={isActive ? "true" : undefined}
-                className={`group flex flex-col items-center gap-1 bg-background px-1 py-2 font-mono text-[10px] tracking-[0.2em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 ${
-                  isActive ? "text-signal" : "text-ink-dim hover:text-ink"
+                className={`group flex flex-col items-center gap-1 rounded-full bg-panel px-1.5 py-2 font-mono text-[10px] tracking-[0.2em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 ${
+                  isActive ? "text-accent-ink" : "text-ink-dim hover:text-ink"
                 }`}
               >
                 <span
@@ -87,7 +87,7 @@ const SchematicRail = ({ sections }) => {
   );
 };
 
-SchematicRail.propTypes = {
+CanvasRail.propTypes = {
   sections: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -96,4 +96,4 @@ SchematicRail.propTypes = {
   ).isRequired,
 };
 
-export default SchematicRail;
+export default CanvasRail;

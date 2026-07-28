@@ -1,11 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { ActiveContextProvider } from "../contextState";
 import { ThemeProvider } from "../context/ThemeContext";
 import { RecruiterModeProvider } from "../context/RecruiterModeContext";
-import Nav from "./schematic/Nav";
-import Cursor from "./schematic/Cursor";
-import BootLoader from "./schematic/BootLoader";
+import Nav from "./chrome/Nav";
+import Cursor from "./chrome/Cursor";
+import BootLoader from "./chrome/BootLoader";
 import Footer from "./Footer";
 import { CssSky, Ruler } from "./canvas";
 import { SmoothScroll, ScrollManager } from "../motion";
@@ -38,8 +37,7 @@ const RouterLayout = () => {
   return (
     <ThemeProvider>
       <RecruiterModeProvider>
-        <ActiveContextProvider>
-          <SmoothScroll>
+        <SmoothScroll>
           <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300">
             {/* Skip link — first focusable element on the page */}
             <a
@@ -79,8 +77,7 @@ const RouterLayout = () => {
             <BootLoader />
             <Cursor />
           </div>
-          </SmoothScroll>
-        </ActiveContextProvider>
+        </SmoothScroll>
       </RecruiterModeProvider>
     </ThemeProvider>
   );

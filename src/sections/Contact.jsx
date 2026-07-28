@@ -124,7 +124,7 @@ const Contact = () => {
         <div className="mt-14 grid gap-12 lg:grid-cols-12">
           {/* Channel card */}
           <Reveal className="lg:col-span-5">
-            <div className="panel overflow-hidden rounded-3xl" data-poi="contact">
+            <div className="panel overflow-hidden rounded-3xl">
               <div className="flex items-center gap-2 border-b border-line px-5 py-3.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-signal" aria-hidden="true" />
                 <span className="h-2.5 w-2.5 rounded-full bg-ember" aria-hidden="true" />

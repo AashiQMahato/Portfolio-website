@@ -190,7 +190,7 @@ const MarkdownMessage = ({ content, isDark }) => {
                       lineHeight: "1.6",
                     }}
                     codeTagProps={{
-                      style: { fontFamily: "var(--font-mono, monospace)" },
+                      style: { fontFamily: "var(--app-font-mono, monospace)" },
                     }}
                     {...props}>
                     {codeText}
