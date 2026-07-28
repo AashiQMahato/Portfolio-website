@@ -1,0 +1,21 @@
+/* Self-hosted variable fonts — Geist Sans + Geist Mono (Vercel).
+   Files vendored from the "geist" npm package into src/assets/fonts
+   since that package only ships next/font/local wrappers, not a
+   framework-agnostic CSS entry. One family, two optical roles: Geist
+   for display/body copy, Geist Mono for HUD labels and code. */
+
+@font-face {
+  font-family: "Geist Variable";
+  src: url("./assets/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono Variable";
+  src: url("./assets/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

@@ -43,13 +43,12 @@
     --sky-high: 143 199 239; /* #8FC7EF */
     --sky-low: 215 237 251; /* #D7EDFB */
 
-    /* Global typography (self-hosted variable fonts) */
+    /* Global typography — one family, two optical roles (self-hosted) */
     --app-font-sans:
-      "Space Grotesk Variable", "Space Grotesk", system-ui, -apple-system,
-      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      "Geist Variable", system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
     --app-font-mono:
-      "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", ui-monospace,
-      SFMono-Regular, Menlo, monospace;
+      "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
     --app-font-weight: 500;
   }
 

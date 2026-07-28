@@ -229,7 +229,7 @@ const Terminal = () => {
       case "boot":
         return "text-cyan-400/80";
       default:
-        return "text-foreground/80";
+        return "text-white/80";
     }
   };
 
@@ -301,7 +301,7 @@ const Terminal = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isBooting}
-            className="flex-1 bg-transparent font-mono text-xs text-foreground/90 outline-none caret-primary"
+            className="flex-1 bg-transparent font-mono text-xs text-white/90 outline-none caret-primary"
             autoComplete="off"
             spellCheck={false}
             aria-label="Terminal input"
