@@ -1,16 +1,33 @@
 import { useEffect, useRef } from "react";
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import PropTypes from "prop-types";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Cpu,
+  Github,
+  Linkedin,
+  Mail,
+  Rocket,
+  Zap,
+} from "lucide-react";
 import {
   createTimeline,
+  stagger,
   utils,
   ANIME,
   usePrefersReducedMotion,
   useScrollToSection,
 } from "../motion";
 import { BOOT_DONE_EVENT, isBootActive } from "../motion/bootGate";
-import { CV } from "../data/portfolioData";
+import { CV, projects, techPills } from "../data/portfolioData";
 import RotatingText from "../components/ui/RotatingText";
-import { SelectionBox, PillButton, HUDLabel, ClockBadge } from "../components/canvas";
+import {
+  SelectionBox,
+  PillButton,
+  HUDLabel,
+  ClockBadge,
+  CountUp,
+} from "../components/canvas";
 
 const ROLES = [
   "Electronics Engineer",
@@ -20,10 +37,35 @@ const ROLES = [
 ];
 
 const SOCIALS = [
-  { label: "GitHub", href: CV.contact.github },
-  { label: "LinkedIn", href: CV.contact.linkedin },
-  { label: "Email", href: `mailto:${CV.contact.email}` },
+  { label: "GitHub", href: CV.contact.github, Icon: Github },
+  { label: "LinkedIn", href: CV.contact.linkedin, Icon: Linkedin },
+  { label: "Email", href: `mailto:${CV.contact.email}`, Icon: Mail },
 ];
+
+const STATS = [
+  { value: projects.length, suffix: "", label: "Projects", Icon: Rocket },
+  { value: techPills.length, suffix: "+", label: "Technologies", Icon: Cpu },
+  { value: 24, suffix: "h", label: "Response time", Icon: Zap },
+];
+
+/** One name line split into per-letter spans for the stagger entrance. */
+const NameLine = ({ text }) => (
+  <span className="block overflow-hidden pb-[0.06em]" aria-hidden="true">
+    {text.split("").map((ch, i) => (
+      <span
+        key={i}
+        data-hero-letter
+        className={`inline-block ${ch === "." ? "text-signal" : ""}`}
+      >
+        {ch}
+      </span>
+    ))}
+  </span>
+);
+
+NameLine.propTypes = {
+  text: PropTypes.string.isRequired,
+};
 
 /**
  * Centered canvas hero over the sky scene. Entrance is an anime.js
@@ -43,10 +85,13 @@ const Hero = () => {
 
     // Hide everything up front (utils.set applies immediately), then build
     // the entrance and hold it until the boot overlay clears.
-    utils.set($("[data-hero-status], [data-hero-sub], [data-hero-cta], [data-hero-cue], [data-hero-box]"), {
-      opacity: 0,
-    });
-    utils.set($("[data-hero-line]"), { translateY: "112%" });
+    utils.set(
+      $(
+        "[data-hero-status], [data-hero-sub], [data-hero-box], [data-hero-stat], [data-hero-cta], [data-hero-cue]",
+      ),
+      { opacity: 0 },
+    );
+    utils.set($("[data-hero-letter]"), { translateY: "115%", rotate: 8 });
 
     const tl = createTimeline({
       autoplay: false,
@@ -58,11 +103,12 @@ const Hero = () => {
       duration: ANIME.dur.sm,
     })
       .add(
-        $("[data-hero-line]"),
+        $("[data-hero-letter]"),
         {
-          translateY: ["112%", "0%"],
+          translateY: ["115%", "0%"],
+          rotate: [8, 0],
           duration: ANIME.dur.lg,
-          delay: (el, i) => i * 120,
+          delay: stagger(45),
         },
         "-=200",
       )
@@ -72,7 +118,6 @@ const Hero = () => {
           opacity: [0, 1],
           translateY: [16, 0],
           duration: ANIME.dur.md,
-          delay: (el, i) => i * 100,
         },
         "-=550",
       )
@@ -82,15 +127,27 @@ const Hero = () => {
         "-=400",
       )
       .add(
+        $("[data-hero-stat]"),
+        {
+          opacity: [0, 1],
+          translateY: [14, 0],
+          scale: [0.92, 1],
+          duration: ANIME.dur.sm,
+          ease: ANIME.ease.pop,
+          delay: stagger(90),
+        },
+        "-=350",
+      )
+      .add(
         $("[data-hero-cta]"),
         {
           opacity: [0, 1],
           scale: [0.9, 1],
           duration: ANIME.dur.sm,
           ease: ANIME.ease.pop,
-          delay: (el, i) => i * 80,
+          delay: stagger(80),
         },
-        "-=350",
+        "-=250",
       )
       .add(
         $("[data-hero-cue]"),
@@ -131,18 +188,12 @@ const Hero = () => {
         Kathmandu · Remote
       </p>
 
-      <h1 className="font-display text-display font-bold uppercase text-ink">
-        <span className="block overflow-hidden pb-[0.06em]">
-          <span data-hero-line className="block">
-            Aashiq
-          </span>
-        </span>
-        <span className="block overflow-hidden pb-[0.06em]">
-          <span data-hero-line className="block">
-            Mahato
-            <span className="text-signal">.</span>
-          </span>
-        </span>
+      <h1
+        aria-label="Aashiq Mahato"
+        className="font-display text-display font-bold uppercase text-ink"
+      >
+        <NameLine text="Aashiq" />
+        <NameLine text="Mahato." />
       </h1>
 
       <p
@@ -167,6 +218,29 @@ const Hero = () => {
         </SelectionBox>
       </div>
 
+      {/* Quick stats */}
+      <ul className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        {STATS.map(({ value, suffix, label, Icon }) => (
+          <li
+            key={label}
+            data-hero-stat
+            className="pill flex items-center gap-2.5 px-4 py-2"
+          >
+            <Icon className="h-4 w-4 text-accent-ink" aria-hidden="true" />
+            <span className="font-display text-lg font-bold text-ink">
+              <CountUp
+                value={value}
+                suffix={suffix}
+                format={(v) => String(Math.round(v)).padStart(2, "0")}
+              />
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-dim">
+              {label}
+            </span>
+          </li>
+        ))}
+      </ul>
+
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         <span data-hero-cta>
           <PillButton onClick={() => scrollTo("#contact")}>
@@ -183,15 +257,16 @@ const Hero = () => {
       </div>
 
       <p data-hero-cta className="mt-8 flex items-center gap-6">
-        {SOCIALS.map((social) => (
+        {SOCIALS.map(({ label, href, Icon }) => (
           <a
-            key={social.label}
-            href={social.href}
-            target={social.href.startsWith("http") ? "_blank" : undefined}
+            key={label}
+            href={href}
+            target={href.startsWith("http") ? "_blank" : undefined}
             rel="noopener noreferrer"
-            className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim underline-offset-4 transition-colors hover:text-accent-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
+            className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-dim underline-offset-4 transition-colors hover:text-accent-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
           >
-            {social.label}
+            <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+            {label}
           </a>
         ))}
       </p>

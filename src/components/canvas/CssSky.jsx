@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 
 const CLOUDS = [
-  { top: "10%", duration: "110s", delay: "-20s", scale: 1 },
-  { top: "26%", duration: "150s", delay: "-70s", scale: 0.7 },
-  { top: "55%", duration: "130s", delay: "-45s", scale: 1.2 },
-  { top: "78%", duration: "170s", delay: "-100s", scale: 0.85 },
+  { top: "10%", duration: "75s", delay: "-20s", scale: 1 },
+  { top: "26%", duration: "100s", delay: "-70s", scale: 0.7 },
+  { top: "55%", duration: "85s", delay: "-45s", scale: 1.2 },
+  { top: "78%", duration: "115s", delay: "-100s", scale: 0.85 },
 ];
 
 /**

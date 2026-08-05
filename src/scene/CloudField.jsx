@@ -31,7 +31,7 @@ const CloudField = ({ registerMaterial }) => {
           scale,
           y: -3 + Math.random() * 7 + (z === -14 ? 1.5 : 0),
           opacity: 0.5 + Math.random() * 0.4,
-          duration: 60000 + Math.random() * 60000,
+          duration: 38000 + Math.random() * 42000,
         };
       }),
     [],

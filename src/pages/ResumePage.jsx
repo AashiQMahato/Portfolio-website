@@ -18,22 +18,25 @@ const ResumePage = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-background">
-      {/* Non-print controls */}
-      <div className="print:hidden sticky top-0 z-50 bg-background/80 backdrop-blur border-b border-border py-4 px-6 flex flex-wrap gap-3 justify-between items-center shadow-sm">
-        <h1 className="text-xl font-bold font-display">Resume</h1>
-        <div className="flex items-center gap-3">
-          <a
-            href="/AashikKumarMahatoResume.pdf"
-            download="Aashik_Kumar_Mahato_Resume.pdf"
-            className="flex items-center gap-2 px-5 py-2 rounded-xl border border-border bg-card/60 font-semibold hover:border-primary/40 transition-colors focus-visible:ring-2 focus-visible:ring-ring/50">
-            <FileText className="w-4 h-4" /> Original PDF
-          </a>
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity focus-visible:ring-2 focus-visible:ring-ring/50">
-            <Download className="w-4 h-4" /> Print / Save
-          </button>
+    <div className="relative min-h-screen bg-background pt-16 print:pt-0 md:pt-24">
+      {/* Non-print controls — sticky BELOW the floating nav pill
+          (nav bottom ≈4rem on mobile, ≈6rem on md with the ruler) */}
+      <div className="print:hidden sticky top-16 z-40 px-3 pt-2 md:top-24 md:px-6">
+        <div className="mx-auto flex max-w-[850px] flex-col gap-3 rounded-2xl border border-line bg-panel/90 px-4 py-3 shadow-soft backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <h1 className="font-display text-lg font-bold text-ink">Resume</h1>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <a
+              href="/AashikKumarMahatoResume.pdf"
+              download="Aashik_Kumar_Mahato_Resume.pdf"
+              className="flex items-center justify-center gap-2 rounded-full border border-ink/50 bg-panel px-5 py-2 font-display text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70">
+              <FileText className="h-4 w-4" aria-hidden="true" /> Original PDF
+            </a>
+            <button
+              onClick={handlePrint}
+              className="flex items-center justify-center gap-2 rounded-full bg-signal px-5 py-2 font-display text-sm font-bold text-primary-foreground transition-[filter] hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel">
+              <Download className="h-4 w-4" aria-hidden="true" /> Print / Save
+            </button>
+          </div>
         </div>
       </div>
 
