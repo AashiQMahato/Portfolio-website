@@ -8,8 +8,6 @@ import FeaturedProjects from "../sections/FeaturedProjects";
 import TestimonialsSection from "../sections/TestimonialsSection";
 import Faq from "../sections/Faq";
 import Contact from "../sections/Contact";
-import CanvasRail from "../components/chrome/CanvasRail";
-import { HOME_SECTIONS } from "../components/chrome/Nav";
 import { useWebGLSupport } from "../scene";
 import { useMediaQuery, usePrefersReducedMotion } from "../motion";
 import { useRecruiterMode } from "../context/RecruiterModeContext";
@@ -42,7 +40,6 @@ const Home = () => {
       )}
 
       <div className="relative z-10">
-        <CanvasRail sections={HOME_SECTIONS} />
         <Hero />
         <About />
         <TechTicker />

@@ -14,7 +14,7 @@ const NowPage = () => {
 
       <div className="relative z-10 mx-auto max-w-4xl section-padding pt-28">
         <ScrollReveal className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-primary">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-accent-ink">
             <Compass className="w-4 h-4" />
             What I'm doing now
           </div>
@@ -48,13 +48,13 @@ const NowPage = () => {
           <ScrollReveal delay={0.2}>
             <div className="h-full p-8 rounded-3xl border border-border bg-card/20 hover:bg-card/40 transition-colors">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 border border-primary/20">
-                <Zap className="w-6 h-6 text-primary" />
+                <Zap className="w-6 h-6 text-accent-ink" />
               </div>
               <h3 className="text-xl font-bold mb-4">Learning</h3>
               <ul className="space-y-3">
                 {nowPageData.learning.map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-muted-foreground">
-                    <ArrowRight className="w-4 h-4 text-primary shrink-0 mt-1" />
+                    <ArrowRight className="w-4 h-4 text-accent-ink shrink-0 mt-1" />
                     <span>{item}</span>
                   </li>
                 ))}

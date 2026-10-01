@@ -82,14 +82,14 @@ const TestimonialsSection = () => {
     () => {
       if (reduced) return;
       const cards = ref.current.querySelectorAll("[data-review-frame]");
-      gsap.set(cards, { autoAlpha: 0 });
+      gsap.set(cards, { opacity: 0 });
       gsap.timeline({
         scrollTrigger: {
           trigger: "[data-review-grid]",
           start: "top 78%",
           once: true,
           onEnter: () => {
-            gsap.set(cards, { autoAlpha: 1 });
+            gsap.set(cards, { opacity: 1 });
             animate(cards, {
               opacity: [0, 1],
               translateY: [42, 0],

@@ -1,4 +1,4 @@
-import AAMS from "../assets/AAMS.png";
+import AAMS from "../assets/AAMS.jpg";
 const DEVICON = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 export const TECH_ICONS = {

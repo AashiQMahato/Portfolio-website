@@ -32,9 +32,9 @@ const Reveal = ({
       if (!targets || targets.length === 0) return;
       gsap.fromTo(
         targets,
-        { autoAlpha: 0, y },
+        { opacity: 0, y },
         {
-          autoAlpha: 1,
+          opacity: 1,
           y: 0,
           duration: DUR.md,
           ease: EASE.out,

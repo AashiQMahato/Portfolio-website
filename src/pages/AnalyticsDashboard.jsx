@@ -34,7 +34,7 @@ const AnalyticsDashboard = () => {
         <ScrollReveal className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-border pb-8">
           <div>
             <h1 className="text-3xl font-bold font-display flex items-center gap-3">
-              <TrendingUp className="w-8 h-8 text-primary" /> Analytics
+              <TrendingUp className="w-8 h-8 text-accent-ink" /> Analytics
             </h1>
             <p className="text-muted-foreground mt-2">Portfolio traffic and engagement metrics</p>
           </div>
@@ -55,7 +55,7 @@ const AnalyticsDashboard = () => {
             ].map((stat, i) => (
               <div key={i} className="p-6 rounded-2xl border border-border bg-card/40 hover:bg-card/60 transition-colors">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                  <div className="p-2.5 rounded-xl bg-primary/10 text-accent-ink">
                     <stat.icon className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">{stat.change}</span>

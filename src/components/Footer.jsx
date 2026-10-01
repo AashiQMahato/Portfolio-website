@@ -160,12 +160,12 @@ const Footer = () => {
           {/* Giant letter-by-letter wordmark */}
           <p
             ref={wordmarkRef}
-            aria-label={WORDMARK}
+            aria-hidden="true"
             className="mt-14 select-none whitespace-nowrap text-center font-display font-bold leading-none tracking-tight text-ink/90"
             style={{ fontSize: "clamp(2.5rem, 9.5vw, 8rem)" }}
           >
             {WORDMARK.split("").map((ch, i) => (
-              <span key={i} aria-hidden="true" data-footer-letter className="inline-block">
+              <span key={i} data-footer-letter className="inline-block">
                 {ch}
               </span>
             ))}
