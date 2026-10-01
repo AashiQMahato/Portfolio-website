@@ -99,14 +99,14 @@ const ProcessChat = () => {
     () => {
       if (reduced) return;
       gsap.utils.toArray("[data-chat-msg], [data-chat-step]").forEach((el) => {
-        gsap.set(el, { autoAlpha: 0 });
+        gsap.set(el, { opacity: 0 });
         gsap.timeline({
           scrollTrigger: {
             trigger: el,
             start: "top 88%",
             once: true,
             onEnter: () => {
-              gsap.set(el, { autoAlpha: 1 });
+              gsap.set(el, { opacity: 1 });
               animate(el, {
                 opacity: [0, 1],
                 translateY: [18, 0],

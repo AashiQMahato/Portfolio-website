@@ -1,21 +1,76 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aashiq Mahato | Electronics Engineer & Full Stack Developer</title>
-    <meta name="description" content="Professional portfolio of Aashiq Mahato - Electronics Engineer and Full Stack Developer specializing in IoT, embedded systems, and modern web technologies." />
-    <meta name="keywords" content="Aashiq Mahato, web developer, portfolio, full stack developer, electronics engineer, IoT, embedded systems, React, JavaScript, Arduino" />
-    <meta name="author" content="Aashiq Mahato" />
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#B8DCF5" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <!-- seo:start — rewritten per route by scripts/seo-pages.mjs at build time -->
+    <title>Aashik Kumar Mahato — Electronics Engineer &amp; Full-Stack Developer</title>
+    <meta name="description" content="Aashik Kumar Mahato is an Electronics Engineer and Full-Stack Developer in Kathmandu, Nepal, building React and Next.js web apps, IoT systems, and embedded hardware." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://www.aashikkumarmahato.com.np/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Aashiq Mahato | Electronics Engineer & Full Stack Developer" />
-    <meta property="og:description" content="Professional portfolio of Aashiq Mahato - Electronics Engineer and Full Stack Developer." />
+    <meta property="og:title" content="Aashik Kumar Mahato — Electronics Engineer &amp; Full-Stack Developer" />
+    <meta property="og:description" content="Aashik Kumar Mahato is an Electronics Engineer and Full-Stack Developer in Kathmandu, Nepal, building React and Next.js web apps, IoT systems, and embedded hardware." />
+    <meta property="og:url" content="https://www.aashikkumarmahato.com.np/" />
+    <meta property="og:image" content="https://www.aashikkumarmahato.com.np/og-image.png" />
+    <meta property="og:image:alt" content="Aashik Kumar Mahato — Electronics Engineer &amp; Full-Stack Developer" />
+    <meta name="twitter:title" content="Aashik Kumar Mahato — Electronics Engineer &amp; Full-Stack Developer" />
+    <meta name="twitter:description" content="Aashik Kumar Mahato is an Electronics Engineer and Full-Stack Developer in Kathmandu, Nepal, building React and Next.js web apps, IoT systems, and embedded hardware." />
+    <meta name="twitter:image" content="https://www.aashikkumarmahato.com.np/og-image.png" />
+    <!-- seo:end -->
+
+    <meta property="og:site_name" content="Aashik Kumar Mahato" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="author" content="Aashik Kumar Mahato" />
+    <meta name="application-name" content="Aashik Mahato" />
+    <meta name="apple-mobile-web-app-title" content="Aashik Mahato" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Theme: matches the canvas ground in each palette -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#B8DCF5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101624" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- Apply the saved theme before first paint: no light→dark flash -->
+    <script>
+      try {
+        var t = localStorage.getItem("portfolio-theme-v2") || "light";
+        var d = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.add(d ? "dark" : "light");
+        document.documentElement.style.colorScheme = d ? "dark" : "light";
+      } catch (e) {}
+    </script>
+
+    <!-- seo:jsonld -->
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./src/main.jsx"></script>
+    <noscript>
+      <main style="max-width:40rem;margin:4rem auto;padding:0 1rem;font-family:system-ui,sans-serif;line-height:1.6">
+        <h1>Aashik Kumar Mahato</h1>
+        <p>Electronics Engineer &amp; Full-Stack Developer in Kathmandu, Nepal. I build React and Next.js web apps, IoT systems, and embedded hardware.</p>
+        <ul>
+          <li><a href="/projects">Projects</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/resume">Résumé</a></li>
+          <li><a href="/AashikKumarMahatoResume.pdf">Download CV (PDF)</a></li>
+          <li><a href="https://github.com/AashiQMahato">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/">LinkedIn</a></li>
+          <li><a href="mailto:aashikkrmahatoo@gmail.com">aashikkrmahatoo@gmail.com</a></li>
+        </ul>
+      </main>
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

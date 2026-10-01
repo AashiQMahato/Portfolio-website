@@ -23,7 +23,7 @@ const ResumePage = () => {
           (nav bottom ≈4rem on mobile, ≈6rem on md with the ruler) */}
       <div className="print:hidden sticky top-16 z-40 px-3 pt-2 md:top-24 md:px-6">
         <div className="mx-auto flex max-w-[850px] flex-col gap-3 rounded-2xl border border-line bg-panel/90 px-4 py-3 shadow-soft backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <h1 className="font-display text-lg font-bold text-ink">Resume</h1>
+          <p className="font-display text-lg font-bold text-ink">Résumé</p>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
             <a
               href="/AashikKumarMahatoResume.pdf"
@@ -48,7 +48,7 @@ const ResumePage = () => {
             <h1 className="text-4xl sm:text-5xl font-black font-display text-gray-900 uppercase tracking-tight mb-3">
               {CV.name}
             </h1>
-            <div className="text-lg sm:text-xl text-primary font-bold mb-4">
+            <div className="text-lg sm:text-xl text-accent-ink font-bold mb-4">
               {CV.title}
             </div>
 
@@ -64,12 +64,12 @@ const ResumePage = () => {
               </span>
               <a
                 href={CV.contact.github}
-                className="flex items-center gap-1.5 hover:text-primary">
+                className="flex items-center gap-1.5 hover:text-accent-ink">
                 <Github className="w-4 h-4" /> github.com/AashiQMahato
               </a>
               <a
                 href={CV.contact.linkedin}
-                className="flex items-center gap-1.5 hover:text-primary">
+                className="flex items-center gap-1.5 hover:text-accent-ink">
                 <Linkedin className="w-4 h-4" /> LinkedIn
               </a>
             </div>
@@ -88,7 +88,7 @@ const ResumePage = () => {
               {/* Experience */}
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-wider text-gray-900 border-b border-gray-300 pb-2 mb-4">
-                  <Briefcase className="w-5 h-5 text-primary" /> Experience
+                  <Briefcase className="w-5 h-5 text-accent-ink" /> Experience
                 </h2>
                 <div className="space-y-6">
                   {CV.experience.map((exp, i) => (
@@ -101,7 +101,7 @@ const ResumePage = () => {
                           {exp.period}
                         </span>
                       </div>
-                      <div className="text-primary font-semibold text-sm mb-2">
+                      <div className="text-accent-ink font-semibold text-sm mb-2">
                         {exp.company} | {exp.location}
                       </div>
                       <ul className="list-disc pl-5 text-gray-700 space-y-1 text-sm leading-relaxed">
@@ -117,7 +117,7 @@ const ResumePage = () => {
               {/* Projects */}
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-wider text-gray-900 border-b border-gray-300 pb-2 mb-4">
-                  <Code className="w-5 h-5 text-primary" /> Projects
+                  <Code className="w-5 h-5 text-accent-ink" /> Projects
                 </h2>
                 <div className="space-y-6">
                   {CV.projects.map((proj, i) => (
@@ -128,7 +128,7 @@ const ResumePage = () => {
                         </h3>
                         <a
                           href={proj.url}
-                          className="text-xs text-primary font-mono truncate max-w-[200px] hover:underline">
+                          className="text-xs text-accent-ink font-mono truncate max-w-[200px] hover:underline">
                           Link
                         </a>
                       </div>
@@ -151,7 +151,7 @@ const ResumePage = () => {
               {/* Education */}
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-wider text-gray-900 border-b border-gray-300 pb-2 mb-4">
-                  <GraduationCap className="w-5 h-5 text-primary" /> Education
+                  <GraduationCap className="w-5 h-5 text-accent-ink" /> Education
                 </h2>
                 <div className="space-y-5">
                   {CV.education.map((edu, i) => (
@@ -159,7 +159,7 @@ const ResumePage = () => {
                       <h3 className="font-bold text-gray-900 text-sm leading-snug">
                         {edu.degree}
                       </h3>
-                      <div className="text-primary text-xs font-semibold my-1">
+                      <div className="text-accent-ink text-xs font-semibold my-1">
                         {edu.institution}
                       </div>
                       <div className="text-gray-500 text-xs">{edu.period}</div>

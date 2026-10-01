@@ -1,0 +1,27 @@
+# Aashik Kumar Mahato
+
+> Electronics Engineer and Full-Stack Developer based in Kathmandu, Nepal (also written "Aashiq Mahato"). Builds React and Next.js web applications, IoT systems and embedded hardware. Open to opportunities.
+
+## Pages
+
+- [Home](https://www.aashikkumarmahato.com.np/): About, skills, featured work, testimonials, FAQ and contact
+- [Projects](https://www.aashikkumarmahato.com.np/projects): All projects with filters
+- [Résumé](https://www.aashikkumarmahato.com.np/resume): Experience, education and skills
+- [Résumé PDF](https://www.aashikkumarmahato.com.np/AashikKumarMahatoResume.pdf): Downloadable CV
+- [Blog](https://www.aashikkumarmahato.com.np/blog): Technical writing on IoT, React and embedded systems
+- [Timeline](https://www.aashikkumarmahato.com.np/timeline): Career and education timeline
+- [Now](https://www.aashikkumarmahato.com.np/now): Current focus
+
+## Case studies
+
+- [Automated Attendance System](https://www.aashikkumarmahato.com.np/projects/automated-attendance-system): Face-recognition attendance with Python, YOLOv8, React and MongoDB
+- [Ultrasonic Blind Stick with GSM/GPS](https://www.aashikkumarmahato.com.np/projects/ultrasonic-blind-stick): Arduino assistive device with obstacle detection and emergency location sharing
+- [Smart School Management System](https://www.aashikkumarmahato.com.np/projects/smart-school-management): MERN school administration platform
+- [WeatherApp](https://www.aashikkumarmahato.com.np/projects/weather-app): Next.js AI weather dashboard
+- [Raghunathpur Cable Network Website](https://www.aashikkumarmahato.com.np/projects/cable-network-website): Production website for a local ISP
+
+## Contact
+
+- [Email](mailto:aashikkrmahatoo@gmail.com)
+- [GitHub](https://github.com/AashiQMahato)
+- [LinkedIn](https://www.linkedin.com/in/aashiq-mahato-9a343b2b4/)

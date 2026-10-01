@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /analytics
+
+Sitemap: https://www.aashikkumarmahato.com.np/sitemap.xml

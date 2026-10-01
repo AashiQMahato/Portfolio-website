@@ -87,7 +87,7 @@ const TimelineNode = ({ event, index }) => {
 
             <div className="flex flex-col gap-1 mb-4">
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{event.date}</span>
-              <h3 className="text-xl md:text-2xl font-bold font-display">{event.title}</h3>
+              <h2 className="text-xl md:text-2xl font-bold font-display">{event.title}</h2>
               <div className="text-sm text-foreground/80 font-medium">
                 {event.subtitle} {event.location && <span className="opacity-60 block mt-0.5">{event.location}</span>}
               </div>
@@ -124,7 +124,7 @@ const TimelinePage = () => {
 
       <div className="relative z-10 mx-auto max-w-5xl section-padding pt-28">
         <ScrollReveal className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-primary">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-accent-ink">
             <Clock className="w-4 h-4" />
             My Journey
           </div>
@@ -145,7 +145,7 @@ const TimelinePage = () => {
           <ScrollReveal>
             <div className="relative flex justify-center mt-12 mb-8">
               <div className="w-12 h-12 rounded-full border-4 border-background bg-primary/10 flex items-center justify-center z-10">
-                <Rocket className="w-5 h-5 text-primary" />
+                <Rocket className="w-5 h-5 text-accent-ink" />
               </div>
             </div>
             <p className="text-center text-muted-foreground font-medium pb-20">What's next?</p>

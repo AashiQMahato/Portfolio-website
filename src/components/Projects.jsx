@@ -143,9 +143,9 @@ const StatCard = ({ icon: Icon, number, suffix, title, index }) => {
         <div className="relative p-5 overflow-hidden text-center transition-all duration-300 border shadow-sm rounded-2xl bg-card/60 backdrop-blur border-border hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
           <div className="relative z-10">
             <div className="flex items-center justify-center mx-auto mb-2 w-11 h-11 rounded-xl bg-primary/10">
-              <Icon className="w-5 h-5 text-primary" />
+              <Icon className="w-5 h-5 text-accent-ink" />
             </div>
-            <div className="text-2xl font-bold font-display text-primary">
+            <div className="text-2xl font-bold font-display text-accent-ink">
               {count}
               {suffix}
             </div>
@@ -196,7 +196,7 @@ const StatusBadge = ({ status }) => {
   const conf = {
     live: {
       label: "Live",
-      className: "bg-primary/10 border-primary/20 text-primary",
+      className: "bg-primary/10 border-primary/20 text-accent-ink",
       dotClassName: "bg-primary",
       pulse: true,
     },
@@ -314,21 +314,23 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
                   <ExternalLink className="w-3.5 h-3.5" /> View Live
                 </a>
               )}
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-transform duration-200 hover:scale-105 border border-border bg-card/70 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                <Github className="w-3.5 h-3.5" /> GitHub
-              </a>
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-transform duration-200 hover:scale-105 border border-border bg-card/70 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                  <Github className="w-3.5 h-3.5" aria-hidden="true" /> GitHub
+                </a>
+              )}
             </motion.div>
           </div>
 
           {/* ── Card Body (~60%) ── */}
           <div className="flex flex-col flex-1 p-5">
             {/* Title + underline */}
-            <h3 className="mb-1 text-lg font-bold leading-tight transition-colors duration-300 font-display text-foreground group-hover:text-primary">
+            <h3 className="mb-1 text-lg font-bold leading-tight transition-colors duration-300 font-display text-foreground group-hover:text-accent-ink">
               {project.title}
             </h3>
             <motion.div
@@ -373,24 +375,28 @@ const ProjectCardGrid = ({ project, index, onOpenDetail }) => {
             <div className="flex items-center justify-between pt-3 border-t border-border/60">
               <Link
                 to={`/projects/${project.slug}`}
-                className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200 rounded-md cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                Learn More <ArrowRight className="w-3 h-3" />
+                className="flex items-center gap-1 text-xs font-semibold transition-colors duration-200 rounded-md cursor-pointer text-accent-ink hover:text-accent-ink/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                Read case study<span className="sr-only">: {project.title}</span> <ArrowRight className="w-3 h-3" aria-hidden="true" />
               </Link>
               <div className="flex items-center gap-2">
+                {project.github && (
                 <a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`${project.title} source code on GitHub`}
                   className="p-1.5 rounded-lg transition-transform duration-200 hover:scale-110 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                  <Github className="w-4 h-4" />
+                  <Github className="w-4 h-4" aria-hidden="true" />
                 </a>
+                )}
                 {project.live && (
                   <a
                     href={project.live}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`${project.title} live site`}
                     className="p-1.5 rounded-lg transition-transform duration-200 hover:scale-110 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4" aria-hidden="true" />
                   </a>
                 )}
               </div>
@@ -429,7 +435,7 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
       {/* Content */}
       <div className="flex flex-col justify-between flex-1 p-5">
         <div>
-          <h3 className="mb-2 text-lg font-bold transition-colors font-display text-foreground group-hover:text-primary">
+          <h3 className="mb-2 text-lg font-bold transition-colors font-display text-foreground group-hover:text-accent-ink">
             {project.title}
           </h3>
           <p className="mb-3 text-sm leading-relaxed text-muted-foreground line-clamp-2">
@@ -458,8 +464,8 @@ const ProjectCardList = ({ project, index, onOpenDetail }) => (
           </div>
           <Link
             to={`/projects/${project.slug}`}
-            className="flex items-center gap-1 text-xs font-semibold rounded-md cursor-pointer text-primary hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-            Details <ArrowRight className="w-3 h-3" />
+            className="flex items-center gap-1 text-xs font-semibold rounded-md cursor-pointer text-accent-ink hover:text-accent-ink/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+            Read case study<span className="sr-only">: {project.title}</span> <ArrowRight className="w-3 h-3" aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -521,6 +527,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             {currentIdx > 0 && (
               <button
                 onClick={() => onNavigate(allProjects[currentIdx - 1])}
+                aria-label="Previous project"
                 className="p-2 transition-colors border rounded-lg cursor-pointer border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -528,6 +535,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             {currentIdx < allProjects.length - 1 && (
               <button
                 onClick={() => onNavigate(allProjects[currentIdx + 1])}
+                aria-label="Next project"
                 className="p-2 transition-colors border rounded-lg cursor-pointer border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -538,6 +546,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close project details"
             className="p-2 transition-colors border rounded-lg cursor-pointer border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
             <X className="w-5 h-5" />
           </button>
@@ -615,7 +624,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
               <div className="space-y-2">
                 {project.features.map((f) => (
                   <div key={f} className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-accent-ink mt-0.5 flex-shrink-0" />
                     <span className="text-sm text-muted-foreground">{f}</span>
                   </div>
                 ))}
@@ -631,7 +640,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                 <div className="space-y-2">
                   {project.highlights.map((h) => (
                     <div key={h} className="flex items-start gap-2">
-                      <Zap className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      <Zap className="w-4 h-4 text-accent-ink mt-0.5 flex-shrink-0" />
                       <span className="text-sm text-muted-foreground">{h}</span>
                     </div>
                   ))}
@@ -642,7 +651,7 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
             {/* Metrics */}
             <div className="flex flex-wrap items-center gap-3 mb-6 text-sm sm:gap-5 text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-primary" />
+                <Star className="w-4 h-4 text-accent-ink" />
                 {project.stars} stars
               </span>
               <span className="flex items-center gap-1.5">
@@ -666,18 +675,20 @@ const ProjectModal = ({ project, onClose, onNavigate, allProjects }) => {
                   <Rocket className="w-4 h-4" /> View Live
                 </a>
               )}
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 sm:px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-transform duration-200 hover:scale-105 border border-border bg-card/60 text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                <Star className="w-4 h-4" /> GitHub
-              </a>
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 sm:px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-transform duration-200 hover:scale-105 border border-border bg-card/60 text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+                  <Star className="w-4 h-4" aria-hidden="true" /> GitHub
+                </a>
+              )}
               <button
                 onClick={copyLink}
                 className="px-3 py-2.5 rounded-xl text-sm flex items-center gap-1.5 transition-colors cursor-pointer border border-border bg-card/60 text-muted-foreground hover:text-foreground hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
                 {copied ? (
-                  <Check className="w-4 h-4 text-primary" />
+                  <Check className="w-4 h-4 text-accent-ink" />
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
@@ -715,7 +726,7 @@ const TechUsageSection = () => {
       <div ref={ref} className="p-8 mb-16 lg:p-12 rounded-2xl panel">
         <div className="flex items-center gap-4 mb-8">
           <div className="p-3 border rounded-xl bg-primary/10 border-primary/15">
-            <Zap className="w-6 h-6 text-primary" />
+            <Zap className="w-6 h-6 text-accent-ink" />
           </div>
           <div>
             <h3 className="text-2xl font-bold font-display text-accent-ink">
@@ -747,7 +758,7 @@ const TechUsageSection = () => {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="flex items-center justify-center w-8 h-8 text-sm font-bold border rounded-lg text-primary bg-primary/10 border-primary/15">
+                    <div className="flex items-center justify-center w-8 h-8 text-sm font-bold border rounded-lg text-accent-ink bg-primary/10 border-primary/15">
                       {tech.name.charAt(0)}
                     </div>
                   )}
@@ -755,7 +766,7 @@ const TechUsageSection = () => {
                 <span className="text-xs font-medium text-muted-foreground">
                   {tech.name}
                 </span>
-                <span className="text-[10px] font-bold text-primary">
+                <span className="text-[10px] font-bold text-accent-ink">
                   {tech.count} project{tech.count > 1 ? "s" : ""}
                 </span>
 
@@ -813,7 +824,7 @@ const BottomCTA = () => {
             </Link>
             <Link
               to="/contactus"
-              className="flex items-center gap-2 py-3 text-sm font-semibold transition-transform duration-300 bg-transparent border px-7 rounded-xl hover:scale-105 border-primary/30 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
+              className="flex items-center gap-2 py-3 text-sm font-semibold transition-transform duration-300 bg-transparent border px-7 rounded-xl hover:scale-105 border-primary/30 text-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
               <Mail className="w-4 h-4" /> Get In Touch
             </Link>
           </div>
@@ -895,7 +906,7 @@ const Projects = () => {
           <ScrollReveal className="relative mb-12 text-center lg:mb-16">
             <HeroParticles />
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-primary">
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-accent-ink">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 Portfolio
               </div>
@@ -973,9 +984,11 @@ const Projects = () => {
                     <button
                       key={mode}
                       onClick={() => setViewMode(mode)}
+                      aria-label={`${mode === "grid" ? "Grid" : "List"} view`}
+                      aria-pressed={viewMode === mode}
                       className={`p-2 transition-colors duration-200 rounded-lg cursor-pointer border ${
                         viewMode === mode
-                          ? "bg-primary/10 text-primary border-primary/20"
+                          ? "bg-primary/10 text-accent-ink border-primary/20"
                           : "border-transparent text-muted-foreground hover:text-foreground"
                       }`}>
                       <Icon className="w-4 h-4" />

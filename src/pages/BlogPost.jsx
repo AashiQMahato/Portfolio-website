@@ -14,6 +14,7 @@ import bashLang from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
 import jsonLang from 'react-syntax-highlighter/dist/esm/languages/prism/json';
 import cssLang from 'react-syntax-highlighter/dist/esm/languages/prism/css';
 import cLang from 'react-syntax-highlighter/dist/esm/languages/prism/c';
+import cppLang from 'react-syntax-highlighter/dist/esm/languages/prism/cpp';
 
 [
   ['jsx', jsxLang],
@@ -24,6 +25,7 @@ import cLang from 'react-syntax-highlighter/dist/esm/languages/prism/c';
   ['json', jsonLang],
   ['css', cssLang],
   ['c', cLang],
+  ['cpp', cppLang],
 ].forEach(([name, lang]) => SyntaxHighlighter.registerLanguage(name, lang));
 import { blogPosts } from '../data/blogPosts';
 
@@ -64,10 +66,14 @@ const CopyButton = ({ code }) => {
   };
   return (
     <button
+      type="button"
       onClick={copy}
-      className="absolute top-3 right-3 p-1.5 rounded-md border border-white/10 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors text-xs"
+      aria-label={copied ? "Code copied" : "Copy code"}
+      className="rounded-md border border-white/15 bg-white/5 px-2 py-1 font-mono text-[11px] text-white/80 transition-[color,background-color,transform] duration-100 hover:bg-white/10 hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
     >
-      {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <span className="text-[10px] font-mono">copy</span>}
+      <span aria-live="polite" className="flex items-center gap-1">
+        {copied ? <><Check className="w-3.5 h-3.5" aria-hidden="true" /> copied</> : "copy"}
+      </span>
     </button>
   );
 };
@@ -87,10 +93,10 @@ const mdComponents = {
     <p className="my-4 leading-[1.85] text-foreground/85">{children}</p>
   ),
   ul: ({ children }) => (
-    <ul className="my-4 pl-6 space-y-2 list-disc marker:text-primary">{children}</ul>
+    <ul className="my-4 pl-6 space-y-2 list-disc marker:text-accent-ink">{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol className="my-4 pl-6 space-y-2 list-decimal marker:text-primary">{children}</ol>
+    <ol className="my-4 pl-6 space-y-2 list-decimal marker:text-accent-ink">{children}</ol>
   ),
   li: ({ children }) => (
     <li className="leading-relaxed text-foreground/85">{children}</li>
@@ -102,7 +108,7 @@ const mdComponents = {
   ),
   a: ({ href, children }) => (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      className="text-primary underline underline-offset-4 hover:opacity-80 transition-opacity">
+      className="text-accent-ink underline underline-offset-4 hover:opacity-80 transition-opacity">
       {children}
     </a>
   ),
@@ -118,21 +124,26 @@ const mdComponents = {
   td: ({ children }) => (
     <td className="px-4 py-3 border-b border-border/50 text-muted-foreground">{children}</td>
   ),
-  code({ inline, className, children, ...props }) {
+  // react-markdown v9 wraps fenced blocks in <pre> and no longer passes an
+  // `inline` flag: the block renderer below owns its own chrome, and a
+  // fence always spans multiple source lines while inline code never does.
+  pre: ({ children }) => <>{children}</>,
+  code({ node, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || '');
     const language = match?.[1] || '';
     const codeStr = String(children).replace(/\n$/, '');
-    if (inline) {
+    const isBlock = Boolean(match) || node?.position?.start.line !== node?.position?.end.line;
+    if (!isBlock) {
       return (
-        <code className="px-1.5 py-0.5 rounded-md bg-muted/50 border border-border/60 font-mono text-[13px] text-primary/90">
+        <code className="px-1.5 py-0.5 rounded-md bg-muted/50 border border-border/60 font-mono text-[13px] text-accent-ink">
           {children}
         </code>
       );
     }
     return (
-      <div className="relative my-6 rounded-xl overflow-hidden border border-border">
-        <div className="flex items-center justify-between px-4 py-2 bg-muted/30 border-b border-border">
-          <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
+      <div className="relative my-6 overflow-hidden rounded-xl border border-white/10 bg-[#1f232b] shadow-lg">
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-4 py-2">
+          <span className="font-mono text-[11px] uppercase tracking-wider text-white/70">
             {language || 'code'}
           </span>
           <CopyButton code={codeStr} />
@@ -141,7 +152,8 @@ const mdComponents = {
           language={language}
           style={oneDark}
           PreTag="div"
-          customStyle={{ margin: 0, background: 'transparent', fontSize: '13px', lineHeight: 1.65 }}
+          customStyle={{ margin: 0, padding: '1rem 1.25rem', background: 'transparent', fontSize: '13px', lineHeight: 1.65 }}
+          codeTagProps={{ style: { background: 'transparent' } }}
           {...props}
         >
           {codeStr}
@@ -157,7 +169,7 @@ const CATEGORY_COLORS = {
   React: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
   AI: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
 };
-const getCatClass = (c) => CATEGORY_COLORS[c] || 'bg-primary/10 text-primary border-primary/20';
+const getCatClass = (c) => CATEGORY_COLORS[c] || 'bg-primary/10 text-accent-ink border-primary/20';
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -249,7 +261,7 @@ const BlogPost = () => {
 
           {/* Author card */}
           <div className="mt-14 p-6 rounded-2xl border border-border bg-card/40 flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0 text-xl font-bold text-primary">
+            <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0 text-xl font-bold text-accent-ink">
               A
             </div>
             <div>
@@ -264,10 +276,10 @@ const BlogPost = () => {
           <div className="mt-10 pt-8 border-t border-border flex flex-col sm:flex-row gap-4 justify-between">
             {prevPost ? (
               <Link to={`/blog/${prevPost.slug}`} className="flex items-center gap-3 group flex-1">
-                <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                <ArrowLeft className="w-4 h-4 text-muted-foreground group-hover:text-accent-ink transition-colors shrink-0" />
                 <div>
                   <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Previous</div>
-                  <div className="font-medium text-sm group-hover:text-primary transition-colors line-clamp-1">{prevPost.title}</div>
+                  <div className="font-medium text-sm group-hover:text-accent-ink transition-colors line-clamp-1">{prevPost.title}</div>
                 </div>
               </Link>
             ) : <div />}
@@ -275,9 +287,9 @@ const BlogPost = () => {
               <Link to={`/blog/${nextPost.slug}`} className="flex items-center justify-end gap-3 group flex-1 text-right">
                 <div>
                   <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Next</div>
-                  <div className="font-medium text-sm group-hover:text-primary transition-colors line-clamp-1">{nextPost.title}</div>
+                  <div className="font-medium text-sm group-hover:text-accent-ink transition-colors line-clamp-1">{nextPost.title}</div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-accent-ink transition-colors shrink-0" />
               </Link>
             ) : <div />}
           </div>

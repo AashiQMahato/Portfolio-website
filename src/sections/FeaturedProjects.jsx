@@ -42,7 +42,7 @@ const ProjectRow = ({ project, index }) => {
         >
           <Link
             to={`/projects/${project.slug}`}
-            aria-label={`${project.title} case study`}
+            aria-hidden="true"
             tabIndex={-1}
             data-cursor="view"
             className="relative block overflow-hidden rounded-xl"
@@ -203,8 +203,8 @@ const FeaturedProjects = () => {
           )
           .fromTo(
             copy,
-            { autoAlpha: 0, y: 22 },
-            { autoAlpha: 1, y: 0, duration: DUR.md, stagger: STAGGER.tight },
+            { opacity: 0, y: 22 },
+            { opacity: 1, y: 0, duration: DUR.md, stagger: STAGGER.tight },
             "-=0.5",
           );
 

@@ -8,6 +8,7 @@ import BootLoader from "./chrome/BootLoader";
 import Footer from "./Footer";
 import { CssSky, Ruler } from "./canvas";
 import { SmoothScroll, ScrollManager } from "../motion";
+import useRouteSeo from "../seo/useRouteSeo";
 
 // Deferred globals: none are needed for first paint, and the chatbot alone
 // drags react-markdown + a syntax highlighter into whatever chunk holds it.
@@ -33,6 +34,7 @@ const useIdleMount = () => {
 
 const RouterLayout = () => {
   const extrasReady = useIdleMount();
+  useRouteSeo();
 
   return (
     <ThemeProvider>

@@ -488,7 +488,7 @@ const CommandPalette = () => {
                               <div
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
                                   isSelected
-                                    ? "bg-primary/15 text-primary"
+                                    ? "bg-primary/15 text-accent-ink"
                                     : "bg-muted/40"
                                 }`}>
                                 <Icon className="w-4 h-4" />
@@ -505,7 +505,7 @@ const CommandPalette = () => {
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 {cmd.tag && (
-                                  <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary/10 text-primary border border-primary/20">
+                                  <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary/10 text-accent-ink border border-primary/20">
                                     {cmd.tag}
                                   </span>
                                 )}
@@ -513,7 +513,7 @@ const CommandPalette = () => {
                                   <motion.div
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}>
-                                    <ChevronRight className="w-3.5 h-3.5 text-primary" />
+                                    <ChevronRight className="w-3.5 h-3.5 text-accent-ink" />
                                   </motion.div>
                                 )}
                               </div>

@@ -279,7 +279,7 @@ const GitHubDashboard = () => {
                 href={profile?.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mt-1">
+                className="text-muted-foreground hover:text-accent-ink transition-colors flex items-center gap-2 mt-1">
                 @{profile?.login || GITHUB_USERNAME}{" "}
                 <LinkIcon className="w-3.5 h-3.5" />
               </a>
@@ -324,7 +324,7 @@ const GitHubDashboard = () => {
 
         {error && (
           <div className="mb-10 p-4 rounded-2xl border border-border bg-card/40 flex items-center gap-3 text-sm text-muted-foreground">
-            <AlertTriangle className="w-4 h-4 text-primary" />
+            <AlertTriangle className="w-4 h-4 text-accent-ink" />
             {error}
           </div>
         )}
@@ -337,7 +337,7 @@ const GitHubDashboard = () => {
               <div className="p-6 rounded-3xl border border-border bg-card/40">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold font-display flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-primary" /> Contribution
+                    <Activity className="w-5 h-5 text-accent-ink" /> Contribution
                     Activity
                   </h2>
                   <span className="text-sm text-muted-foreground">
@@ -384,7 +384,7 @@ const GitHubDashboard = () => {
               <div className="p-6 rounded-3xl border border-border bg-card/40 h-[320px] flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold font-display flex items-center gap-2">
-                    <Code2 className="w-5 h-5 text-primary" /> Language
+                    <Code2 className="w-5 h-5 text-accent-ink" /> Language
                     distribution
                   </h2>
                   <span className="text-xs text-muted-foreground">
@@ -447,7 +447,7 @@ const GitHubDashboard = () => {
             <ScrollReveal delay={0.2}>
               <div className="flex items-center justify-between mb-6 mt-10">
                 <h2 className="text-xl font-bold font-display flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-primary" /> Recent
+                  <BookOpen className="w-5 h-5 text-accent-ink" /> Recent
                   Repositories
                 </h2>
               </div>
@@ -460,7 +460,7 @@ const GitHubDashboard = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block p-5 rounded-2xl border border-border bg-card/20 hover:bg-card/60 hover:border-primary/30 transition-all group">
-                    <h3 className="font-bold mb-2 flex items-center gap-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold mb-2 flex items-center gap-2 group-hover:text-accent-ink transition-colors">
                       <BookOpen className="w-4 h-4 text-muted-foreground" />{" "}
                       {repo.name}
                     </h3>

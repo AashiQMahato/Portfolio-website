@@ -136,8 +136,8 @@ const ProjectCaseStudy = () => {
                 </span>
               ))}
               {project.status === "live" && (
-                <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />{" "}
+                <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-panel text-accent-ink border border-primary/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary motion-safe:animate-pulse" aria-hidden="true" />{" "}
                   Live
                 </span>
               )}
@@ -286,7 +286,7 @@ const ProjectCaseStudy = () => {
           <section className="mb-20 lg:mb-32 max-w-4xl">
             <div className="flex items-center gap-3 mb-8">
               <div className="p-3 rounded-xl bg-primary/10">
-                <Target className="w-6 h-6 text-primary" />
+                <Target className="w-6 h-6 text-accent-ink" />
               </div>
               <h2 className="text-3xl font-bold font-display">The Challenge</h2>
             </div>
@@ -342,7 +342,7 @@ const ProjectCaseStudy = () => {
             <section className="mb-20 lg:mb-32">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 rounded-xl bg-primary/10">
-                  <LayoutTemplate className="w-6 h-6 text-primary" />
+                  <LayoutTemplate className="w-6 h-6 text-accent-ink" />
                 </div>
                 <h2 className="text-3xl font-bold font-display">
                   Architecture & System Design
@@ -373,7 +373,7 @@ const ProjectCaseStudy = () => {
             <section className="mb-20 lg:mb-32 max-w-4xl">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 rounded-xl bg-primary/10">
-                  <Rocket className="w-6 h-6 text-primary" />
+                  <Rocket className="w-6 h-6 text-accent-ink" />
                 </div>
                 <h2 className="text-3xl font-bold font-display">
                   Technical Hurdles
@@ -386,7 +386,7 @@ const ProjectCaseStudy = () => {
                     key={i}
                     className="p-6 md:p-8 rounded-2xl bg-card/60 backdrop-blur border border-border shadow-sm">
                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                      <span className="text-primary">0{i + 1}.</span> {c.title}
+                      <span className="text-accent-ink">0{i + 1}.</span> {c.title}
                     </h3>
                     <div className="space-y-4">
                       <div>
@@ -396,7 +396,7 @@ const ProjectCaseStudy = () => {
                         <p className="mt-1 text-foreground/90">{c.problem}</p>
                       </div>
                       <div className="pl-4 border-l-2 border-primary/30">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-accent-ink">
                           Solution
                         </span>
                         <p className="mt-1 text-muted-foreground">
@@ -417,7 +417,7 @@ const ProjectCaseStudy = () => {
             <section className="mb-20 lg:mb-32">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 rounded-xl bg-primary/10">
-                  <TrendingUp className="w-6 h-6 text-primary" />
+                  <TrendingUp className="w-6 h-6 text-accent-ink" />
                 </div>
                 <h2 className="text-3xl font-bold font-display">
                   Measurable Impact
@@ -429,7 +429,7 @@ const ProjectCaseStudy = () => {
                   <div
                     key={i}
                     className="p-6 rounded-2xl bg-card/40 border border-border">
-                    <div className="text-3xl font-bold font-display text-primary mb-2">
+                    <div className="text-3xl font-bold font-display text-accent-ink mb-2">
                       {metric.value || metric.improvement}
                     </div>
                     <div className="text-sm font-semibold text-foreground mb-1">
@@ -438,7 +438,7 @@ const ProjectCaseStudy = () => {
                     {(metric.before || metric.after) && (
                       <div className="text-xs text-muted-foreground mt-2 flex items-center justify-between border-t border-border/50 pt-2">
                         <span>Before: {metric.before}</span>
-                        <ArrowRight className="w-3 h-3 mx-1 text-primary/50" />
+                        <ArrowRight className="w-3 h-3 mx-1 text-accent-ink/50" />
                         <span>After: {metric.after}</span>
                       </div>
                     )}
@@ -455,7 +455,7 @@ const ProjectCaseStudy = () => {
             <section className="mb-20 lg:mb-32">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 rounded-xl bg-primary/10">
-                  <ImageIcon className="w-6 h-6 text-primary" />
+                  <ImageIcon className="w-6 h-6 text-accent-ink" />
                 </div>
                 <h2 className="text-3xl font-bold font-display">
                   Project Gallery
@@ -507,7 +507,7 @@ const ProjectCaseStudy = () => {
             <section className="mb-20 lg:mb-32 max-w-4xl">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-3 rounded-xl bg-primary/10">
-                  <Lightbulb className="w-6 h-6 text-primary" />
+                  <Lightbulb className="w-6 h-6 text-accent-ink" />
                 </div>
                 <h2 className="text-3xl font-bold font-display">
                   Key Takeaways
@@ -519,7 +519,7 @@ const ProjectCaseStudy = () => {
                   <li
                     key={i}
                     className="flex items-start gap-4 p-4 rounded-xl bg-card/40 border border-border">
-                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 text-accent-ink shrink-0 mt-0.5" />
                     <span className="text-muted-foreground leading-relaxed">
                       {lesson}
                     </span>
@@ -537,7 +537,7 @@ const ProjectCaseStudy = () => {
               <section className="mb-20 lg:mb-32 max-w-4xl">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="p-3 rounded-xl bg-primary/10">
-                    <Rocket className="w-6 h-6 text-primary" />
+                    <Rocket className="w-6 h-6 text-accent-ink" />
                   </div>
                   <h2 className="text-3xl font-bold font-display">
                     Next Iteration

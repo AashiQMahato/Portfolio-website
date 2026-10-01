@@ -1,12 +1,12 @@
 {
   "name": "portfolio",
-  "homepage": "https://AashiQMahato.github.io/Portfolio-website/",
+  "homepage": "https://www.aashikkumarmahato.com.np/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/seo-pages.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",

@@ -15,7 +15,7 @@ const CATEGORY_COLORS = {
 };
 
 const getCategoryClass = (cat) =>
-  CATEGORY_COLORS[cat] || "bg-primary/10 text-primary border-primary/20";
+  CATEGORY_COLORS[cat] || "bg-primary/10 text-accent-ink border-primary/20";
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
@@ -39,12 +39,12 @@ const BlogCard = ({ post, index, featured }) => (
             className={`px-3 py-1 text-xs font-semibold rounded-full border ${getCategoryClass(post.category)}`}>
             {post.category}
           </span>
-          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+          <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-accent-ink group-hover:translate-x-1 transition-all" />
         </div>
 
         {/* Title */}
         <h2
-          className={`font-bold font-display text-foreground group-hover:text-primary transition-colors mb-3 leading-snug ${featured ? "text-xl md:text-2xl" : "text-lg"}`}>
+          className={`font-bold font-display text-foreground group-hover:text-accent-ink transition-colors mb-3 leading-snug ${featured ? "text-xl md:text-2xl" : "text-lg"}`}>
           {post.title}
         </h2>
 
@@ -95,7 +95,7 @@ const Blog = () => {
       <div className="relative z-10 section-padding pt-28 mx-auto max-w-6xl">
         {/* Header */}
         <ScrollReveal className="mb-12 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-5 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-primary">
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-5 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-accent-ink">
             <BookOpen className="w-3.5 h-3.5" />
             Technical Writing
           </div>
@@ -153,7 +153,7 @@ const Blog = () => {
         {/* CTA */}
         <ScrollReveal delay={0.2}>
           <div className="mt-20 py-12 text-center rounded-2xl border border-border bg-card/30">
-            <BookOpen className="w-10 h-10 mx-auto mb-4 text-primary" />
+            <BookOpen className="w-10 h-10 mx-auto mb-4 text-accent-ink" />
             <h3 className="text-xl font-bold font-display mb-2">
               More articles coming soon
             </h3>

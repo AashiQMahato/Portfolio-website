@@ -19,6 +19,7 @@ import {
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useTheme } from "../context/ThemeContext";
+import assistantAvatar from "../assets/assistant-avatar.png";
 
 [
   ["jsx", jsxLang],
@@ -31,8 +32,8 @@ import { useTheme } from "../context/ThemeContext";
   ["c", cLang],
 ].forEach(([name, lang]) => SyntaxHighlighter.registerLanguage(name, lang));
 
-const AVATAR_URL =
-  "https://cdn.pixabay.com/photo/2024/03/17/09/13/ai-generated-8638571_1280.png";
+// Self-hosted: the remote CDN set third-party cookies on every load.
+const AVATAR_URL = assistantAvatar;
 
 const SYSTEM_PROMPT = `You are Aashiq's AI Assistant on his portfolio website (Aashiq.dev). You are knowledgeable, friendly, and professional.
 
@@ -125,7 +126,7 @@ const MarkdownMessage = ({ content, isDark }) => {
               href={href}
               target="_blank"
               rel="noreferrer"
-              className="underline text-primary underline-offset-4 hover:opacity-90"
+              className="underline text-accent-ink underline-offset-4 hover:opacity-90"
               {...props}>
               {children}
             </a>

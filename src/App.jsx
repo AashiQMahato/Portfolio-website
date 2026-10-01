@@ -13,6 +13,7 @@ const NowPage = lazy(() => import("./pages/NowPage"));
 const TimelinePage = lazy(() => import("./pages/TimelinePage"));
 const ResumePage = lazy(() => import("./pages/ResumePage"));
 const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="timeline" element={<TimelinePage />} />
             <Route path="resume" element={<ResumePage />} />
             <Route path="analytics" element={<AnalyticsDashboard />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </Suspense>
