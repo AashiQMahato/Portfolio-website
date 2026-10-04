@@ -78,6 +78,8 @@ const ProjectCaseStudy = () => {
           alt={`${project.title} — screenshot`}
           width={1600}
           height={974}
+          // React 18 drops the camelCase prop; the lowercase attribute reaches the DOM.
+          // eslint-disable-next-line react/no-unknown-property
           fetchpriority="high"
           className="absolute inset-0 h-full w-full object-cover will-change-transform"
         />

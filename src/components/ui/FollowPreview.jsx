@@ -14,8 +14,9 @@ const OFFSET = 36;
  */
 const FollowPreview = ({ items, activeKey, aspect = "4/3" }) => {
   const ref = useRef(null);
-  const enabled = useMediaQuery("(hover: hover) and (pointer: fine)") && !usePrefersReducedMotion();
-  const pos = useRef(null);
+  const fine = useMediaQuery("(hover: hover) and (pointer: fine)");
+  const reduced = usePrefersReducedMotion();
+  const enabled = fine && !reduced;
 
   useEffect(() => {
     if (!enabled) return undefined;
@@ -23,7 +24,6 @@ const FollowPreview = ({ items, activeKey, aspect = "4/3" }) => {
     gsap.set(el, { xPercent: 0, yPercent: -50, x: -9999, y: -9999 });
     const xTo = gsap.quickTo(el, "x", { duration: 0.65, ease: EASE.soft });
     const yTo = gsap.quickTo(el, "y", { duration: 0.65, ease: EASE.soft });
-    pos.current = { xTo, yTo };
     const onMove = (e) => {
       const flip = e.clientX + OFFSET + W > window.innerWidth - 16;
       const x = flip ? e.clientX - OFFSET - W : e.clientX + OFFSET;

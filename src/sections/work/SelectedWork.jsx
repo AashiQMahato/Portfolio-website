@@ -23,6 +23,12 @@ const ORDER = [
   "ultrasonic-blind-stick",
 ];
 const SHOWCASE = ORDER.map((slug) => projects.find((p) => p.slug === slug)).filter(Boolean);
+/** Each project's label as a 0–1 progress value of the stage timeline. */
+const labelStops = (tl) =>
+  Object.values(tl.labels)
+    .map((t) => t / tl.duration())
+    .sort((a, b) => a - b);
+
 const MOBILE_REVEALS = ["clip", "side", "iris", "scale", "clip"];
 
 /**
@@ -36,6 +42,7 @@ const MOBILE_REVEALS = ["clip", "side", "iris", "scale", "clip"];
 const SelectedWork = () => {
   const ref = useRef(null);
   const stRef = useRef(null);
+  const tlRef = useRef(null);
   const lenis = useLenis();
   const reduced = usePrefersReducedMotion();
   const wide = useMediaQuery("(min-width: 1024px)");
@@ -82,19 +89,31 @@ const SelectedWork = () => {
           // direction, without velocity projection (inertia would fling a
           // fast trackpad swipe past several projects at once).
           snap: {
-            snapTo: "labelsDirectional",
+            snapTo: (value, self) => {
+              // Already on a project (keyboard focus, programmatic scroll):
+              // stay. Otherwise go to the next project in scroll direction.
+              const stops = labelStops(self.animation);
+              const near = stops.find((p) => Math.abs(p - value) < 0.02);
+              if (near !== undefined) return near;
+              return self.direction > 0
+                ? stops.find((p) => p > value) ?? 1
+                : [...stops].reverse().find((p) => p < value) ?? 0;
+            },
             inertia: false,
             duration: { min: 0.3, max: 0.8 },
             ease: "power3.inOut",
             delay: 0.08,
           },
           onUpdate: (self) => {
-            setActive(Math.round(self.progress * (n - 1)));
+            const stops = labelStops(self.animation);
+            const nearest = stops.reduce((best, p, k) => (Math.abs(p - self.progress) < Math.abs(stops[best] - self.progress) ? k : best), 0);
+            setActive(nearest);
             gsap.set(q("[data-rail-fill]"), { scaleY: self.progress });
           },
         },
       });
       stRef.current = tl.scrollTrigger;
+      tlRef.current = tl;
 
       tl.addLabel("p0");
       for (let i = 1; i < n; i += 1) {
@@ -119,7 +138,7 @@ const SelectedWork = () => {
   const onSlideFocus = (i) => {
     const st = stRef.current;
     if (!st) return;
-    const y = st.start + ((st.end - st.start) * i) / (n - 1);
+    const y = st.start + (st.end - st.start) * labelStops(tlRef.current)[i];
     if (lenis) lenis.scrollTo(y, { duration: 0.8 });
     else window.scrollTo({ top: y });
   };

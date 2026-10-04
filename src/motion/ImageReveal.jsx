@@ -94,6 +94,8 @@ const ImageReveal = ({
         height={height}
         loading={loading}
         decoding="async"
+        // React 18 drops the camelCase prop; the lowercase attribute reaches the DOM.
+        // eslint-disable-next-line react/no-unknown-property
         fetchpriority={fetchPriority}
         className={`h-full w-full object-cover will-change-transform ${imgClassName}`}
       />

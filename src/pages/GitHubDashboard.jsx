@@ -277,12 +277,30 @@ const GitHubDashboard = () => {
       </header>
 
       {loading ? (
-        <div role="status" className="mt-[clamp(4rem,10vh,7rem)] flex items-center gap-3 border-t border-line pt-8">
-          <span
-            aria-hidden="true"
-            className="h-4 w-4 animate-spin rounded-full border-2 border-signal border-t-transparent"
-          />
-          <span className="hud">Loading GitHub data…</span>
+        // Skeleton reserves roughly the loaded layout's height, so the
+        // footer can't sit in view and then jump when data arrives (CLS).
+        <div role="status" className="mt-[clamp(4rem,10vh,7rem)] min-h-[110svh]">
+          <span className="sr-only">Loading GitHub data…</span>
+          <div aria-hidden="true" className="motion-safe:animate-pulse">
+            <div className="flex items-center gap-5 border-y border-line py-8">
+              <div className="h-16 w-16 rounded-full bg-line" />
+              <div className="space-y-2">
+                <div className="h-4 w-40 rounded bg-line" />
+                <div className="h-3 w-24 rounded bg-line" />
+              </div>
+            </div>
+            <div className="mt-12 grid gap-10 lg:grid-cols-12">
+              <div className="space-y-4 lg:col-span-8">
+                <div className="h-40 rounded-xl bg-line/60" />
+                <div className="h-56 rounded-xl bg-line/60" />
+              </div>
+              <div className="space-y-3 lg:col-span-4">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-12 rounded-lg bg-line/60" />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <>
