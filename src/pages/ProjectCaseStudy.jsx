@@ -1,605 +1,306 @@
-import React, { useEffect, useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  ArrowRight,
-  ExternalLink,
-  Github,
-  CheckCircle2,
-  Target,
-  Lightbulb,
-  Rocket,
-  ChevronRight,
-  LayoutTemplate,
-  TrendingUp,
-  Image as ImageIcon,
-} from "lucide-react";
+import { useRef } from "react";
+import PropTypes from "prop-types";
+import { Link, useParams } from "react-router-dom";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import { gsap, EASE, ImageReveal, Reveal, SplitText, usePrefersReducedMotion } from "../motion";
 import { projects } from "../data/portfolioData";
-import { ScrollReveal } from "../components/ui";
-import { useRecruiterMode } from "../context/RecruiterModeContext";
+import NotFound from "./NotFound";
 
-const normalizeGalleryItem = (item) => {
-  if (!item) return null;
-  if (typeof item === "string") return { src: item };
-  const src = item.src || item.url;
-  if (!src) return null;
-  return { src, caption: item.caption, label: item.label };
-};
+const GALLERY_REVEALS = ["side", "scale", "clip"];
 
-const getFeaturedMedia = (project) => {
-  if (!project) return { type: "none" };
-  if (project.featuredVideo)
-    return { type: "video", src: project.featuredVideo };
-  if (project.image) return { type: "image", src: project.image };
-  const gallery = Array.isArray(project.gallery) ? project.gallery : [];
-  const first = normalizeGalleryItem(gallery[0]);
-  if (first?.src) return { type: "image", src: first.src };
-  return { type: "none" };
-};
-
-const ArchitectureFlow = ({ items }) => {
-  if (!Array.isArray(items) || items.length === 0) return null;
-  const flow = items.slice(0, 5);
-  return (
-    <div className="p-5 md:p-6 rounded-2xl bg-card/40 border border-border">
-      <div className="flex flex-wrap items-center gap-2">
-        {flow.map((node, idx) => (
-          <React.Fragment key={`${node.component}-${idx}`}>
-            <div className="px-3 py-2 rounded-xl border border-border bg-background/40">
-              <div className="text-xs font-semibold text-foreground">
-                {node.component}
-              </div>
-              <div className="text-[11px] text-muted-foreground line-clamp-1">
-                {node.desc}
-              </div>
-            </div>
-            {idx < flow.length - 1 && (
-              <ArrowRight className="w-4 h-4 text-muted-foreground/60" />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-      {items.length > flow.length && (
-        <div className="mt-3 text-xs text-muted-foreground">
-          +{items.length - flow.length} more components
-        </div>
-      )}
+/** Numbered chapter: sticky mono label on the left, content on the right. */
+const Chapter = ({ index, title, children }) => (
+  <section className="grid gap-6 border-t border-line py-[clamp(3.5rem,9vh,6rem)] lg:grid-cols-12">
+    <div className="lg:col-span-4">
+      <h2 className="hud flex gap-3 lg:sticky lg:top-[calc(var(--nav-h)+2rem)]">
+        <span className="tabular-nums text-ink">{index}</span>
+        {title}
+      </h2>
     </div>
-  );
-};
+    <div className="lg:col-span-8">{children}</div>
+  </section>
+);
 
+Chapter.propTypes = { index: PropTypes.string.isRequired, title: PropTypes.string.isRequired, children: PropTypes.node };
+
+/**
+ * Case study. The hero image is full-bleed at 100svh — exactly where the
+ * Flip transition from the home page / index lands, so the lifted image
+ * becomes this page. Below, numbered chapters tell problem → approach →
+ * architecture → challenges → results, each with its own reveal pattern,
+ * and the next project hands off with the same transition.
+ */
 const ProjectCaseStudy = () => {
   const { slug } = useParams();
-  const navigate = useNavigate();
-  const { isRecruiterMode } = useRecruiterMode();
+  const ref = useRef(null);
+  const reduced = usePrefersReducedMotion();
+  const idx = projects.findIndex((p) => p.slug === slug);
+  const project = projects[idx];
 
-  const project = useMemo(() => projects.find((p) => p.slug === slug), [slug]);
-  const projectIndex = useMemo(
-    () => projects.findIndex((p) => p.slug === slug),
-    [slug],
+  useGSAP(
+    () => {
+      if (reduced || !project) return;
+      const q = gsap.utils.selector(ref);
+      gsap.fromTo(q("[data-hero-copy]"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1, ease: EASE.out, stagger: 0.08, delay: 0.35 });
+      gsap.to(q("[data-hero-img]"), {
+        yPercent: 12,
+        scale: 1.06,
+        ease: "none",
+        scrollTrigger: { trigger: q("[data-cs-hero]")[0], start: "top top", end: "bottom top", scrub: true },
+      });
+    },
+    { dependencies: [reduced, slug], scope: ref, revertOnUpdate: true },
   );
 
-  const prevProject = projectIndex > 0 ? projects[projectIndex - 1] : null;
-  const nextProject =
-    projectIndex < projects.length - 1 ? projects[projectIndex + 1] : null;
+  if (!project) return <NotFound />;
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [slug]);
-
-  if (!project) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center section-padding pt-28">
-        <h1 className="text-4xl font-bold mb-4">Project Not Found</h1>
-        <p className="text-muted-foreground mb-8">
-          The case study you are looking for doesn't exist.
-        </p>
-        <button
-          onClick={() => navigate("/projects")}
-          className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:opacity-90 transition-opacity">
-          Back to Projects
-        </button>
-      </div>
-    );
-  }
-
-  const featured = getFeaturedMedia(project);
-  const galleryItems = (Array.isArray(project.gallery) ? project.gallery : [])
-    .map(normalizeGalleryItem)
-    .filter(Boolean);
+  const next = projects[(idx + 1) % projects.length];
+  const meta = [
+    ["Category", project.category],
+    ["Year", project.year],
+    project.role && ["Role", project.role],
+    project.teamSize && ["Team", project.teamSize === 1 ? "Solo" : `${project.teamSize} people`],
+    project.timeline && ["Timeline", project.timeline],
+    ["Status", project.status === "live" ? "Shipped" : project.status],
+  ].filter(Boolean);
+  const gallery = (project.gallery || []).filter((g) => g && g !== project.image);
+  let n = 0;
+  const num = () => String((n += 1)).padStart(2, "0");
 
   return (
-    <div className="relative min-h-screen bg-background">
-      {/* Decorative Blurs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-5xl section-padding pt-28">
-        {/* Back Button */}
-        <Link
-          to="/projects"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-12">
-          <ArrowLeft className="w-4 h-4" /> Back to all projects
-        </Link>
-
-        {/* 1. Hero Section */}
-        <ScrollReveal>
-          <header className="mb-16 lg:mb-24">
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 text-xs font-medium border rounded-full border-border bg-card/60 text-muted-foreground">
-                  {tag}
-                </span>
-              ))}
-              {project.status === "live" && (
-                <span className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-panel text-accent-ink border border-primary/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary motion-safe:animate-pulse" aria-hidden="true" />{" "}
-                  Live
-                </span>
-              )}
-            </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-display mb-6 tracking-tight">
-              {project.title}
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed mb-10">
+    <article ref={ref} key={slug}>
+      {/* Hero — the Flip landing zone */}
+      <header data-cs-hero className="relative h-[100svh] min-h-[34rem] overflow-hidden bg-panel">
+        <img
+          data-hero-img
+          src={project.image}
+          alt={`${project.title} — screenshot`}
+          width={1600}
+          height={974}
+          // React 18 drops the camelCase prop; the lowercase attribute reaches the DOM.
+          // eslint-disable-next-line react/no-unknown-property
+          fetchpriority="high"
+          className="absolute inset-0 h-full w-full object-cover will-change-transform"
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
+        <div className="shell relative flex h-full flex-col justify-end pb-[clamp(2.5rem,7vh,5rem)] text-white">
+          <p data-hero-copy className="hud mb-6 flex flex-wrap gap-x-4 text-white/80">
+            <span>Case study — {String(idx + 1).padStart(2, "0")}</span>
+            <span>{project.category}</span>
+            <span>{project.year}</span>
+          </p>
+          <h1 data-hero-copy className="max-w-5xl text-display">
+            {project.title}
+          </h1>
+          {(project.tagline || project.shortDesc) && (
+            <p data-hero-copy className="mt-6 max-w-2xl text-lede text-white/85">
               {project.tagline || project.shortDesc}
             </p>
-
-            <div className="flex flex-wrap items-center gap-4">
-              {project.live && (
-                <a
-                  href={project.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-xl font-semibold flex items-center gap-2 bg-primary text-primary-foreground hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                  <ExternalLink className="w-4 h-4" /> View Live Project
-                </a>
-              )}
-              {project.github && (
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-xl font-semibold flex items-center gap-2 bg-card/80 border border-border text-foreground hover:bg-card hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                  <Github className="w-4 h-4" /> Source Code
-                </a>
-              )}
-            </div>
-          </header>
-        </ScrollReveal>
-
-        {/* Recruiter summary */}
-        {isRecruiterMode && (
-          <ScrollReveal delay={0.05}>
-            <section className="mb-14 rounded-2xl border border-border bg-card/40 p-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Recruiter Summary
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                    {project.recruiterSummary ||
-                      "A focused breakdown of scope, decisions, and measurable outcomes."}
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link
-                    to="/resume"
-                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-card/70 border border-border hover:bg-card transition-colors">
-                    View Resume
-                  </Link>
-                  <Link
-                    to="/contactus"
-                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
-                    Contact
-                  </Link>
-                </div>
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* At a glance */}
-        <ScrollReveal delay={0.08}>
-          <section className="mb-16">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-2xl border border-border bg-card/40">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                  Role
-                </div>
-                <div className="mt-2 text-sm font-semibold text-foreground">
-                  {project.role || "Full-stack engineer"}
-                </div>
-              </div>
-              <div className="p-5 rounded-2xl border border-border bg-card/40">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                  Scope
-                </div>
-                <div className="mt-2 text-sm font-semibold text-foreground">
-                  {project.scope || `${project.category} · ${project.year}`}
-                </div>
-              </div>
-              <div className="p-5 rounded-2xl border border-border bg-card/40">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                  Team
-                </div>
-                <div className="mt-2 text-sm font-semibold text-foreground">
-                  {project.teamSize ? `Team of ${project.teamSize}` : "Solo"}
-                </div>
-              </div>
-              <div className="p-5 rounded-2xl border border-border bg-card/40">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                  Timeline
-                </div>
-                <div className="mt-2 text-sm font-semibold text-foreground">
-                  {project.timeline || "Shipped iteratively"}
-                </div>
-              </div>
-            </div>
-          </section>
-        </ScrollReveal>
-
-        {/* Featured Media */}
-        {featured.type !== "none" && (
-          <ScrollReveal delay={0.2}>
-            <div className="mb-20 lg:mb-32 rounded-2xl md:rounded-3xl overflow-hidden border border-border bg-card/40 shadow-2xl relative group">
-              {/* Browser mockup header */}
-              <div className="h-10 md:h-12 bg-card border-b border-border flex items-center px-4 gap-2">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                </div>
-                <div className="mx-auto px-4 py-1.5 rounded-md bg-background/50 border border-border text-xs text-muted-foreground font-mono truncate max-w-[200px] md:max-w-sm">
-                  {project.live || "localhost:3000"}
-                </div>
-              </div>
-              <div className="relative aspect-video">
-                {featured.type === "video" ? (
-                  <video
-                    src={featured.src}
-                    className="w-full h-full object-cover"
-                    controls
-                    playsInline
-                  />
-                ) : (
-                  <img
-                    src={featured.src}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" />
-              </div>
-            </div>
-          </ScrollReveal>
-        )}
-
-        {/* 2. Problem Statement */}
-        <ScrollReveal>
-          <section className="mb-20 lg:mb-32 max-w-4xl">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-3 rounded-xl bg-primary/10">
-                <Target className="w-6 h-6 text-accent-ink" />
-              </div>
-              <h2 className="text-3xl font-bold font-display">The Challenge</h2>
-            </div>
-
-            <div className="pl-6 border-l-4 border-primary/40">
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {project.problemStatement || project.fullDesc}
-              </p>
-            </div>
-
-            {(project.audience || project.whyItMatters) && (
-              <div className="mt-10 grid md:grid-cols-2 gap-4">
-                {project.audience && (
-                  <div className="p-6 rounded-2xl bg-card/40 border border-border">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Target Audience
-                    </div>
-                    <div className="mt-2 text-sm text-foreground/90 leading-relaxed">
-                      {Array.isArray(project.audience)
-                        ? project.audience.join(", ")
-                        : project.audience}
-                    </div>
-                  </div>
-                )}
-                {project.whyItMatters && (
-                  <div className="p-6 rounded-2xl bg-card/40 border border-border">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Why It Matters
-                    </div>
-                    <ul className="mt-3 space-y-2">
-                      {(Array.isArray(project.whyItMatters)
-                        ? project.whyItMatters
-                        : [project.whyItMatters]
-                      ).map((v, idx) => (
-                        <li
-                          key={idx}
-                          className="flex items-start gap-3 text-sm text-muted-foreground">
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/60 shrink-0" />
-                          <span>{v}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-          </section>
-        </ScrollReveal>
-
-        {/* 3. Architecture */}
-        {project.architecture && (
-          <ScrollReveal>
-            <section className="mb-20 lg:mb-32">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <LayoutTemplate className="w-6 h-6 text-accent-ink" />
-                </div>
-                <h2 className="text-3xl font-bold font-display">
-                  Architecture & System Design
-                </h2>
-              </div>
-
-              <ArchitectureFlow items={project.architecture} />
-
-              <div className="mt-6 grid md:grid-cols-2 gap-6">
-                {project.architecture.map((item, i) => (
-                  <div
-                    key={i}
-                    className="p-6 rounded-2xl bg-card/40 border border-border hover:border-primary/30 transition-colors">
-                    <h3 className="text-lg font-bold mb-3">{item.component}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {item.desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* 4. Challenges & Solutions */}
-        {project.challenges && (
-          <ScrollReveal>
-            <section className="mb-20 lg:mb-32 max-w-4xl">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <Rocket className="w-6 h-6 text-accent-ink" />
-                </div>
-                <h2 className="text-3xl font-bold font-display">
-                  Technical Hurdles
-                </h2>
-              </div>
-
-              <div className="space-y-6">
-                {project.challenges.map((c, i) => (
-                  <div
-                    key={i}
-                    className="p-6 md:p-8 rounded-2xl bg-card/60 backdrop-blur border border-border shadow-sm">
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                      <span className="text-accent-ink">0{i + 1}.</span> {c.title}
-                    </h3>
-                    <div className="space-y-4">
-                      <div>
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          Problem
-                        </span>
-                        <p className="mt-1 text-foreground/90">{c.problem}</p>
-                      </div>
-                      <div className="pl-4 border-l-2 border-primary/30">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-accent-ink">
-                          Solution
-                        </span>
-                        <p className="mt-1 text-muted-foreground">
-                          {c.solution}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* 4.5 Metrics / Impact */}
-        {project.metrics && (
-          <ScrollReveal>
-            <section className="mb-20 lg:mb-32">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <TrendingUp className="w-6 h-6 text-accent-ink" />
-                </div>
-                <h2 className="text-3xl font-bold font-display">
-                  Measurable Impact
-                </h2>
-              </div>
-
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {project.metrics.map((metric, i) => (
-                  <div
-                    key={i}
-                    className="p-6 rounded-2xl bg-card/40 border border-border">
-                    <div className="text-3xl font-bold font-display text-accent-ink mb-2">
-                      {metric.value || metric.improvement}
-                    </div>
-                    <div className="text-sm font-semibold text-foreground mb-1">
-                      {metric.label}
-                    </div>
-                    {(metric.before || metric.after) && (
-                      <div className="text-xs text-muted-foreground mt-2 flex items-center justify-between border-t border-border/50 pt-2">
-                        <span>Before: {metric.before}</span>
-                        <ArrowRight className="w-3 h-3 mx-1 text-accent-ink/50" />
-                        <span>After: {metric.after}</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* 4.75 Gallery */}
-        {galleryItems.length > 0 && (
-          <ScrollReveal>
-            <section className="mb-20 lg:mb-32">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <ImageIcon className="w-6 h-6 text-accent-ink" />
-                </div>
-                <h2 className="text-3xl font-bold font-display">
-                  Project Gallery
-                </h2>
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                {galleryItems.map((item, i) => (
-                  <a
-                    key={item.src + i}
-                    href={item.src}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group relative aspect-video rounded-2xl overflow-hidden border border-border bg-card/40 shadow-sm hover:shadow-xl transition-all"
-                    aria-label={`Open ${project.title} media ${i + 1}`}>
-                    <img
-                      src={item.src}
-                      alt={
-                        item.caption || `${project.title} screenshot ${i + 1}`
-                      }
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                    {(item.label || item.caption) && (
-                      <div className="absolute left-3 right-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="px-3 py-2 rounded-xl bg-background/70 backdrop-blur border border-border text-xs text-foreground">
-                          {item.label && (
-                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                              {item.label}
-                            </div>
-                          )}
-                          {item.caption && (
-                            <div className="mt-0.5">{item.caption}</div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </a>
-                ))}
-              </div>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* 5. Lessons Learned */}
-        {project.lessons && (
-          <ScrollReveal>
-            <section className="mb-20 lg:mb-32 max-w-4xl">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 rounded-xl bg-primary/10">
-                  <Lightbulb className="w-6 h-6 text-accent-ink" />
-                </div>
-                <h2 className="text-3xl font-bold font-display">
-                  Key Takeaways
-                </h2>
-              </div>
-
-              <ul className="space-y-4">
-                {project.lessons.map((lesson, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-card/40 border border-border">
-                    <CheckCircle2 className="w-5 h-5 text-accent-ink shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground leading-relaxed">
-                      {lesson}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </ScrollReveal>
-        )}
-
-        {/* 5.5 Future Improvements */}
-        {Array.isArray(project.futureImprovements) &&
-          project.futureImprovements.length > 0 && (
-            <ScrollReveal>
-              <section className="mb-20 lg:mb-32 max-w-4xl">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 rounded-xl bg-primary/10">
-                    <Rocket className="w-6 h-6 text-accent-ink" />
-                  </div>
-                  <h2 className="text-3xl font-bold font-display">
-                    Next Iteration
-                  </h2>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {project.futureImprovements.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-5 rounded-2xl border border-border bg-card/40 text-sm text-muted-foreground">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </ScrollReveal>
-          )}
-
-        {/* 6. Bottom Navigation */}
-        <div className="pt-12 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6">
-          {prevProject ? (
-            <Link
-              to={`/projects/${prevProject.slug}`}
-              className="flex items-center gap-3 group text-left max-w-[45%]">
-              <div className="w-10 h-10 rounded-full border border-border bg-card/50 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors shrink-0">
-                <ArrowLeft className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">
-                  Previous
-                </div>
-                <div className="font-semibold truncate">
-                  {prevProject.title}
-                </div>
-              </div>
-            </Link>
-          ) : (
-            <div />
-          )}
-
-          {nextProject ? (
-            <Link
-              to={`/projects/${nextProject.slug}`}
-              className="flex items-center justify-end gap-3 group text-right max-w-[45%]">
-              <div>
-                <div className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">
-                  Next
-                </div>
-                <div className="font-semibold truncate">
-                  {nextProject.title}
-                </div>
-              </div>
-              <div className="w-10 h-10 rounded-full border border-border bg-card/50 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors shrink-0">
-                <ChevronRight className="w-4 h-4" />
-              </div>
-            </Link>
-          ) : (
-            <div />
           )}
         </div>
+      </header>
+
+      <div className="shell">
+        {/* Meta strip */}
+        <Reveal as="dl" variant="fade" selector="[data-meta]" className="grid grid-cols-2 gap-x-8 gap-y-6 py-12 sm:grid-cols-3 lg:grid-cols-6">
+          {meta.map(([k, v]) => (
+            <div key={k} data-meta>
+              <dt className="hud">{k}</dt>
+              <dd className="mt-1.5 text-ink">{v}</dd>
+            </div>
+          ))}
+        </Reveal>
+
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-line py-8">
+          <ul className="flex flex-wrap gap-1.5" aria-label="Technologies">
+            {project.tags.map((t) => (
+              <li key={t} className="rounded-full border border-line px-2.5 py-1 font-mono text-[11px] text-ink-dim">
+                {t}
+              </li>
+            ))}
+          </ul>
+          <div className="flex gap-6 sm:ml-auto">
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+                <span className="link-line">Visit live site</span> <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+            {project.github && (
+              <a href={project.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+                <span className="link-line">{project.githubBackend ? "Frontend source" : "Source on GitHub"}</span>{" "}
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+            {project.githubBackend && (
+              <a href={project.githubBackend} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+                <span className="link-line">Backend source</span> <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
+          </div>
+        </div>
+
+        {project.problemStatement && (
+          <Chapter index={num()} title="The problem">
+            <Reveal variant="rise">
+              <p className="max-w-3xl text-[clamp(1.4rem,2.3vw,2.1rem)] font-medium leading-[1.28] tracking-[-0.025em] text-ink">{project.problemStatement}</p>
+            </Reveal>
+          </Chapter>
+        )}
+
+        <Chapter index={num()} title="The build">
+          <Reveal variant="rise" selector="[data-p]" className="max-w-3xl space-y-6">
+            <p data-p className="text-lede text-ink">{project.fullDesc}</p>
+            {project.recruiterSummary && <p data-p className="text-ink-dim">{project.recruiterSummary}</p>}
+          </Reveal>
+          {project.features?.length > 0 && (
+            <Reveal as="ul" variant="clip" selector="li" className="mt-10 grid border-t border-line sm:grid-cols-2 sm:gap-x-10">
+              {project.features.map((f) => (
+                <li key={f} className="flex gap-3 border-b border-line py-4 text-ink-dim">
+                  <span aria-hidden="true" className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-signal" />
+                  {f}
+                </li>
+              ))}
+            </Reveal>
+          )}
+        </Chapter>
+
+        {project.architecture?.length > 0 && (
+          <Chapter index={num()} title="Architecture">
+            <Reveal as="ol" variant="rise" selector="[data-node]" stagger={0.1} className="relative">
+              {project.architecture.map((a, i) => (
+                <li key={a.component} data-node className="relative grid grid-cols-[2.5rem_1fr] gap-4 pb-8 last:pb-0">
+                  {i < project.architecture.length - 1 && (
+                    <span aria-hidden="true" className="absolute left-[0.6rem] top-7 h-[calc(100%-1.75rem)] w-px bg-line" />
+                  )}
+                  <span className="grid h-5 w-5 place-items-center rounded-full border border-signal font-mono text-[10px] text-accent-ink">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-xl font-medium tracking-[-0.02em] text-ink">{a.component}</h3>
+                    <p className="mt-1 text-ink-dim">{a.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </Reveal>
+          </Chapter>
+        )}
+
+        {gallery[0] && (
+          <ImageReveal src={gallery[0]} alt={`${project.title} — additional view`} width={1600} height={974} variant="iris" drift={8} className="my-6 aspect-[16/9] rounded-lg bg-panel" />
+        )}
+
+        {project.challenges?.length > 0 && (
+          <Chapter index={num()} title="What broke, and the fix">
+            <div className="space-y-10">
+              {project.challenges.map((c) => (
+                <Reveal key={c.title} variant="rise" selector="[data-c]" className="grid gap-4 sm:grid-cols-2 sm:gap-10">
+                  <div data-c>
+                    <h3 className="text-xl font-medium tracking-[-0.02em] text-ink">{c.title}</h3>
+                    <p className="mt-2 text-ink-dim">{c.problem}</p>
+                  </div>
+                  <div data-c className="border-l border-signal pl-5">
+                    <p className="hud mb-2 text-accent-ink">Solution</p>
+                    <p className="text-ink">{c.solution}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </Chapter>
+        )}
+
+        {project.metrics?.length > 0 && (
+          <Chapter index={num()} title="Results">
+            <Reveal as="dl" variant="rise" selector="[data-metric]" className="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
+              {project.metrics.map((m) => (
+                <div key={m.label} data-metric className="flex flex-col gap-6 bg-background p-6">
+                  <dt className="hud">{m.label}</dt>
+                  <dd className="order-first font-mono text-[clamp(1.8rem,3vw,2.6rem)] font-medium leading-none tracking-[-0.04em] text-ink">
+                    {m.value || (
+                      <>
+                        <span className="text-ink-dim line-through decoration-1">{m.before}</span>{" "}
+                        <span aria-hidden="true" className="text-ink-dim">→</span>{" "}
+                        <span className="sr-only">to</span>
+                        {m.after}
+                      </>
+                    )}
+                  </dd>
+                  {m.improvement && <dd className="text-sm text-accent-ink">{m.improvement}</dd>}
+                </div>
+              ))}
+            </Reveal>
+          </Chapter>
+        )}
+
+        {gallery.length > 1 && (
+          <div className="grid gap-6 sm:grid-cols-2">
+            {gallery.slice(1).map((g, i) => (
+              <ImageReveal key={g} src={g} alt={`${project.title} — view ${i + 2}`} variant={GALLERY_REVEALS[i % 3]} className="aspect-[4/3] rounded-lg bg-panel" />
+            ))}
+          </div>
+        )}
+
+        {project.lessons?.length > 0 && (
+          <Chapter index={num()} title="Lessons">
+            <Reveal as="ul" variant="lines" selector="[data-l]" className="space-y-5">
+              {project.lessons.map((l) => (
+                <li key={l} className="overflow-clip">
+                  <span data-l className="block text-[clamp(1.25rem,2vw,1.6rem)] leading-snug tracking-[-0.02em] text-ink">
+                    {l}
+                  </span>
+                </li>
+              ))}
+            </Reveal>
+            {project.futureImprovements?.length > 0 && (
+              <>
+                <h3 className="hud mb-4 mt-12">Next iteration</h3>
+                <ul className="space-y-2 text-ink-dim">
+                  {project.futureImprovements.map((f) => (
+                    <li key={f}>— {f}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </Chapter>
+        )}
       </div>
-    </div>
+
+      {/* Next project */}
+      <nav aria-label="Next project" className="mt-[clamp(3rem,8vh,6rem)] border-t border-line">
+        <Link to={`/projects/${next.slug}`} data-transition="project" data-cursor="view" className="group block">
+          <div className="shell grid items-center gap-8 py-[clamp(3rem,8vh,5rem)] lg:grid-cols-12">
+            <div className="lg:col-span-6">
+              <p className="hud mb-4">Next project</p>
+              <SplitText
+                as="p"
+                lines={[next.title]}
+                by="lines"
+                className="text-display-2 text-ink transition-transform duration-700 ease-out group-hover:translate-x-2"
+              />
+              <span className="mt-8 inline-flex items-center gap-3 text-sm font-medium text-ink">
+                <span className="link-line">Continue</span>
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-signal text-primary-foreground transition-transform duration-500 ease-out group-hover:translate-x-1">
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </span>
+              </span>
+            </div>
+            <div className="overflow-hidden rounded-lg lg:col-span-6">
+              <img
+                src={next.image}
+                alt=""
+                width={1600}
+                height={974}
+                loading="lazy"
+                className="aspect-[16/10] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.035]"
+              />
+            </div>
+          </div>
+        </Link>
+      </nav>
+    </article>
   );
 };
 

@@ -5,11 +5,12 @@ import { gsap } from "./gsapSetup";
 import usePrefersReducedMotion from "./usePrefersReducedMotion";
 import useMediaQuery from "./useMediaQuery";
 
-const MAX_PULL = 8;
+const MAX_PULL = 12;
 
 /**
- * Magnetic hover: the wrapped element leans toward the cursor (≤8px) and
- * springs back on leave. Fine-pointer devices only; inert under reduced
+ * Magnetic hover: the wrapped element leans toward the cursor (≤12px) and
+ * eases back on leave. Starts from the live position, so it can be grabbed
+ * again mid-return without a jump. Fine-pointer devices only; inert under reduced
  * motion and on touch.
  */
 const Magnetic = ({ children, strength = 0.3, className = "" }) => {
@@ -21,8 +22,8 @@ const Magnetic = ({ children, strength = 0.3, className = "" }) => {
     (context, contextSafe) => {
       if (reduced || !fine) return undefined;
       const el = ref.current;
-      const xTo = gsap.quickTo(el, "x", { duration: 0.4, ease: "power3.out" });
-      const yTo = gsap.quickTo(el, "y", { duration: 0.4, ease: "power3.out" });
+      const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" });
+      const yTo = gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" });
 
       const onMove = contextSafe((e) => {
         const r = el.getBoundingClientRect();

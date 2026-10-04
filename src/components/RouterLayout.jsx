@@ -1,13 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { ThemeProvider } from "../context/ThemeContext";
-import { RecruiterModeProvider } from "../context/RecruiterModeContext";
 import Nav from "./chrome/Nav";
 import Cursor from "./chrome/Cursor";
-import BootLoader from "./chrome/BootLoader";
+import Preloader from "./chrome/Preloader";
 import Footer from "./Footer";
-import { CssSky, Ruler } from "./canvas";
-import { SmoothScroll, ScrollManager } from "../motion";
+import { SmoothScroll, ScrollManager, PageTransitionProvider } from "../motion";
 import useRouteSeo from "../seo/useRouteSeo";
 
 // Deferred globals: none are needed for first paint, and the chatbot alone
@@ -21,9 +19,7 @@ const useIdleMount = () => {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     if ("requestIdleCallback" in window) {
-      const id = window.requestIdleCallback(() => setReady(true), {
-        timeout: 2500,
-      });
+      const id = window.requestIdleCallback(() => setReady(true), { timeout: 2500 });
       return () => window.cancelIdleCallback(id);
     }
     const id = window.setTimeout(() => setReady(true), 1500);
@@ -32,55 +28,54 @@ const useIdleMount = () => {
   return ready;
 };
 
+/** Placeholder while a lazy route chunk loads (PageTransition waits on it). */
+const RouteLoading = () => (
+  <div data-route-loading className="grid min-h-[100svh] place-items-center">
+    <span className="hud">Loading</span>
+  </div>
+);
+
 const RouterLayout = () => {
   const extrasReady = useIdleMount();
+  const { pathname } = useLocation();
   useRouteSeo();
 
   return (
     <ThemeProvider>
-      <RecruiterModeProvider>
-        <SmoothScroll>
-          <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300">
-            {/* Skip link — first focusable element on the page */}
-            <a
-              href="#main-content"
-              className="fixed left-4 top-4 z-[300] -translate-y-24 rounded-full border border-signal bg-panel px-4 py-2 font-mono text-xs uppercase tracking-[0.2em] text-accent-ink transition-transform focus:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70"
-            >
-              Skip to content
-            </a>
+      <SmoothScroll>
+        <PageTransitionProvider>
+          <a
+            href="#main-content"
+            data-transition="none"
+            className="fixed left-4 top-4 z-[300] -translate-y-24 rounded-full bg-ink px-4 py-2 text-sm font-medium text-background transition-transform focus:translate-y-0"
+          >
+            Skip to content
+          </a>
 
-            {/* Ambient sky background — every route. The home page layers
-                the WebGL SkyScene above this; elsewhere it stands alone. */}
-            <CssSky />
+          <ScrollManager />
+          <Nav />
 
-            {/* Canvas chrome + navigation */}
-            <ScrollManager />
-            <Ruler />
-            <Nav />
-
-            {/* Main Content */}
-            <main id="main-content" className="relative z-10">
+          <main id="main-content" data-path={pathname} tabIndex={-1} className="relative outline-none">
+            <Suspense fallback={<RouteLoading />}>
               <Outlet />
-            </main>
+            </Suspense>
+          </main>
 
-            {/* Footer */}
-            <Footer />
+          <Footer />
 
-            {/* Deferred globals: chatbot FAB, ⌘K palette, terminal mode */}
-            {extrasReady && (
-              <Suspense fallback={null}>
-                <AIChatbot />
-                <CommandPalette />
-                <Terminal />
-              </Suspense>
-            )}
+          {extrasReady && (
+            <Suspense fallback={null}>
+              <AIChatbot />
+              <CommandPalette />
+              <Terminal />
+            </Suspense>
+          )}
 
-            {/* Global: boot sequence + custom cursor */}
-            <BootLoader />
-            <Cursor />
-          </div>
-        </SmoothScroll>
-      </RecruiterModeProvider>
+          <div className="grain" aria-hidden="true" />
+          <Preloader />
+          <Cursor />
+        </PageTransitionProvider>
+      </SmoothScroll>
     </ThemeProvider>
   );
 };

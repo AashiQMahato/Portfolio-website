@@ -1,57 +1,29 @@
-import { lazy, Suspense } from "react";
-import Hero from "../sections/Hero";
+import Hero from "../sections/hero/Hero";
+import Statement from "../sections/Statement";
+import SelectedWork from "../sections/work/SelectedWork";
 import About from "../sections/About";
-import TechTicker from "../sections/TechTicker";
-import ProcessChat from "../sections/ProcessChat";
-import SkillsCanvas from "../sections/SkillsCanvas";
-import FeaturedProjects from "../sections/FeaturedProjects";
-import TestimonialsSection from "../sections/TestimonialsSection";
-import Faq from "../sections/Faq";
-import Contact from "../sections/Contact";
-import { useWebGLSupport } from "../scene";
-import { useMediaQuery, usePrefersReducedMotion } from "../motion";
-import { useRecruiterMode } from "../context/RecruiterModeContext";
+import Experience from "../sections/Experience";
+import Skills from "../sections/Skills";
+import Writing from "../sections/Writing";
+import ResumeCta from "../sections/ResumeCta";
+import Contact from "../sections/contact/Contact";
 
-// Lazy so three.js (and the anime three adapter) live in their own async
-// chunk and never block first paint.
-const SkyScene = lazy(() => import("../scene/SkyScene"));
-
-/** The scroll-driven one-pager: hero → about → skills → work → voices → contact. */
-const Home = () => {
-  const reduced = usePrefersReducedMotion();
-  const isWide = useMediaQuery("(min-width: 768px)");
-  const webglOk = useWebGLSupport();
-  const { isRecruiterMode } = useRecruiterMode();
-  const showSky =
-    !reduced &&
-    !isRecruiterMode &&
-    isWide &&
-    webglOk &&
-    !navigator?.connection?.saveData;
-
-  return (
-    <div className="relative text-ink">
-      {/* WebGL sky above the CssSky fallback (which RouterLayout mounts
-          globally) — same palette, so the handoff is seamless. */}
-      {showSky && (
-        <Suspense fallback={null}>
-          <SkyScene />
-        </Suspense>
-      )}
-
-      <div className="relative z-10">
-        <Hero />
-        <About />
-        <TechTicker />
-        <ProcessChat />
-        <SkillsCanvas />
-        <FeaturedProjects />
-        <TestimonialsSection />
-        <Faq />
-        <Contact />
-      </div>
-    </div>
-  );
-};
+/**
+ * The narrative: identity → philosophy → proof → person → journey →
+ * range → knowledge → the compact version → action.
+ */
+const Home = () => (
+  <>
+    <Hero />
+    <Statement />
+    <SelectedWork />
+    <About />
+    <Experience />
+    <Skills />
+    <Writing />
+    <ResumeCta />
+    <Contact />
+  </>
+);
 
 export default Home;

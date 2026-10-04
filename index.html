@@ -32,9 +32,8 @@
     <meta name="format-detection" content="telephone=no" />
 
     <!-- Theme: matches the canvas ground in each palette -->
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#B8DCF5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101624" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#070708" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -42,15 +41,22 @@
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
-    <!-- Apply the saved theme before first paint: no light→dark flash -->
+    <!-- Apply the saved theme before first paint (dark-first): no flash -->
     <script>
       try {
-        var t = localStorage.getItem("portfolio-theme-v2") || "light";
-        var d = t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-        document.documentElement.classList.add(d ? "dark" : "light");
-        document.documentElement.style.colorScheme = d ? "dark" : "light";
-      } catch (e) {}
+        var t = localStorage.getItem("portfolio-theme-v3") === "light" ? "light" : "dark";
+        document.documentElement.classList.add(t);
+        document.documentElement.style.colorScheme = t;
+        if (t === "light") document.querySelector('meta[name="theme-color"]').content = "#F3F1EC";
+      } catch (e) {
+        document.documentElement.classList.add("dark");
+      }
     </script>
+
+    <!-- Both faces render above the fold (display type + mono labels); fetch
+         them with the HTML so a late swap can't re-wrap lines (CLS). -->
+    <link rel="preload" href="/src/assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- seo:jsonld -->
   </head>

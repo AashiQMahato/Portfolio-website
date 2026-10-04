@@ -18,19 +18,17 @@ export default {
         muted: "rgb(var(--muted) / <alpha-value>)",
         "muted-foreground": "rgb(var(--muted-foreground) / <alpha-value>)",
         ring: "rgb(var(--ring) / <alpha-value>)",
-        // "Schematic" design tokens (see :root in index.css)
+        // "Signal" design tokens (see :root in index.css)
         panel: "rgb(var(--panel) / <alpha-value>)",
         line: "rgb(var(--line) / <alpha-value>)",
         ink: {
           DEFAULT: "rgb(var(--ink) / <alpha-value>)",
           dim: "rgb(var(--ink-dim) / <alpha-value>)",
+          faint: "rgb(var(--ink-faint) / <alpha-value>)",
         },
         signal: "rgb(var(--signal) / <alpha-value>)",
         ember: "rgb(var(--ember) / <alpha-value>)",
-        // Canvas tokens
         "accent-ink": "rgb(var(--accent-ink) / <alpha-value>)",
-        "sky-high": "rgb(var(--sky-high) / <alpha-value>)",
-        "sky-low": "rgb(var(--sky-low) / <alpha-value>)",
         primary: {
           DEFAULT: "rgb(var(--primary) / <alpha-value>)",
           foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
@@ -40,18 +38,29 @@ export default {
         },
       },
       fontSize: {
-        // Hero display headline ("IMPOSSIBLE TO IGNORE." scale)
+        // Editorial scale — size, leading and tracking travel together
+        // (large type tightens, small type opens up).
+        "display-xl": [
+          "clamp(3.4rem, min(19.5vw, 19svh), 15rem)",
+          { lineHeight: "0.84", letterSpacing: "-0.055em", fontWeight: "600" },
+        ],
         display: [
-          "clamp(3.25rem, 10vw, 8.5rem)",
-          { lineHeight: "0.95", letterSpacing: "-0.03em", fontWeight: "700" },
+          "clamp(3rem, 8.2vw, 8rem)",
+          { lineHeight: "0.9", letterSpacing: "-0.045em", fontWeight: "600" },
         ],
-        // Section title scale
         "display-2": [
-          "clamp(2.25rem, 6vw, 4.5rem)",
-          { lineHeight: "1.02", letterSpacing: "-0.02em", fontWeight: "700" },
+          "clamp(2.4rem, 5.4vw, 5.25rem)",
+          { lineHeight: "0.98", letterSpacing: "-0.04em", fontWeight: "600" },
         ],
-        // Mono HUD micro-labels
-        hud: ["0.6875rem", { lineHeight: "1.3", letterSpacing: "0.2em" }],
+        statement: [
+          "clamp(1.85rem, 3.9vw, 3.75rem)",
+          { lineHeight: "1.1", letterSpacing: "-0.03em", fontWeight: "500" },
+        ],
+        lede: [
+          "clamp(1.15rem, 1.6vw, 1.4rem)",
+          { lineHeight: "1.5", letterSpacing: "-0.01em" },
+        ],
+        hud: ["0.6875rem", { lineHeight: "1.4", letterSpacing: "0.14em" }],
       },
       boxShadow: {
         soft: "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
@@ -98,7 +107,9 @@ export default {
         400: "400ms",
       },
       transitionTimingFunction: {
-        "bounce-in": "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+        // CSS mirrors of the GSAP tokens in src/motion/tokens.js
+        out: "cubic-bezier(0.22, 1, 0.36, 1)",
+        "in-out": "cubic-bezier(0.87, 0, 0.13, 1)",
       },
     },
   },

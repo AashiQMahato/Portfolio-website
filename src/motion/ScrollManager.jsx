@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useLenis } from "./SmoothScroll";
 
@@ -12,6 +12,17 @@ const NAV_OFFSET = -72;
 const ScrollManager = () => {
   const { pathname, hash } = useLocation();
   const lenis = useLenis();
+  const first = useRef(true);
+
+  // Route change → move focus to the new page so screen-reader and keyboard
+  // users start at its content, not wherever the old page left them.
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    if (!hash) document.getElementById("main-content")?.focus({ preventScroll: true });
+  }, [pathname, hash]);
 
   useEffect(() => {
     if (hash) {

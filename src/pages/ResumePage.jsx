@@ -1,6 +1,6 @@
 import {
   Download,
-  FileText,
+  Printer,
   Mail,
   MapPin,
   Phone,
@@ -18,59 +18,66 @@ const ResumePage = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-background pt-16 print:pt-0 md:pt-24">
-      {/* Non-print controls — sticky BELOW the floating nav pill
-          (nav bottom ≈4rem on mobile, ≈6rem on md with the ruler) */}
-      <div className="print:hidden sticky top-16 z-40 px-3 pt-2 md:top-24 md:px-6">
-        <div className="mx-auto flex max-w-[850px] flex-col gap-3 rounded-2xl border border-line bg-panel/90 px-4 py-3 shadow-soft backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <p className="font-display text-lg font-bold text-ink">Résumé</p>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+    <div className="min-h-screen pb-[clamp(5rem,12vh,9rem)] pt-[var(--nav-h)] print:p-0">
+      {/* Site chrome: sticky toolbar under the fixed nav, never printed */}
+      <div
+        data-chrome
+        className="sticky top-[var(--nav-h)] z-40 border-b border-line bg-background print:hidden">
+        <div className="shell flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="hud">(Résumé) — Printable document</p>
+          <div className="flex flex-wrap items-center gap-3">
             <a
               href="/AashikKumarMahatoResume.pdf"
               download="Aashik_Kumar_Mahato_Resume.pdf"
-              className="flex items-center justify-center gap-2 rounded-full border border-ink/50 bg-panel px-5 py-2 font-display text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70">
-              <FileText className="h-4 w-4" aria-hidden="true" /> Original PDF
+              className="inline-flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-ink">
+              <Download className="h-4 w-4" aria-hidden="true" /> Download PDF
             </a>
             <button
+              type="button"
               onClick={handlePrint}
-              className="flex items-center justify-center gap-2 rounded-full bg-signal px-5 py-2 font-display text-sm font-bold text-primary-foreground transition-[filter] hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-panel">
-              <Download className="h-4 w-4" aria-hidden="true" /> Print / Save
+              className="inline-flex items-center gap-2 rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110">
+              <Printer className="h-4 w-4" aria-hidden="true" /> Print / Save
             </button>
           </div>
         </div>
       </div>
 
-      {/* A4 Paper Container for Print & Desktop */}
-      <div className="section-padding py-10 print:p-0 print:m-0 flex justify-center">
-        <div className="w-full max-w-[850px] bg-white text-black p-8 sm:p-12 md:p-16 rounded-sm shadow-2xl print:shadow-none print:w-full print:max-w-none print:p-0">
+      {/* A4 paper sheet — a light document in both themes, so its accent is
+          the light-theme accent-ink value (AA on white), not the themed token */}
+      <div className="shell flex justify-center pt-10 print:m-0 print:p-0">
+        <div className="w-full max-w-[850px] rounded-sm bg-white p-8 text-black ring-1 ring-line sm:p-12 md:p-16 print:w-full print:max-w-none print:p-0 print:ring-0">
           {/* Header */}
           <header className="border-b-2 border-gray-900 pb-6 mb-6">
             <h1 className="text-4xl sm:text-5xl font-black font-display text-gray-900 uppercase tracking-tight mb-3">
               {CV.name}
             </h1>
-            <div className="text-lg sm:text-xl text-accent-ink font-bold mb-4">
+            <div className="text-lg sm:text-xl text-[#A6360A] font-bold mb-4">
               {CV.title}
             </div>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 font-medium">
               <span className="flex items-center gap-1.5">
-                <Mail className="w-4 h-4" /> {CV.contact.email}
+                <Mail className="w-4 h-4" aria-hidden="true" /> {CV.contact.email}
               </span>
               <span className="flex items-center gap-1.5">
-                <Phone className="w-4 h-4" /> {CV.contact.phone}
+                <Phone className="w-4 h-4" aria-hidden="true" /> {CV.contact.phone}
               </span>
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4" /> {CV.contact.location}
+                <MapPin className="w-4 h-4" aria-hidden="true" /> {CV.contact.location}
               </span>
               <a
                 href={CV.contact.github}
-                className="flex items-center gap-1.5 hover:text-accent-ink">
-                <Github className="w-4 h-4" /> github.com/AashiQMahato
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-[#A6360A]">
+                <Github className="w-4 h-4" aria-hidden="true" /> github.com/AashiQMahato
               </a>
               <a
                 href={CV.contact.linkedin}
-                className="flex items-center gap-1.5 hover:text-accent-ink">
-                <Linkedin className="w-4 h-4" /> LinkedIn
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-[#A6360A]">
+                <Linkedin className="w-4 h-4" aria-hidden="true" /> LinkedIn
               </a>
             </div>
           </header>
@@ -88,7 +95,7 @@ const ResumePage = () => {
               {/* Experience */}
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-wider text-gray-900 border-b border-gray-300 pb-2 mb-4">
-                  <Briefcase className="w-5 h-5 text-accent-ink" /> Experience
+                  <Briefcase className="w-5 h-5 text-[#A6360A]" aria-hidden="true" /> Experience
                 </h2>
                 <div className="space-y-6">
                   {CV.experience.map((exp, i) => (
@@ -101,7 +108,7 @@ const ResumePage = () => {
                           {exp.period}
                         </span>
                       </div>
-                      <div className="text-accent-ink font-semibold text-sm mb-2">
+                      <div className="text-[#A6360A] font-semibold text-sm mb-2">
                         {exp.company} | {exp.location}
                       </div>
                       <ul className="list-disc pl-5 text-gray-700 space-y-1 text-sm leading-relaxed">
@@ -117,7 +124,7 @@ const ResumePage = () => {
               {/* Projects */}
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-wider text-gray-900 border-b border-gray-300 pb-2 mb-4">
-                  <Code className="w-5 h-5 text-accent-ink" /> Projects
+                  <Code className="w-5 h-5 text-[#A6360A]" aria-hidden="true" /> Projects
                 </h2>
                 <div className="space-y-6">
                   {CV.projects.map((proj, i) => (
@@ -128,8 +135,10 @@ const ResumePage = () => {
                         </h3>
                         <a
                           href={proj.url}
-                          className="text-xs text-accent-ink font-mono truncate max-w-[200px] hover:underline">
-                          Link
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#A6360A] font-mono truncate max-w-[200px] hover:underline">
+                          Source<span className="sr-only"> code for {proj.name}</span>
                         </a>
                       </div>
                       <div className="text-gray-600 font-medium text-xs mb-2 italic">
@@ -151,7 +160,7 @@ const ResumePage = () => {
               {/* Education */}
               <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-wider text-gray-900 border-b border-gray-300 pb-2 mb-4">
-                  <GraduationCap className="w-5 h-5 text-accent-ink" /> Education
+                  <GraduationCap className="w-5 h-5 text-[#A6360A]" aria-hidden="true" /> Education
                 </h2>
                 <div className="space-y-5">
                   {CV.education.map((edu, i) => (
@@ -159,7 +168,7 @@ const ResumePage = () => {
                       <h3 className="font-bold text-gray-900 text-sm leading-snug">
                         {edu.degree}
                       </h3>
-                      <div className="text-accent-ink text-xs font-semibold my-1">
+                      <div className="text-[#A6360A] text-xs font-semibold my-1">
                         {edu.institution}
                       </div>
                       <div className="text-gray-500 text-xs">{edu.period}</div>
@@ -200,7 +209,7 @@ const ResumePage = () => {
         </div>
       </div>
 
-      {/* Global CSS for printing */}
+      {/* Print: edge-to-edge sheet with exact colours */}
       <style>{`
         @media print {
           @page { margin: 0; }
@@ -209,7 +218,6 @@ const ResumePage = () => {
             print-color-adjust: exact;
             background: white !important;
           }
-          .section-padding { padding: 0 !important; }
         }
       `}</style>
     </div>

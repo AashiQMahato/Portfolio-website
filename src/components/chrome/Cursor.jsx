@@ -1,134 +1,147 @@
-import { useEffect, useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import {
-  gsap,
-  useMediaQuery,
-  usePrefersReducedMotion,
-} from "../../motion";
-
-const INTERACTIVE =
-  "a, button, [role='button'], label, summary, [data-cursor='link']";
-const TEXT_FIELDS = "input, textarea, select, [contenteditable='true']";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "../../motion/gsapSetup";
+import { usePrefersReducedMotion, useMediaQuery } from "../../motion";
 
 /**
- * Custom design-tool cursor: an orange Figma-style arrow that tracks
- * tightly plus a lagging "aashiq" name-tag pill — as if the owner's
- * multiplayer cursor is yours. Contextual states — the tag brightens over
- * interactive elements, flips to [ VIEW ] over project media, and yields to
- * the native caret over text fields. Fine-pointer devices only; native
- * cursor under reduced motion or on touch.
+ * Desktop cursor. A precise dot plus a lagging follower that changes state
+ * from the nearest [data-cursor] ancestor:
+ *
+ *   link      (default for a / button) follower ring, dot hides
+ *   button    larger ring around magnetic CTAs
+ *   view | explore | read | drag | copy   filled disc with a label
+ *   external  ring + ↗
+ *   hide      nothing (text inputs, iframes)
+ *
+ * `data-cursor-label` overrides the label text. Purely decorative: it is
+ * aria-hidden, pointer-events:none, and the native cursor returns for
+ * touch, coarse pointers and reduced motion.
  */
-const Cursor = () => {
-  const arrowRef = useRef(null);
-  const tagRef = useRef(null);
-  const tagTextRef = useRef(null);
-  const reduced = usePrefersReducedMotion();
-  const fine = useMediaQuery("(pointer: fine)");
-  const enabled = fine && !reduced;
+const LABELS = {
+  view: "View project",
+  explore: "Explore",
+  read: "Read",
+  drag: "Drag",
+  copy: "Copy",
+};
 
-  // Hide the native cursor only while the custom one is live.
+const SIZE = { default: 0, link: 44, button: 72, external: 52, label: 104, hide: 0 };
+
+const Cursor = () => {
+  const dotRef = useRef(null);
+  const ringRef = useRef(null);
+  const reduced = usePrefersReducedMotion();
+  const fine = useMediaQuery("(hover: hover) and (pointer: fine)");
+  const enabled = fine && !reduced;
+  const [state, setState] = useState({ kind: "default", label: "" });
+
   useEffect(() => {
-    document.documentElement.classList.toggle("custom-cursor", enabled);
-    return () => document.documentElement.classList.remove("custom-cursor");
+    if (!enabled) return undefined;
+    const root = document.documentElement;
+    root.classList.add("has-cursor");
+
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    gsap.set([dot, ring], { xPercent: -50, yPercent: -50, x: -100, y: -100 });
+    const dotX = gsap.quickTo(dot, "x", { duration: 0.12, ease: "power3.out" });
+    const dotY = gsap.quickTo(dot, "y", { duration: 0.12, ease: "power3.out" });
+    const ringX = gsap.quickTo(ring, "x", { duration: 0.45, ease: "power3.out" });
+    const ringY = gsap.quickTo(ring, "y", { duration: 0.45, ease: "power3.out" });
+
+    let visible = false;
+    const onMove = (e) => {
+      if (!visible) {
+        visible = true;
+        gsap.set([dot, ring], { x: e.clientX, y: e.clientY });
+        gsap.to([dot, ring], { autoAlpha: 1, duration: 0.2 });
+      }
+      dotX(e.clientX);
+      dotY(e.clientY);
+      ringX(e.clientX);
+      ringY(e.clientY);
+    };
+
+    const resolve = (target) => {
+      const el = target?.closest?.(
+        "[data-cursor], a, button, [role='button'], summary, label, input, textarea, select, iframe",
+      );
+      if (!el) return { kind: "default", label: "" };
+      const kind = el.getAttribute("data-cursor");
+      if (kind) return { kind, label: el.getAttribute("data-cursor-label") || LABELS[kind] || "" };
+      if (el.matches("input, textarea, select, iframe")) return { kind: "hide", label: "" };
+      if (el.matches("a[target='_blank']")) return { kind: "external", label: "" };
+      return { kind: "link", label: "" };
+    };
+
+    const onOver = (e) => setState(resolve(e.target));
+    const onLeaveWindow = () => {
+      visible = false;
+      gsap.to([dot, ring], { autoAlpha: 0, duration: 0.2 });
+    };
+    const onDown = () => gsap.to(ring, { scale: 0.86, duration: 0.15 });
+    const onUp = () => gsap.to(ring, { scale: 1, duration: 0.4, ease: "power3.out" });
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("pointerover", onOver, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeaveWindow);
+    window.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointerup", onUp);
+    return () => {
+      root.classList.remove("has-cursor");
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerover", onOver);
+      document.documentElement.removeEventListener("pointerleave", onLeaveWindow);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+    };
   }, [enabled]);
 
-  useGSAP(
-    (context, contextSafe) => {
-      if (!enabled) return undefined;
-      const arrow = arrowRef.current;
-      const tag = tagRef.current;
-      const tagText = tagTextRef.current;
-
-      gsap.set([arrow, tag], { autoAlpha: 0 });
-      const arrowX = gsap.quickTo(arrow, "x", { duration: 0.06, ease: "power2.out" });
-      const arrowY = gsap.quickTo(arrow, "y", { duration: 0.06, ease: "power2.out" });
-      const tagX = gsap.quickTo(tag, "x", { duration: 0.28, ease: "power3.out" });
-      const tagY = gsap.quickTo(tag, "y", { duration: 0.28, ease: "power3.out" });
-
-      let seen = false;
-      const onMove = contextSafe((e) => {
-        if (!seen) {
-          seen = true;
-          gsap.set([arrow, tag], { x: e.clientX, y: e.clientY });
-          gsap.to([arrow, tag], { autoAlpha: 1, duration: 0.2 });
-        }
-        arrowX(e.clientX);
-        arrowY(e.clientY);
-        tagX(e.clientX);
-        tagY(e.clientY);
-      });
-
-      const setState = contextSafe((state) => {
-        const view = state === "view";
-        const hover = state === "hover";
-        if (tagText)
-          tagText.textContent = view ? "view" : "aashiq";
-        gsap.to(tag, {
-          scale: view ? 1.15 : 1,
-          backgroundColor: view
-            ? "rgb(var(--ember))"
-            : hover
-              ? "rgb(var(--signal))"
-              : "rgb(var(--signal) / 0.9)",
-          duration: 0.25,
-          ease: "power3.out",
-        });
-        gsap.to(arrow, { scale: hover || view ? 0.85 : 1, duration: 0.2 });
-      });
-
-      const onOver = contextSafe((e) => {
-        const t = e.target;
-        if (t.closest?.("[data-cursor='view']")) setState("view");
-        else if (t.closest?.(TEXT_FIELDS)) {
-          gsap.to([arrow, tag], { autoAlpha: 0, duration: 0.15 });
-          return;
-        } else if (t.closest?.(INTERACTIVE)) setState("hover");
-        else setState("default");
-        gsap.to([arrow, tag], { autoAlpha: 1, duration: 0.15 });
-      });
-
-      const onLeaveWindow = contextSafe(() => {
-        seen = false;
-        gsap.to([arrow, tag], { autoAlpha: 0, duration: 0.2 });
-      });
-
-      window.addEventListener("pointermove", onMove, { passive: true });
-      document.addEventListener("pointerover", onOver, { passive: true });
-      document.documentElement.addEventListener("pointerleave", onLeaveWindow);
-      return () => {
-        window.removeEventListener("pointermove", onMove);
-        document.removeEventListener("pointerover", onOver);
-        document.documentElement.removeEventListener("pointerleave", onLeaveWindow);
-      };
-    },
-    { dependencies: [enabled] },
-  );
+  // Resize the follower per state (width/height on a fixed, composited
+  // layer with no layout dependants — cheaper than a scale that would blur
+  // the label text).
+  useEffect(() => {
+    if (!enabled) return;
+    const isLabel = Boolean(LABELS[state.kind] || (state.label && state.kind !== "link"));
+    const size = isLabel ? SIZE.label : SIZE[state.kind] ?? SIZE.link;
+    gsap.to(ringRef.current, {
+      width: size,
+      height: size,
+      duration: 0.45,
+      ease: "power3.out",
+      overwrite: "auto",
+    });
+    gsap.to(dotRef.current, {
+      scale: state.kind === "default" ? 1 : 0,
+      duration: 0.25,
+      overwrite: "auto",
+    });
+  }, [state, enabled]);
 
   if (!enabled) return null;
 
+  const isLabel = Boolean(LABELS[state.kind] || (state.label && state.kind !== "link"));
+
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[200]">
-      {/* Lagging name-tag pill (offset below-right of the hotspot) */}
+    <div aria-hidden="true" data-chrome>
       <div
-        ref={tagRef}
-        className="fixed left-0 top-0 origin-top-left rounded-full bg-signal/90 px-2.5 py-0.5 font-mono text-[10px] tracking-wider text-primary-foreground"
-        style={{ marginLeft: 14, marginTop: 18 }}
+        ref={dotRef}
+        className="pointer-events-none fixed left-0 top-0 z-[200] h-2 w-2 rounded-full bg-white opacity-0 mix-blend-difference"
+      />
+      <div
+        ref={ringRef}
+        className={`pointer-events-none fixed left-0 top-0 z-[199] flex h-0 w-0 items-center justify-center rounded-full opacity-0 transition-[background-color,border-color] duration-300 ${
+          isLabel
+            ? "bg-signal text-primary-foreground"
+            : "border border-ink/40 bg-ink/[0.03] backdrop-blur-[2px]"
+        }`}
       >
-        <span ref={tagTextRef}>aashiq</span>
+        <span
+          className={`whitespace-nowrap font-mono text-[10px] font-medium uppercase tracking-[0.14em] transition-opacity duration-200 ${
+            isLabel || state.kind === "external" ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {isLabel ? state.label : state.kind === "external" ? "↗" : ""}
+        </span>
       </div>
-      {/* Arrow — hotspot at top-left of the SVG */}
-      <svg
-        ref={arrowRef}
-        className="fixed left-0 top-0"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="rgb(var(--signal))"
-        stroke="rgb(var(--panel))"
-        strokeWidth="1.5"
-      >
-        <path d="M4 2l16 8-7 2-3 7z" />
-      </svg>
     </div>
   );
 };

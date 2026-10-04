@@ -1,4 +1,10 @@
 import AAMS from "../assets/AAMS.jpg";
+import attendeaseShot from "../assets/projects/attendease.jpg";
+import smartSchoolShot from "../assets/projects/smart-school.jpg";
+import cableNetworkShot from "../assets/projects/cable-network.jpg";
+import weatherImage from "../assets/projects/weather.jpg";
+import blindStickDiagram from "../assets/projects/blind-stick.svg";
+import studioToolsShot from "../assets/projects/studio-tools.jpg";
 const DEVICON = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 export const TECH_ICONS = {
@@ -145,6 +151,59 @@ export const CV = {
 
 export const projects = [
   {
+    slug: "studio-tools",
+    title: "Studio Tools",
+    tagline:
+      "Image, text and PDF tools in the browser — AI background removal, upscaling and OCR, with no install and no sign-up.",
+    shortDesc:
+      "An all-in-one image, text and PDF toolkit: AI background removal, upscaling, cropping, OCR for English and Nepali, and PDF editing, signing and conversion.",
+    fullDesc:
+      "Studio Tools is a free, privacy-first web app for everyday image and document chores. Background removal (rembg) and AI upscaling (Upscayl) run locally on the server, cropping with straightening, aspect ratios and rotate/flip runs in the browser, and a before/after comparison lets people check results before downloading. Uploaded files are processed in memory and deleted after processing.",
+    problemStatement:
+      "Removing a background, upscaling a photo or signing a PDF usually means installing heavy software or uploading private files to ad-heavy sites. Studio Tools puts those jobs behind one fast, private interface that works on any device.",
+    architecture: [
+      {
+        component: "Frontend",
+        desc: "React 19 SPA on Vite with strict TypeScript, Tailwind CSS v4, Zustand and React Router — talks only to its own API",
+      },
+      {
+        component: "API",
+        desc: "Express 5 + TypeScript with Helmet, CORS, rate limiting and in-memory Multer uploads; owns every provider key",
+      },
+      {
+        component: "Background removal",
+        desc: "Internal FastAPI service wrapping rembg, called by the API — never exposed to the browser",
+      },
+      {
+        component: "Upscaling",
+        desc: "Upscayl running on the server for AI super-resolution",
+      },
+    ],
+    features: [
+      "AI background removal (rembg)",
+      "AI upscaling (Upscayl)",
+      "Crop, straighten, rotate and flip in the browser",
+      "Before / after comparison slider",
+      "OCR for English and Nepali",
+      "PDF editing, signing and conversion",
+    ],
+    highlights: [
+      "Browser never sees provider API keys — every call goes through the API",
+      "Frontend and backend deploy independently",
+      "Files processed in memory and deleted after processing",
+    ],
+    gallery: [studioToolsShot],
+    image: studioToolsShot,
+    tags: ["React 19", "TypeScript", "Express 5", "Python", "FastAPI", "rembg", "Tailwind CSS"],
+    github: "https://github.com/AashiQMahato/StudioTools",
+    live: "https://imagetools-358n.onrender.com/",
+    category: "Full-Stack",
+    cats: ["Full-Stack", "AI/ML", "Web Dev"],
+    status: "live",
+    year: "2026",
+    featured: true,
+  },
+  {
     slug: "ultrasonic-blind-stick",
     title: "Ultrasonic Blind Stick with GSM/GPS",
     tagline:
@@ -209,11 +268,8 @@ export const projects = [
         improvement: "Instant SMS via GSM",
       },
     ],
-    gallery: [
-      "https://media.springernature.com/lw685/springer-static/image/chp%3A10.1007%2F978-981-33-4866-0_23/MediaObjects/498359_1_En_23_Fig2_HTML.png",
-    ],
-    image:
-      "https://media.springernature.com/lw685/springer-static/image/chp%3A10.1007%2F978-981-33-4866-0_23/MediaObjects/498359_1_En_23_Fig2_HTML.png",
+    gallery: [blindStickDiagram],
+    image: blindStickDiagram,
     tags: ["Arduino", "GSM Module", "GPS", "Sensors"],
     features: [
       "2m ultrasonic obstacle detection",
@@ -221,7 +277,8 @@ export const projects = [
       "Haptic vibration feedback",
       "Weatherproof enclosure design",
     ],
-    github: null,
+    github:
+      "https://github.com/AashiQMahato/Arduino-projects-/tree/main/Ultrasonic-Blindstick-with-GSM-and-GPS-tracking-main",
     live: null,
     role: "Embedded systems + integration",
     scope: "Hardware prototype · Sensor + GSM/GPS integration",
@@ -242,10 +299,7 @@ export const projects = [
     category: "Hardware",
     cats: ["Hardware", "IoT"],
     status: "live",
-    stars: 12,
-    forks: 5,
-    views: 340,
-    year: "2023",
+    year: "2024",
     teamSize: 3,
     featured: false,
     highlights: [
@@ -320,8 +374,8 @@ export const projects = [
         improvement: "Eliminated",
       },
     ],
-    gallery: [AAMS],
-    image: AAMS,
+    gallery: [attendeaseShot, AAMS],
+    image: attendeaseShot,
     tags: ["Python", "Face Recognition", "React", "MongoDB"],
     features: [
       "Real-time webcam-based attendance capture",
@@ -334,9 +388,6 @@ export const projects = [
     category: "Full-Stack",
     cats: ["Full-Stack", "AI/ML"],
     status: "live",
-    stars: 24,
-    forks: 8,
-    views: 580,
     year: "2024",
     teamSize: 4,
     featured: true,
@@ -395,11 +446,8 @@ export const projects = [
         improvement: "Optimized Core Web Vitals",
       },
     ],
-    gallery: [
-      "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    ],
-    image:
-      "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    gallery: [weatherImage],
+    image: weatherImage,
     tags: ["Next.js", "React", "OpenAI", "TypeScript"],
     features: [
       "AI-powered weather summaries in natural language",
@@ -414,10 +462,7 @@ export const projects = [
     category: "Web Dev",
     cats: ["Web Dev", "AI/ML"],
     status: "live",
-    stars: 18,
-    forks: 6,
-    views: 420,
-    year: "2023",
+    year: "2025",
     teamSize: 2,
     featured: false,
     highlights: [
@@ -475,11 +520,8 @@ export const projects = [
         improvement: "Secure JWT architecture",
       },
     ],
-    gallery: [
-      "https://img.freepik.com/premium-photo/3d-cartoon-back-school_1268653-382.jpg",
-    ],
-    image:
-      "https://img.freepik.com/premium-photo/3d-cartoon-back-school_1268653-382.jpg",
+    gallery: [smartSchoolShot],
+    image: smartSchoolShot,
     tags: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS", "JWT"],
     features: [
       "Role-based dashboards for Admin, Teacher, Student, and Parent",
@@ -489,14 +531,12 @@ export const projects = [
       "Responsive modern dashboard UI",
       "AI-powered analytics and student insights",
     ],
-    github: "https://github.com/AashiQMahato/Smart_School_Management_System",
+    github: "https://github.com/AashiQMahato/Smart-School-management-system-Frontend",
+    githubBackend: "https://github.com/AashiQMahato/Smart-School-management-system-Backend",
     live: "https://smart-school-management-system-frontend.onrender.com/",
     category: "Full-Stack",
     cats: ["Full-Stack", "Web Dev", "AI/ML"],
     status: "live",
-    stars: 32,
-    forks: 11,
-    views: 920,
     year: "2025",
     teamSize: 4,
     featured: true,
@@ -558,11 +598,8 @@ export const projects = [
         improvement: "Optimized for mobile",
       },
     ],
-    gallery: [
-      "https://i.ytimg.com/vi/wbBFNa1bTOQ/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBZkhFMn_FEh8DWV-gJI-uDJLeYiw",
-    ],
-    image:
-      "https://i.ytimg.com/vi/wbBFNa1bTOQ/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBZkhFMn_FEh8DWV-gJI-uDJLeYiw",
+    gallery: [cableNetworkShot],
+    image: cableNetworkShot,
     tags: [
       "Next.js",
       "TypeScript",
@@ -579,14 +616,11 @@ export const projects = [
       "Smooth animations and micro-interactions",
       "Reusable scalable component architecture",
     ],
-    github: "https://github.com/AashiQMahato/raghunathpur-cable-network",
+    github: "https://github.com/AashiQMahato/RCN_Commercial_Website",
     live: "https://raghunathpurcable.com.np/",
     category: "Frontend",
     cats: ["Frontend", "Web Dev"],
     status: "live",
-    stars: 18,
-    forks: 5,
-    views: 420,
     year: "2026",
     teamSize: 1,
     featured: true,

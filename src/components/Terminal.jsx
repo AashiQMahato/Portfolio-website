@@ -1,25 +1,45 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { X, Minus, Square, Terminal as TerminalIcon } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useGSAP } from "@gsap/react";
+import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { projects } from "../data/portfolioData";
+import { gsap, EASE, DUR, usePrefersReducedMotion } from "../motion";
 
 const PROMPT = "aashiq@portfolio:~$";
+
+// `open <target>` destinations: home sections first, then routes.
+const OPEN_TARGETS = {
+  home: "/",
+  work: "/#work",
+  about: "/#about",
+  experience: "/#experience",
+  skills: "/#skills",
+  writing: "/#writing",
+  contact: "/#contact",
+  projects: "/projects",
+  blog: "/blog",
+  resume: "/resume",
+  now: "/now",
+  timeline: "/timeline",
+  dashboard: "/developer-dashboard",
+};
 
 const HELP_TEXT = `
 Available commands:
 
-  help        Show this help message
-  whoami      About Aashiq
-  projects    List all projects
-  skills      List tech skills
-  about       Short bio
-  resume      Open resume page
-  contact     Contact info
-  github      Open GitHub profile
-  clear       Clear terminal
+  help          Show this help message
+  whoami        About Aashiq
+  projects      List all projects
+  skills        List tech skills
+  about         Short bio
+  resume        Open resume page
+  contact       Contact info
+  github        Open GitHub profile
+  open <page>   Go to a page or section
+                (${Object.keys(OPEN_TARGETS).join(", ")})
+  clear         Clear terminal
 
-Use arrow keys for command history.
+Use arrow keys for command history. Esc closes.
 `;
 
 const WHOAMI_TEXT = `
@@ -68,6 +88,34 @@ const BOOT_SEQUENCE = [
   "",
 ];
 
+// The terminal is always dark, so its colours are fixed rather than themed.
+// Every value clears AA against #0d1117.
+const LINE_COLOR = {
+  prompt: "text-[#ff8052]",
+  error: "text-[#ff7b72]",
+  success: "text-[#7ee787]",
+  boot: "text-[#79c0ff]",
+  output: "text-[#e6edf3]/85",
+};
+
+/* Keep Tab inside the dialog. */
+const trapTab = (e, root) => {
+  if (e.key !== "Tab" || !root) return;
+  const nodes = root.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  );
+  const first = nodes[0];
+  const last = nodes[nodes.length - 1];
+  if (!first) return;
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+};
+
 const Terminal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [lines, setLines] = useState([]);
@@ -76,9 +124,11 @@ const Terminal = () => {
   const [histIdx, setHistIdx] = useState(-1);
   const [booted, setBooted] = useState(false);
   const [isBooting, setIsBooting] = useState(false);
+  const panelRef = useRef(null);
   const inputRef = useRef(null);
-  const bottomRef = useRef(null);
+  const outputRef = useRef(null);
   const navigate = useNavigate();
+  const reduced = usePrefersReducedMotion();
 
   const addLine = useCallback((content, type = "output") => {
     setLines((prev) => [
@@ -105,12 +155,9 @@ const Terminal = () => {
   }, [isOpen, booted, boot]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [lines]);
-
-  useEffect(() => {
-    if (isOpen) setTimeout(() => inputRef.current?.focus(), 100);
-  }, [isOpen]);
+    const el = outputRef.current;
+    el?.scrollTo({ top: el.scrollHeight, behavior: reduced ? "auto" : "smooth" });
+  }, [lines, reduced]);
 
   // Listen for custom event from command palette
   useEffect(() => {
@@ -118,6 +165,38 @@ const Terminal = () => {
     window.addEventListener("open-terminal", handler);
     return () => window.removeEventListener("open-terminal", handler);
   }, []);
+
+  // Enter / exit. The panel stays mounted; autoAlpha hides it once faded out.
+  useGSAP(
+    () => {
+      const panel = panelRef.current;
+      if (isOpen) {
+        gsap.set(panel, { visibility: "visible" });
+        gsap.fromTo(
+          panel,
+          { opacity: 0, y: reduced ? 0 : 16 },
+          { opacity: 1, y: 0, duration: DUR.fast, ease: EASE.out, overwrite: true },
+        );
+      } else {
+        gsap.to(panel, {
+          autoAlpha: 0,
+          y: reduced ? 0 : 12,
+          duration: 0.2,
+          ease: EASE.soft,
+          overwrite: true,
+        });
+      }
+    },
+    { dependencies: [isOpen, reduced], scope: panelRef },
+  );
+
+  // Move focus in on open, hand it back on close.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const previous = document.activeElement;
+    inputRef.current?.focus({ preventScroll: true });
+    return () => previous?.focus?.({ preventScroll: true });
+  }, [isOpen]);
 
   const processCommand = useCallback(
     (cmd) => {
@@ -171,6 +250,8 @@ const Terminal = () => {
         default: {
           // Handle "projects <n>"
           const projMatch = trimmed.match(/^projects\s+(\d+)$/);
+          // Handle "open <page>"
+          const openMatch = trimmed.match(/^open\s+(\S+)$/);
           if (projMatch) {
             const idx = parseInt(projMatch[1]) - 1;
             if (projects[idx]) {
@@ -184,6 +265,17 @@ const Terminal = () => {
                 "error",
               );
             }
+          } else if (openMatch && OPEN_TARGETS[openMatch[1]]) {
+            addLine(`> Opening ${openMatch[1]}...`, "success");
+            setTimeout(() => {
+              navigate(OPEN_TARGETS[openMatch[1]]);
+              setIsOpen(false);
+            }, 300);
+          } else if (openMatch) {
+            addLine(
+              `> Unknown page: "${openMatch[1]}". Try: ${Object.keys(OPEN_TARGETS).join(", ")}.`,
+              "error",
+            );
           } else {
             addLine(
               `> Command not found: "${trimmed}". Type "help" for options.`,
@@ -218,80 +310,63 @@ const Terminal = () => {
     }
   };
 
-  const lineColor = (type) => {
-    switch (type) {
-      case "prompt":
-        return "text-primary";
-      case "error":
-        return "text-red-400";
-      case "success":
-        return "text-green-400";
-      case "boot":
-        return "text-cyan-400/80";
-      default:
-        return "text-white/80";
+  const onPanelKeyDown = (e) => {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      setIsOpen(false);
+      return;
     }
+    trapTab(e, panelRef.current);
   };
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        title="Open Terminal (developer mode)"
-        className="fixed bottom-28 left-4 sm:left-6 lg:left-16 z-[90] w-10 h-10 rounded-xl border border-border bg-card/80 backdrop-blur text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-card transition-all flex items-center justify-center shadow-sm">
-        <TerminalIcon className="w-4 h-4" />
-      </button>
-    );
-  }
-
   return (
-    <AnimatePresence>
-      <motion.div
-        key="terminal"
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 24, scale: 0.97 }}
-        transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-        className="fixed bottom-4 left-4 sm:left-6 z-[150] w-[92vw] sm:w-[560px] rounded-2xl overflow-hidden border border-border bg-[#0d1117]/95 backdrop-blur-xl shadow-2xl shadow-black/50"
-        style={{ maxHeight: "420px" }}>
+    <>
+      {/* Window — intentionally dark in both themes */}
+      <div
+        ref={panelRef}
+        id="terminal-window"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Terminal"
+        data-chrome
+        onKeyDown={onPanelKeyDown}
+        style={{ visibility: "hidden", opacity: 0 }}
+        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-3 right-3 z-[150] overflow-hidden rounded-xl border border-white/10 bg-[#0d1117] shadow-2xl shadow-black/40 sm:left-5 sm:right-auto sm:w-[560px]">
         {/* Title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-[#161b22] border-b border-white/5">
-          <div className="flex gap-1.5">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 transition-colors"
-            />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-            <div className="w-3 h-3 rounded-full bg-green-500/80" />
-          </div>
-          <div className="flex-1 text-center text-[11px] text-white/30 font-mono">
-            aashiq@portfolio — terminal
-          </div>
+        <div className="flex items-center gap-3 border-b border-white/10 bg-[#161b22] py-2 pl-4 pr-2">
+          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#ff8052]" />
+          <span className="hud flex-1 truncate text-[#8b949e]">
+            Terminal — aashiq@portfolio
+          </span>
           <button
+            type="button"
             onClick={() => setIsOpen(false)}
-            className="text-white/20 hover:text-white/60 transition-colors">
-            <X className="w-3.5 h-3.5" />
+            aria-label="Close terminal"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[#8b949e] transition-colors duration-200 ease-out hover:bg-white/5 hover:text-[#e6edf3]">
+            <X aria-hidden="true" className="h-3.5 w-3.5" />
           </button>
         </div>
 
         {/* Output area */}
         <div
+          ref={outputRef}
           data-lenis-prevent
-          className="h-64 overflow-y-auto p-4 font-mono text-xs leading-relaxed cursor-text"
+          role="log"
+          aria-live="polite"
+          className="h-64 cursor-text overflow-y-auto p-4 font-mono text-xs leading-relaxed"
           onClick={() => inputRef.current?.focus()}>
           {lines.map((line) => (
             <pre
               key={line.id}
-              className={`whitespace-pre-wrap break-words ${lineColor(line.type)}`}>
+              className={`whitespace-pre-wrap break-words ${LINE_COLOR[line.type] ?? LINE_COLOR.output}`}>
               {line.content}
             </pre>
           ))}
-          <div ref={bottomRef} />
         </div>
 
         {/* Input row */}
-        <div className="flex items-center gap-2 px-4 py-3 border-t border-white/5 bg-[#0d1117]">
-          <span className="font-mono text-xs text-primary shrink-0">
+        <div className="flex items-center gap-2 border-t border-white/10 px-4 py-3">
+          <span className="shrink-0 font-mono text-xs text-[#ff8052]">
             {PROMPT}
           </span>
           <input
@@ -300,16 +375,20 @@ const Terminal = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isBooting}
-            className="flex-1 bg-transparent font-mono text-xs text-white/90 outline-none caret-primary"
+            readOnly={isBooting}
+            className="min-w-0 flex-1 bg-transparent font-mono text-xs text-[#e6edf3] caret-[#ff8052] outline-none"
             autoComplete="off"
+            autoCapitalize="off"
             spellCheck={false}
             aria-label="Terminal input"
           />
-          <span className="w-2 h-4 bg-primary/80 animate-pulse" />
+          <span
+            aria-hidden="true"
+            className="h-4 w-2 bg-[#ff8052]/80 motion-safe:animate-pulse"
+          />
         </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </>
   );
 };
 
