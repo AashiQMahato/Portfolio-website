@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 974" width="1600" height="974" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+  <defs>
+    <pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#F2F1EE" stroke-opacity="0.05"/>
+    </pattern>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0L10 5L0 10z" fill="#FF6A33"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="974" fill="#0F0F11"/>
+  <rect width="1600" height="974" fill="url(#g)"/>
+
+  <text x="80" y="104" fill="#A3A29C" font-size="20" letter-spacing="3">FIG. 01 — ULTRASONIC BLIND STICK / SYSTEM DIAGRAM</text>
+  <text x="1520" y="104" fill="#A3A29C" font-size="20" letter-spacing="3" text-anchor="end">REV 2024</text>
+  <line x1="80" y1="132" x2="1520" y2="132" stroke="#26262A" stroke-width="2"/>
+
+  <!-- signal path -->
+  <g stroke="#FF6A33" stroke-width="3" fill="none" marker-end="url(#a)">
+    <path d="M430 487H560"/>
+    <path d="M920 487H1040"/>
+    <path d="M740 600V700"/>
+  </g>
+  <path d="M120 487c40-90 80 90 120 0s80 90 120 0" stroke="#FF6A33" stroke-opacity="0.55" stroke-width="2" fill="none"/>
+
+  <!-- blocks -->
+  <g font-size="18" letter-spacing="2">
+    <rect x="230" y="387" width="200" height="200" rx="10" fill="#070708" stroke="#3A3A3F" stroke-width="2"/>
+    <text x="250" y="425" fill="#A3A29C">01 SENSE</text>
+    <text x="250" y="525" fill="#F2F1EE" font-size="30" letter-spacing="0">HC-SR04</text>
+    <text x="250" y="560" fill="#A3A29C">ultrasonic · 2 m</text>
+
+    <rect x="560" y="374" width="360" height="226" rx="10" fill="#070708" stroke="#FF6A33" stroke-width="2"/>
+    <text x="584" y="414" fill="#FF8052">02 PROCESS</text>
+    <text x="584" y="520" fill="#F2F1EE" font-size="40" letter-spacing="0">Arduino Nano</text>
+    <text x="584" y="560" fill="#A3A29C">filtering · sleep states</text>
+
+    <rect x="1040" y="387" width="340" height="200" rx="10" fill="#070708" stroke="#3A3A3F" stroke-width="2"/>
+    <text x="1062" y="425" fill="#A3A29C">03 ALERT</text>
+    <text x="1062" y="525" fill="#F2F1EE" font-size="30" letter-spacing="0">SIM800L + Neo-6M</text>
+    <text x="1062" y="560" fill="#A3A29C">SMS location · &lt; 5 s</text>
+
+    <rect x="560" y="700" width="360" height="150" rx="10" fill="#070708" stroke="#3A3A3F" stroke-width="2"/>
+    <text x="584" y="738" fill="#A3A29C">04 FEEDBACK</text>
+    <text x="584" y="810" fill="#F2F1EE" font-size="30" letter-spacing="0">Haptic motors</text>
+  </g>
+
+  <text x="80" y="900" fill="#62625E" font-size="18" letter-spacing="2">BATTERY 4 h → 12 h · TEAM OF 3 · HARDWARE PROTOTYPE</text>
+</svg>

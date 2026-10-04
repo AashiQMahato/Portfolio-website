@@ -1,156 +1,113 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Clock, Briefcase, GraduationCap, Code, Rocket } from 'lucide-react';
-import { CV } from '../data/portfolioData';
-import { ScrollReveal } from '../components/ui';
+import PropTypes from "prop-types";
+import { CV } from "../data/portfolioData";
+import { Reveal, SplitText } from "../motion";
 
-// Combine and sort events
-const generateTimelineEvents = () => {
-  const events = [];
+// Grouped rather than date-sorted: experience → education → projects
+// (projects carry no dates in the CV data).
+const EVENTS = [
+  ...CV.experience.map((exp, i) => ({
+    id: `exp-${i}`,
+    kind: "Experience",
+    title: exp.role,
+    subtitle: exp.company,
+    location: exp.location,
+    date: exp.period,
+    content: exp.bullets,
+  })),
+  ...CV.education.map((edu, i) => ({
+    id: `edu-${i}`,
+    kind: "Education",
+    title: edu.degree,
+    subtitle: edu.institution,
+    location: edu.location,
+    date: edu.period,
+    content: [],
+  })),
+  ...CV.projects.map((proj, i) => ({
+    id: `proj-${i}`,
+    kind: "Project",
+    title: proj.name,
+    subtitle: proj.stack,
+    location: "",
+    date: "",
+    content: proj.bullets,
+  })),
+];
 
-  CV.experience.forEach((exp, i) => {
-    events.push({
-      id: `exp-${i}`,
-      type: 'experience',
-      icon: Briefcase,
-      title: exp.role,
-      subtitle: exp.company,
-      location: exp.location,
-      date: exp.period,
-      content: exp.bullets,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/30'
-    });
-  });
+// Shared by the rail and every marker so they stay on one line.
+const RAIL = "left-0 md:left-1/4";
 
-  CV.education.forEach((edu, i) => {
-    events.push({
-      id: `edu-${i}`,
-      type: 'education',
-      icon: GraduationCap,
-      title: edu.degree,
-      subtitle: edu.institution,
-      location: edu.location,
-      date: edu.period,
-      content: [],
-      color: 'text-emerald-500',
-      bgColor: 'bg-emerald-500/10',
-      borderColor: 'border-emerald-500/30'
-    });
-  });
+const TimelineNode = ({ event }) => (
+  <Reveal as="li" variant="rise" className="relative grid pb-14 pl-8 md:grid-cols-12 md:pl-0">
+    <span
+      aria-hidden="true"
+      className={`absolute top-1 h-2 w-2 -translate-x-1/2 rounded-full bg-signal ${RAIL}`}
+    />
+    <div className="md:col-span-3 md:pr-10 md:text-right">
+      {event.date && <p className="hud tabular-nums text-ink">{event.date}</p>}
+      <p className="hud mt-1">{event.kind}</p>
+    </div>
+    <div className="mt-4 md:col-span-9 md:mt-0 md:pl-10">
+      <h2 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">{event.title}</h2>
+      <p className="mt-2 text-ink-dim">
+        {event.subtitle}
+        {event.location && <span> · {event.location}</span>}
+      </p>
+      {event.content.length > 0 && (
+        <ul className="mt-5 max-w-2xl divide-y divide-line border-t border-line">
+          {event.content.map((bullet) => (
+            <li key={bullet} className="py-3 text-sm leading-relaxed text-ink-dim">
+              {bullet}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </Reveal>
+);
 
-  CV.projects.forEach((proj, i) => {
-    // Just mapping some projects to timeline to fill it up
-    events.push({
-      id: `proj-${i}`,
-      type: 'project',
-      icon: Code,
-      title: proj.name,
-      subtitle: proj.stack,
-      location: '',
-      date: 'Project',
-      content: proj.bullets,
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-500/10',
-      borderColor: 'border-purple-500/30'
-    });
-  });
-
-  // Simplified sorting: in a real scenario you'd parse the dates. 
-  // Here we just group them: Experience -> Education -> Projects
-  return events;
-};
-
-const TimelineNode = ({ event, index }) => {
-  const isEven = index % 2 === 0;
-  const Icon = event.icon;
-
-  return (
-    <ScrollReveal>
-      <div className={`relative flex flex-col md:flex-row items-center justify-between mb-16 ${isEven ? 'md:flex-row-reverse' : ''}`}>
-        
-        {/* Timeline Line & Dot (Desktop) */}
-        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 flex-col items-center justify-center">
-          <div className={`w-12 h-12 rounded-full border-4 border-background flex items-center justify-center shadow-xl ${event.bgColor} z-10`}>
-            <Icon className={`w-5 h-5 ${event.color}`} />
-          </div>
-        </div>
-
-        {/* Content Card */}
-        <div className={`w-full md:w-[45%] flex ${isEven ? 'justify-start' : 'justify-end'}`}>
-          <div className="relative w-full p-6 md:p-8 rounded-3xl border border-border bg-card/40 backdrop-blur hover:bg-card/60 transition-colors shadow-sm">
-            {/* Mobile icon */}
-            <div className={`md:hidden w-10 h-10 rounded-full mb-4 flex items-center justify-center ${event.bgColor}`}>
-              <Icon className={`w-5 h-5 ${event.color}`} />
-            </div>
-
-            <div className="flex flex-col gap-1 mb-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{event.date}</span>
-              <h2 className="text-xl md:text-2xl font-bold font-display">{event.title}</h2>
-              <div className="text-sm text-foreground/80 font-medium">
-                {event.subtitle} {event.location && <span className="opacity-60 block mt-0.5">{event.location}</span>}
-              </div>
-            </div>
-
-            {event.content.length > 0 && (
-              <ul className="space-y-2 mt-4 pt-4 border-t border-border/50">
-                {event.content.map((bullet, i) => (
-                  <li key={i} className="text-sm text-muted-foreground leading-relaxed flex items-start gap-2">
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary/50 shrink-0" />
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-
-      </div>
-    </ScrollReveal>
-  );
+TimelineNode.propTypes = {
+  event: PropTypes.shape({
+    kind: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    subtitle: PropTypes.string,
+    location: PropTypes.string,
+    date: PropTypes.string,
+    content: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
 };
 
 const TimelinePage = () => {
-  const events = generateTimelineEvents();
-
   return (
-    <div className="relative min-h-screen">
-      {/* Decorative */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px]" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-5xl section-padding pt-28">
-        <ScrollReveal className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium border rounded-full border-border bg-card/60 backdrop-blur text-accent-ink">
-            <Clock className="w-4 h-4" />
-            My Journey
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-display mb-6 tracking-tight">
-            Timeline
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+    <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
+      <header className="max-w-5xl">
+        <Reveal variant="fade">
+          <p className="hud">(Timeline) — Experience, education &amp; projects</p>
+        </Reveal>
+        <Reveal variant="lines" className="mt-6">
+          <SplitText as="h1" text="Timeline" className="text-display text-ink" />
+        </Reveal>
+        <Reveal variant="rise" delay={0.2}>
+          <p className="mt-8 max-w-2xl text-lede text-ink-dim">
             A chronological look at my education, experience, and key projects.
           </p>
-        </ScrollReveal>
+        </Reveal>
+      </header>
 
-        <div className="relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
-          {events.map((event, index) => (
-            <TimelineNode key={event.id} event={event} index={index} />
+      <div className="relative mt-[clamp(4rem,10vh,7rem)] border-t border-line pt-12">
+        <span aria-hidden="true" className={`absolute bottom-0 top-12 w-px bg-line ${RAIL}`} />
+        <ol>
+          {EVENTS.map((event) => (
+            <TimelineNode key={event.id} event={event} />
           ))}
-
-          {/* End cap */}
-          <ScrollReveal>
-            <div className="relative flex justify-center mt-12 mb-8">
-              <div className="w-12 h-12 rounded-full border-4 border-background bg-primary/10 flex items-center justify-center z-10">
-                <Rocket className="w-5 h-5 text-accent-ink" />
-              </div>
-            </div>
-            <p className="text-center text-muted-foreground font-medium pb-20">What's next?</p>
-          </ScrollReveal>
-        </div>
+        </ol>
+        <Reveal variant="fade" className="relative grid pl-8 md:grid-cols-12 md:pl-0">
+          <span
+            aria-hidden="true"
+            className={`absolute top-1 h-2 w-2 -translate-x-1/2 rounded-full border border-signal bg-background ${RAIL}`}
+          />
+          <p className="hud md:col-span-9 md:col-start-4 md:pl-10">What&apos;s next?</p>
+        </Reveal>
       </div>
     </div>
   );

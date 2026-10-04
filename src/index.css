@@ -4,79 +4,78 @@
 
 @layer base {
   /*
-   * ── "Canvas" design tokens (RGB triplets for Tailwind alpha support) ──
-   * Light-first: :root is the DAY palette (sky + cream + orange),
-   * html.dark is the DUSK palette (night navy + cream ink).
+   * ── "Signal" design tokens (RGB triplets for Tailwind alpha support) ──
+   * Dark-first: :root is the default near-black editorial canvas,
+   * html.light is the warm "paper" variant.
    *
-   * Contrast rule: raw orange (--signal) is only for large/bold display
-   * text (≥24px bold), fills behind white bold labels, borders, and
-   * decorative chrome. All SMALL orange text must use --accent-ink
-   * (darkened orange, ≥4.5:1 on cream and sky).
+   * Contrast rules
+   *  - --ink        primary text, ≥ 15:1
+   *  - --ink-dim    secondary text, ≥ 7:1 (safe at any size)
+   *  - --ink-faint  tertiary — ONLY for large type or non-text decoration
+   *  - --signal     the one accent; in dark it is AA for small text too,
+   *                 in light use --accent-ink for anything under 24px
+   * Token names are shared by every page, so inner routes recolor from here.
    */
   :root {
-    --background: 184 220 245; /* #B8DCF5 sky-blue canvas ground */
-    --foreground: 20 24 29; /* #14181D ink */
-    --card: 253 250 243; /* #FDFAF3 cream panels */
-    --card-foreground: 20 24 29;
-    --border: 198 207 216; /* #C6CFD8 hairlines */
-    --muted: 232 226 213; /* #E8E2D5 muted cream */
-    --muted-foreground: 68 80 92; /* #44505C */
-    --primary: 232 98 44; /* #E8622C brand orange */
-    --primary-foreground: 20 24 29; /* ink labels on orange fills (AA) */
-    --ring: 184 74 22; /* focus ring: darker orange, visible on cream */
+    --background: 7 7 8; /* #070708 */
+    --foreground: 242 241 238; /* #F2F1EE */
+    --card: 15 15 17; /* #0F0F11 */
+    --card-foreground: 242 241 238;
+    --border: 38 38 42; /* #26262A */
+    --muted: 24 24 27; /* #18181B */
+    --muted-foreground: 163 162 156; /* #A3A29C */
+    --primary: 255 106 51; /* #FF6A33 signal orange */
+    --primary-foreground: 7 7 8;
+    --ring: 255 122 74;
+    --secondary: 143 168 255;
+    --accent: 255 106 51;
 
-    /* Non-semantic accents */
-    --secondary: 29 78 216; /* #1D4ED8 deep blue (chat bubbles, links) */
-    --accent: 232 98 44; /* orange, same as --primary */
+    --panel: 15 15 17;
+    --line: 38 38 42;
+    --ink: 242 241 238;
+    --ink-dim: 163 162 156;
+    --ink-faint: 98 98 94; /* #62625E — ≥3:1, large type only */
+    --signal: 255 106 51;
+    --accent-ink: 255 128 82; /* #FF8052 */
+    --ember: 143 168 255; /* rare cool emphasis */
 
-    /* Canvas tokens (names kept from the schematic system so every
-       text-ink / bg-panel / border-line / text-signal class recolors) */
-    --panel: 253 250 243; /* cream surfaces */
-    --line: 198 207 216; /* hairlines / dashed selection strokes */
-    --ink: 20 24 29; /* primary text */
-    --ink-dim: 68 80 92; /* secondary text (AA on sky + cream) */
-    --signal: 232 98 44; /* #E8622C the accent — large/bold/chrome only */
-    --accent-ink: 160 63 15; /* #A03F0F small orange text (AA even on sky) */
-    --ember: 29 78 216; /* deep blue rare emphasis */
-
-    /* Sky gradient stops — shared by CssSky and the WebGL scene uniforms */
-    --sky-high: 143 199 239; /* #8FC7EF */
-    --sky-low: 215 237 251; /* #D7EDFB */
-
-    /* Global typography — one family, two optical roles (self-hosted) */
     --app-font-sans:
       "Geist Variable", system-ui, -apple-system, "Segoe UI", Roboto,
       "Helvetica Neue", Arial, sans-serif;
     --app-font-mono:
       "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
-    --app-font-weight: 500;
+
+    /* Layout rhythm */
+    --gutter: clamp(1.25rem, 4vw, 3.5rem);
+    --nav-h: 4.5rem;
+
+    color-scheme: dark;
   }
 
-  html.dark {
-    --background: 16 22 36; /* #101624 night navy */
-    --foreground: 242 237 226; /* #F2EDE2 cream ink */
-    --card: 26 34 51; /* #1A2233 */
-    --card-foreground: 242 237 226;
-    --border: 44 56 80; /* #2C3850 */
-    --muted: 34 44 66;
-    --muted-foreground: 168 176 190; /* #A8B0BE */
-    --primary: 255 122 69; /* #FF7A45 brighter orange on navy */
-    --primary-foreground: 26 20 16;
-    --ring: 255 160 122;
+  html.light {
+    --background: 243 241 236; /* #F3F1EC paper */
+    --foreground: 12 12 13;
+    --card: 251 250 247;
+    --card-foreground: 12 12 13;
+    --border: 216 212 203;
+    --muted: 232 229 222;
+    --muted-foreground: 82 80 75; /* #52504B */
+    --primary: 232 82 26; /* #E8521A */
+    --primary-foreground: 12 12 13;
+    --ring: 170 56 12;
+    --secondary: 37 70 200;
+    --accent: 232 82 26;
 
-    --secondary: 108 155 255; /* #6C9BFF */
-    --accent: 255 122 69;
+    --panel: 251 250 247;
+    --line: 216 212 203;
+    --ink: 12 12 13;
+    --ink-dim: 82 80 75;
+    --ink-faint: 124 120 112; /* ≥3:1 on paper — large type only */
+    --signal: 232 82 26;
+    --accent-ink: 166 54 10; /* #A6360A */
+    --ember: 37 70 200;
 
-    --panel: 26 34 51;
-    --line: 44 56 80;
-    --ink: 242 237 226;
-    --ink-dim: 168 176 190;
-    --signal: 255 122 69;
-    --accent-ink: 255 160 122; /* #FFA07A small orange text on navy */
-    --ember: 108 155 255;
-
-    --sky-high: 11 16 32; /* #0B1020 */
-    --sky-low: 42 53 80; /* #2A3550 */
+    color-scheme: light;
   }
 
   * {
@@ -84,28 +83,27 @@
     padding: 0;
     box-sizing: border-box;
   }
-  html {
-    scroll-behavior: smooth;
-    color-scheme: light;
-  }
 
-  html.dark {
-    color-scheme: dark;
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
     font-family: var(--app-font-sans);
     background-color: rgb(var(--background));
     color: rgb(var(--foreground));
-    line-height: 1.65;
-    font-weight: var(--app-font-weight);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    overflow-x: hidden;
+    font-feature-settings: "ss01", "cv11";
+    overflow-x: clip;
     transition:
-      background-color 0.25s ease,
-      color 0.25s ease;
+      background-color 0.4s ease,
+      color 0.4s ease;
   }
 
   h1,
@@ -115,46 +113,54 @@
   h5,
   h6 {
     font-family: inherit;
-    line-height: 1.2;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     color: inherit;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   ::selection {
-    background-color: rgb(var(--signal) / 0.28);
-    color: rgb(var(--foreground));
+    background-color: rgb(var(--signal));
+    color: rgb(var(--background));
   }
 
   :focus-visible {
-    outline: 2px solid rgb(var(--ring) / 0.55);
-    outline-offset: 2px;
+    outline: 2px solid rgb(var(--ring));
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   ::-webkit-scrollbar-track {
     background: rgb(var(--background));
   }
   ::-webkit-scrollbar-thumb {
-    background: rgb(var(--border) / 0.9);
-    border-radius: 3px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--border));
+    background: rgb(var(--line));
+    border-radius: 4px;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
+  button,
+  summary,
+  [role="button"],
+  label[for] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
   }
 
   /* ── Custom cursor (class applied to <html> while active) ── */
-  html.custom-cursor,
-  html.custom-cursor * {
+  html.has-cursor,
+  html.has-cursor * {
     cursor: none !important;
   }
-  html.custom-cursor :is(input, textarea, select, [contenteditable="true"]) {
+  html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
     cursor: auto !important;
   }
 
@@ -170,19 +176,34 @@
     overscroll-behavior: contain;
   }
   .lenis.lenis-stopped {
-    overflow: hidden;
+    overflow: clip;
   }
 }
 
 @layer components {
-  /* ── Canvas primitives ─────────────────────────────────────── */
+  /* Page gutter + max width shared by every section */
+  .shell {
+    width: 100%;
+    max-width: 92rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Monospaced engineering micro-label */
+  .hud {
+    font-family: var(--app-font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(var(--ink-dim));
+  }
+
+  /* Hairline surface — the only "card" treatment on the site */
   .panel {
     background: rgb(var(--panel));
     border: 1px solid rgb(var(--line));
-    border-radius: 1.5rem;
-    box-shadow:
-      0 1px 2px rgb(var(--ink) / 0.04),
-      0 12px 32px rgb(var(--ink) / 0.07);
+    border-radius: 0.75rem;
   }
 
   .pill {
@@ -192,110 +213,63 @@
   }
 
   .section-padding {
-    padding: 4rem 1rem;
+    padding: 4rem 1.25rem;
   }
   @media (min-width: 768px) {
     .section-padding {
-      padding: 5rem 1.5rem;
+      padding: 5rem 2rem;
     }
   }
   @media (min-width: 1024px) {
     .section-padding {
-      padding: 6rem 2rem;
+      padding: 6rem 3rem;
     }
+  }
+
+  /* Animated underline for text links */
+  .link-line {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-line:hover,
+  .link-line:focus-visible {
+    background-size: 100% 1px;
+    background-position: 0% 100%;
   }
 }
 
 @layer utilities {
-  /* Figma-canvas dot grid texture (content section backdrops) */
-  .canvas-dots {
-    background-image: radial-gradient(
-      rgb(var(--ink) / 0.08) 1px,
-      transparent 1px
-    );
-    background-size: 24px 24px;
+  .text-balance {
+    text-wrap: balance;
   }
 
-  /* ── CssSky: pure-CSS sky fallback / secondary-page background ── */
-  .cssky-cloud {
-    position: absolute;
-    left: 0;
-    width: 42vw;
-    height: 11vw;
-    min-width: 320px;
-    min-height: 90px;
-    background:
-      radial-gradient(
-        closest-side at 35% 60%,
-        rgb(255 255 255 / 0.9),
-        rgb(255 255 255 / 0) 72%
-      ),
-      radial-gradient(
-        closest-side at 65% 40%,
-        rgb(255 255 255 / 0.75),
-        rgb(255 255 255 / 0) 70%
-      );
-    filter: blur(8px);
-    animation-name: cloud-drift;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-  html.dark .cssky-cloud {
-    opacity: 0.12;
-  }
-  @keyframes cloud-drift {
-    from {
-      transform: translateX(-50vw);
-    }
-    to {
-      transform: translateX(105vw);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cssky-cloud {
-      animation: none;
-      transform: translateX(10vw);
-    }
-  }
-
-  .cssky-stars {
-    opacity: 0;
-    transition: opacity 0.6s ease;
+  /* Faint engineering grid — section backdrops only */
+  .micro-grid {
     background-image:
-      radial-gradient(
-        1px 1px at 22% 28%,
-        rgb(255 255 255 / 0.9),
-        transparent 100%
-      ),
-      radial-gradient(
-        1px 1px at 68% 12%,
-        rgb(255 255 255 / 0.7),
-        transparent 100%
-      ),
-      radial-gradient(
-        1.5px 1.5px at 45% 62%,
-        rgb(255 255 255 / 0.8),
-        transparent 100%
-      ),
-      radial-gradient(
-        1px 1px at 85% 45%,
-        rgb(255 255 255 / 0.6),
-        transparent 100%
-      ),
-      radial-gradient(
-        1px 1px at 10% 80%,
-        rgb(255 255 255 / 0.7),
-        transparent 100%
-      );
-    background-size:
-      260px 260px,
-      340px 340px,
-      300px 300px,
-      220px 220px,
-      380px 380px;
+      linear-gradient(rgb(var(--ink) / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--ink) / 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
-  html.dark .cssky-stars {
-    opacity: 0.55;
+
+  /* Lines of a split heading clip their children while revealing */
+  .line-mask {
+    display: block;
+    overflow: clip;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+
+  /* Scroll-resolved words (Statement): --w 0 → faint, 1 → full colour */
+  .word-mix {
+    --w: 1;
+    --to: var(--ink);
+    color: color-mix(in srgb, rgb(var(--to)) calc(var(--w) * 100%), rgb(var(--ink-faint)));
+  }
+  .word-mix-signal {
+    --to: var(--signal);
   }
 
   .perspective-1000 {
@@ -310,28 +284,63 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
-  .text-balance {
-    text-wrap: balance;
+}
+
+/* Hero scroll cue: a line that draws in from the left and exits right */
+@keyframes scrollcue {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  45% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  55% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
   }
 }
 
-/* ════════════ RECRUITER MODE OVERRIDES ════════════ */
-
-.recruiter-mode * {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
+/* Film grain — fixed, non-interactive, removed for reduced transparency */
+/* Exactly viewport-sized: an oversized fixed layer re-anchors when the
+   mobile layout viewport settles and registers as a full-screen layout
+   shift. The texture is static, so no overscan is needed. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html.light .grain {
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .grain {
+    display: none;
+  }
 }
 
-.recruiter-mode .pointer-events-none.absolute.inset-0 > div[class*="blur"],
-.recruiter-mode .particles-container,
-.recruiter-mode canvas {
-  display: none !important;
-  opacity: 0 !important;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.recruiter-mode body {
-  background-image: none !important;
-  background: rgb(var(--background)) !important;
+@media print {
+  .grain,
+  [data-chrome] {
+    display: none !important;
+  }
 }
-

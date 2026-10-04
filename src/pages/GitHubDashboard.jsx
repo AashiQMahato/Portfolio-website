@@ -1,15 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  Github,
-  Star,
-  GitFork,
-  BookOpen,
-  Activity,
-  GitCommit,
-  Link as LinkIcon,
-  AlertTriangle,
-  Code2,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { ArrowUpRight, Star, GitFork } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -19,9 +10,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { ScrollReveal } from "../components/ui";
+import { Reveal, SplitText } from "../motion";
 
 const GITHUB_USERNAME = "AashiQMahato";
+const PROFILE_URL = `https://github.com/${GITHUB_USERNAME}`;
 
 const levelToIndex = (level) => {
   const map = {
@@ -35,21 +27,39 @@ const levelToIndex = (level) => {
   return map[level] ?? 0;
 };
 
-const HeatmapCell = ({ level, title }) => {
-  const idx = levelToIndex(level);
-  const colors = {
-    0: "bg-border/40",
-    1: "bg-primary/15",
-    2: "bg-primary/30",
-    3: "bg-primary/50",
-    4: "bg-primary",
-  };
-  return (
-    <div
-      title={title}
-      className={`w-3 h-3 rounded-sm ${colors[idx]} transition-colors hover:ring-1 hover:ring-primary/60`}
-    />
-  );
+const HEAT = ["bg-line", "bg-signal/25", "bg-signal/50", "bg-signal/75", "bg-signal"];
+
+const HeatmapCell = ({ level, title }) => (
+  <div title={title} className={`h-3 w-3 rounded-[2px] ${HEAT[levelToIndex(level)]}`} />
+);
+
+HeatmapCell.propTypes = {
+  level: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  title: PropTypes.string,
+};
+
+// Chart chrome reads the live theme tokens, so both themes recolor for free.
+const TOOLTIP = {
+  contentStyle: {
+    backgroundColor: "rgb(var(--panel))",
+    border: "1px solid rgb(var(--line))",
+    borderRadius: 8,
+    color: "rgb(var(--ink))",
+  },
+  labelStyle: { color: "rgb(var(--ink-dim))" },
+  itemStyle: { color: "rgb(var(--ink))" },
+};
+
+const SectionHead = ({ title, meta }) => (
+  <div className="mb-5 flex items-baseline justify-between gap-4 border-t border-line pt-4">
+    <h2 className="text-lg font-semibold tracking-tight text-ink">{title}</h2>
+    {meta && <p className="hud">{meta}</p>}
+  </div>
+);
+
+SectionHead.propTypes = {
+  title: PropTypes.string.isRequired,
+  meta: PropTypes.string,
 };
 
 const formatEvent = (e) => {
@@ -242,169 +252,133 @@ const GitHubDashboard = () => {
     fetchGitHubData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-28">
-        <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-      </div>
-    );
-  }
+  const profileUrl = profile?.url || PROFILE_URL;
+  const recentEvents = events.slice(0, 6);
+  const figures = [
+    { label: "Repositories", value: profile?.publicRepos || 0 },
+    { label: "Followers", value: profile?.followers || 0 },
+    ...(stats?.commits != null ? [{ label: "Commits (1y)", value: stats.commits }] : []),
+  ];
 
   return (
-    <div className="relative min-h-screen">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 right-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
-      </div>
+    <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
+      <header className="max-w-5xl">
+        <Reveal variant="fade">
+          <p className="hud">(GitHub) — Live from the GitHub API</p>
+        </Reveal>
+        <Reveal variant="lines" className="mt-6">
+          <SplitText as="h1" text="GitHub" className="text-display text-ink" />
+        </Reveal>
+        <Reveal variant="rise" delay={0.2}>
+          <p className="mt-8 max-w-2xl text-lede text-ink-dim">
+            Repositories, languages and recent public activity, fetched live from @{GITHUB_USERNAME}.
+          </p>
+        </Reveal>
+      </header>
 
-      <div className="relative z-10 mx-auto max-w-6xl section-padding pt-28">
-        {/* Header */}
-        <ScrollReveal className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-full border border-border p-1 bg-card/50 overflow-hidden shadow-xl">
+      {loading ? (
+        <div role="status" className="mt-[clamp(4rem,10vh,7rem)] flex items-center gap-3 border-t border-line pt-8">
+          <span
+            aria-hidden="true"
+            className="h-4 w-4 animate-spin rounded-full border-2 border-signal border-t-transparent"
+          />
+          <span className="hud">Loading GitHub data…</span>
+        </div>
+      ) : (
+        <>
+          <Reveal
+            variant="rise"
+            className="mt-[clamp(4rem,10vh,7rem)] grid items-center gap-8 border-y border-line py-8 md:grid-cols-12">
+            <div className="flex items-center gap-5 md:col-span-5">
               <img
-                src={
-                  profile?.avatarUrl ||
-                  "https://github.com/identicons/AashiQMahato.png"
-                }
-                alt="GitHub Avatar"
-                className="w-full h-full rounded-full object-cover"
+                src={profile?.avatarUrl || `https://github.com/identicons/${GITHUB_USERNAME}.png`}
+                alt=""
+                width="64"
+                height="64"
+                className="h-16 w-16 shrink-0 rounded-full border border-line object-cover"
                 loading="lazy"
               />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold font-display">
-                {profile?.name || GITHUB_USERNAME}
-              </h1>
-              <a
-                href={profile?.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-accent-ink transition-colors flex items-center gap-2 mt-1">
-                @{profile?.login || GITHUB_USERNAME}{" "}
-                <LinkIcon className="w-3.5 h-3.5" />
-              </a>
-              <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
-                <span className="px-2 py-0.5 rounded-full border border-border bg-card/40">
+              <div className="min-w-0">
+                <p className="text-xl font-semibold tracking-tight text-ink">
+                  {profile?.name || GITHUB_USERNAME}
+                </p>
+                <a
+                  href={profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-line mt-1 inline-flex items-center gap-1 text-ink-dim transition-colors hover:text-ink">
+                  @{profile?.login || GITHUB_USERNAME}
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+                <p className="hud mt-2">
                   Mode: {mode}
-                </span>
-                {note && <span className="opacity-80">• {note}</span>}
+                  {note && <span className="normal-case tracking-normal"> · {note}</span>}
+                </p>
               </div>
             </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="text-center px-6 py-3 rounded-2xl bg-card/40 border border-border">
-              <div className="text-2xl font-bold text-foreground">
-                {profile?.publicRepos || 0}
-              </div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">
-                Repositories
-              </div>
-            </div>
-            <div className="text-center px-6 py-3 rounded-2xl bg-card/40 border border-border">
-              <div className="text-2xl font-bold text-foreground">
-                {profile?.followers || 0}
-              </div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">
-                Followers
-              </div>
-            </div>
-            {stats?.commits != null && (
-              <div className="text-center px-6 py-3 rounded-2xl bg-card/40 border border-border">
-                <div className="text-2xl font-bold text-foreground">
-                  {stats.commits}
+            <dl className="grid grid-cols-3 md:col-span-7">
+              {figures.map((s, i) => (
+                <div key={s.label} className={`flex flex-col gap-2 px-4 ${i ? "border-l border-line" : "pl-0"}`}>
+                  <dt className="hud">{s.label}</dt>
+                  <dd className="text-3xl font-semibold tracking-tight tabular-nums text-ink">{s.value}</dd>
                 </div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">
-                  Commits (1y)
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollReveal>
+              ))}
+            </dl>
+          </Reveal>
 
-        {error && (
-          <div className="mb-10 p-4 rounded-2xl border border-border bg-card/40 flex items-center gap-3 text-sm text-muted-foreground">
-            <AlertTriangle className="w-4 h-4 text-accent-ink" />
-            {error}
-          </div>
-        )}
+          {error && (
+            <p role="alert" className="panel mt-8 flex items-center gap-3 p-4 text-sm text-ink-dim">
+              <span className="hud text-accent-ink">Error</span>
+              {error}
+            </p>
+          )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Content - Heatmap & Repos */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Contribution Heatmap */}
-            <ScrollReveal delay={0.1}>
-              <div className="p-6 rounded-3xl border border-border bg-card/40">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold font-display flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-accent-ink" /> Contribution
-                    Activity
-                  </h2>
-                  <span className="text-sm text-muted-foreground">
-                    Last year
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto pb-4">
-                  <div className="flex gap-1 min-w-max">
-                    {contributions?.weeks ? (
-                      contributions.weeks.map((week, wIdx) => (
-                        <div key={wIdx} className="flex flex-col gap-1">
-                          {week.contributionDays.map((day, dIdx) => (
-                            <HeatmapCell
-                              key={`${wIdx}-${dIdx}`}
-                              level={day.contributionLevel}
-                              title={`${day.date}: ${day.contributionCount} contributions`}
-                            />
-                          ))}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 rounded-2xl border border-border bg-background/30 text-sm text-muted-foreground">
-                        Live yearly heatmap requires a GitHub token on the
-                        server.
+          <div className="mt-[clamp(3rem,8vh,5rem)] grid gap-14 lg:grid-cols-12 lg:gap-8">
+            <div className="space-y-14 lg:col-span-8">
+              <Reveal as="section" variant="rise">
+                <SectionHead title="Contribution activity" meta="Last year" />
+                <div className="panel p-6">
+                  {contributions?.weeks ? (
+                    <div className="overflow-x-auto pb-2">
+                      <div className="flex min-w-max gap-1">
+                        {contributions.weeks.map((week, wIdx) => (
+                          <div key={wIdx} className="flex flex-col gap-1">
+                            {week.contributionDays.map((day, dIdx) => (
+                              <HeatmapCell
+                                key={`${wIdx}-${dIdx}`}
+                                level={day.contributionLevel}
+                                title={`${day.date}: ${day.contributionCount} contributions`}
+                              />
+                            ))}
+                          </div>
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-ink-dim">
+                      Live yearly heatmap requires a GitHub token on the server.
+                    </p>
+                  )}
+                  <div aria-hidden="true" className="hud mt-4 flex items-center justify-end gap-2">
+                    <span>Less</span>
+                    {HEAT.map((_, level) => (
+                      <HeatmapCell key={level} level={level} />
+                    ))}
+                    <span>More</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-end gap-2 text-xs text-muted-foreground mt-4">
-                  <span>Less</span>
-                  <HeatmapCell level={0} />
-                  <HeatmapCell level={1} />
-                  <HeatmapCell level={2} />
-                  <HeatmapCell level={3} />
-                  <HeatmapCell level={4} />
-                  <span>More</span>
-                </div>
-              </div>
-            </ScrollReveal>
+              </Reveal>
 
-            {/* Language distribution */}
-            <ScrollReveal delay={0.15}>
-              <div className="p-6 rounded-3xl border border-border bg-card/40 h-[320px] flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold font-display flex items-center gap-2">
-                    <Code2 className="w-5 h-5 text-accent-ink" /> Language
-                    distribution
-                  </h2>
-                  <span className="text-xs text-muted-foreground">
-                    Top languages
-                  </span>
-                </div>
-                <div className="flex-1 min-h-0">
-                  {Array.isArray(languages) && languages.length > 0 ? (
+              <Reveal as="section" variant="rise">
+                <SectionHead title="Languages" meta="Top 8 · bytes" />
+                <div className="panel h-[320px] p-6">
+                  {languages.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
-                        data={languages
-                          .slice(0, 8)
-                          .map((l) => ({ name: l.name, bytes: l.bytes }))}
+                        data={languages.slice(0, 8).map((l) => ({ name: l.name, bytes: l.bytes }))}
                         layout="vertical"
                         margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          horizontal={false}
-                          stroke="rgb(var(--border) / 0.55)"
-                        />
+                        <CartesianGrid horizontal={false} stroke="rgb(var(--line))" />
                         <XAxis type="number" hide />
                         <YAxis
                           type="category"
@@ -412,143 +386,103 @@ const GitHubDashboard = () => {
                           axisLine={false}
                           tickLine={false}
                           width={90}
-                          tick={{
-                            fontSize: 12,
-                            fill: "rgb(var(--muted-foreground))",
-                          }}
+                          tick={{ fontSize: 12, fill: "rgb(var(--ink-dim))" }}
                         />
                         <Tooltip
-                          contentStyle={{
-                            backgroundColor: "rgb(var(--card))",
-                            borderColor: "rgb(var(--border))",
-                            borderRadius: 12,
-                          }}
-                          itemStyle={{ color: "rgb(var(--foreground))" }}
+                          {...TOOLTIP}
+                          cursor={{ fill: "rgb(var(--line) / 0.5)" }}
                           formatter={(v) => [v, "bytes"]}
                         />
-                        <Bar
-                          dataKey="bytes"
-                          fill="rgb(var(--primary))"
-                          radius={[0, 6, 6, 0]}
-                          barSize={18}
-                        />
+                        <Bar dataKey="bytes" fill="rgb(var(--signal))" radius={[0, 2, 2, 0]} barSize={16} />
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-sm text-muted-foreground">
+                    <p className="flex h-full items-center justify-center text-sm text-ink-dim">
                       Language analytics available with server token.
-                    </div>
+                    </p>
                   )}
                 </div>
-              </div>
-            </ScrollReveal>
+              </Reveal>
 
-            {/* Repositories */}
-            <ScrollReveal delay={0.2}>
-              <div className="flex items-center justify-between mb-6 mt-10">
-                <h2 className="text-xl font-bold font-display flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-accent-ink" /> Recent
-                  Repositories
-                </h2>
-              </div>
+              <Reveal as="section" variant="rise">
+                <SectionHead title="Recent repositories" meta={`${repos.length} shown`} />
+                <ul className="divide-y divide-line border-b border-line">
+                  {repos.map((repo) => (
+                    <li key={repo.url || repo.name}>
+                      <a
+                        href={repo.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group grid gap-2 py-5 sm:grid-cols-12 sm:gap-6">
+                        <div className="min-w-0 sm:col-span-8">
+                          <h3 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-ink transition-colors group-hover:text-accent-ink">
+                            {repo.name}
+                            <ArrowUpRight
+                              className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                              aria-hidden="true"
+                            />
+                          </h3>
+                          <p className="mt-1 line-clamp-2 text-sm text-ink-dim">
+                            {repo.description || "No description provided."}
+                          </p>
+                        </div>
+                        <p className="hud flex items-center gap-4 sm:col-span-4 sm:justify-end">
+                          {repo.language && <span>{repo.language}</span>}
+                          <span className="flex items-center gap-1 tabular-nums">
+                            <Star className="h-3 w-3" aria-hidden="true" />
+                            <span className="sr-only">Stars</span>
+                            {repo.stars ?? 0}
+                          </span>
+                          <span className="flex items-center gap-1 tabular-nums">
+                            <GitFork className="h-3 w-3" aria-hidden="true" />
+                            <span className="sr-only">Forks</span>
+                            {repo.forks ?? 0}
+                          </span>
+                        </p>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                {repos.map((repo) => (
-                  <a
-                    key={repo.url || repo.name}
-                    href={repo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block p-5 rounded-2xl border border-border bg-card/20 hover:bg-card/60 hover:border-primary/30 transition-all group">
-                    <h3 className="font-bold mb-2 flex items-center gap-2 group-hover:text-accent-ink transition-colors">
-                      <BookOpen className="w-4 h-4 text-muted-foreground" />{" "}
-                      {repo.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2 h-10">
-                      {repo.description || "No description provided."}
-                    </p>
-                    <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
-                      {repo.language && (
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-primary" />{" "}
-                          {repo.language}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5" /> {repo.stars ?? 0}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <GitFork className="w-3.5 h-3.5" /> {repo.forks ?? 0}
-                      </span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <ScrollReveal delay={0.3}>
-              <div className="p-6 rounded-3xl border border-border bg-card/40">
-                <h2 className="text-lg font-bold font-display mb-4">About</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  {profile?.bio || "No bio available."}
-                </p>
+            <aside className="space-y-14 lg:col-span-4">
+              <Reveal as="section" variant="rise">
+                <SectionHead title="About" />
+                <p className="text-ink-dim">{profile?.bio || "No bio available."}</p>
                 <a
-                  href={profile?.url}
+                  href={profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
-                  <Github className="w-4 h-4" /> View Full Profile
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110">
+                  View full profile
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                 </a>
-              </div>
-            </ScrollReveal>
+              </Reveal>
 
-            <ScrollReveal delay={0.4}>
-              <div className="p-6 rounded-3xl border border-border bg-card/40">
-                <h2 className="text-lg font-bold font-display mb-4 flex items-center gap-2">
-                  <GitCommit className="w-5 h-5 text-accent" /> Recent Activity
-                </h2>
-                <div className="space-y-4">
-                  {(events.length ? events.slice(0, 6) : []).map((ev, i) => (
-                    <div key={i} className="flex gap-3">
-                      <div className="mt-1 flex flex-col items-center">
-                        <div className="w-2.5 h-2.5 rounded-full bg-accent" />
-                        {i !== Math.min(events.length, 6) - 1 && (
-                          <div className="w-px h-10 bg-border my-1" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {ev.title}
+              <Reveal as="section" variant="rise">
+                <SectionHead title="Recent activity" />
+                {recentEvents.length > 0 ? (
+                  <ol className="divide-y divide-line border-b border-line">
+                    {recentEvents.map((ev, i) => (
+                      <li key={i} className="py-4">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <p className="truncate text-sm font-medium text-ink">{ev.title}</p>
+                          <p className="hud shrink-0 tabular-nums">{timeAgo(ev.createdAt)}</p>
                         </div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {ev.subtitle}
-                        </div>
-                        {ev.meta && (
-                          <div className="text-[11px] text-muted-foreground/70 mt-1 line-clamp-1">
-                            {ev.meta}
-                          </div>
-                        )}
-                        <div className="text-[10px] text-muted-foreground/60 mt-1">
-                          {timeAgo(ev.createdAt)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {events.length === 0 && (
-                    <div className="text-sm text-muted-foreground">
-                      No recent public activity available.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </ScrollReveal>
+                        <p className="mt-1 truncate text-sm text-ink-dim">{ev.subtitle}</p>
+                        {ev.meta && <p className="mt-1 line-clamp-1 text-sm text-ink-dim">{ev.meta}</p>}
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="text-sm text-ink-dim">No recent public activity available.</p>
+                )}
+              </Reveal>
+            </aside>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

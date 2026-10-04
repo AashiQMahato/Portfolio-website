@@ -5,150 +5,63 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { useGSAP } from "@gsap/react";
 import {
   Search,
   Home,
   User,
   Code2,
   FolderKanban,
-  GraduationCap,
+  Layers,
+  Briefcase,
+  PenLine,
   Mail,
   LayoutDashboard,
   BookOpen,
   Compass,
-  ExternalLink,
   Github,
-  Download,
   Terminal,
   Moon,
   Sun,
   Monitor,
-  Briefcase,
-  Sparkles,
-  ArrowRight,
   Clock,
   Star,
-  Cpu,
   FileText,
   ChevronRight,
-  BarChart2,
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
-import { useRecruiterMode } from "../context/RecruiterModeContext";
 import { projects } from "../data/portfolioData";
 import { blogPosts } from "../data/blogPosts";
+import { gsap, EASE, DUR, usePrefersReducedMotion } from "../motion";
 
 /* ─── Command definitions ─────────────────────────────────── */
 
-const buildCommands = (
-  navigate,
-  theme,
-  setTheme,
-  isRecruiterMode,
-  toggleRecruiterMode,
-) => [
+const NAV_TARGETS = [
+  { id: "home", label: "Home", description: "Go to homepage", icon: Home, to: "/", keywords: ["home", "start", "main"] },
+  { id: "work", label: "Work", description: "Selected work", icon: Layers, to: "/#work", keywords: ["work", "featured", "case", "studies"] },
+  { id: "about", label: "About", description: "About Aashiq", icon: User, to: "/#about", keywords: ["about", "bio", "profile"] },
+  { id: "experience", label: "Experience", description: "Roles & education", icon: Briefcase, to: "/#experience", keywords: ["experience", "jobs", "education", "degree", "university"] },
+  { id: "skills", label: "Skills", description: "Technical skills & expertise", icon: Code2, to: "/#skills", keywords: ["skills", "tech", "expertise", "languages"] },
+  { id: "writing", label: "Writing", description: "Latest articles", icon: PenLine, to: "/#writing", keywords: ["writing", "articles", "posts"] },
+  { id: "contact", label: "Contact", description: "Get in touch", icon: Mail, to: "/#contact", keywords: ["contact", "hire", "email", "reach"] },
+  { id: "projects", label: "Projects", description: "View all projects", icon: FolderKanban, to: "/projects", keywords: ["projects", "portfolio", "builds"] },
+  { id: "blog", label: "Blog", description: "Technical writing & insights", icon: BookOpen, to: "/blog", keywords: ["blog", "articles", "writing", "posts"] },
+  { id: "resume", label: "Resume", description: "View & download resume", icon: FileText, to: "/resume", keywords: ["resume", "cv", "download", "pdf"] },
+  { id: "now", label: "Now", description: "What I'm doing now", icon: Compass, to: "/now", keywords: ["now", "currently", "doing", "learning"] },
+  { id: "timeline", label: "Timeline", description: "My developer journey", icon: Clock, to: "/timeline", keywords: ["timeline", "journey", "history", "milestones"] },
+  { id: "dashboard", label: "Developer Dashboard", description: "GitHub activity & stats", icon: LayoutDashboard, to: "/developer-dashboard", keywords: ["dashboard", "github", "activity", "stats", "analytics"] },
+];
+
+const buildCommands = (navigate, theme, setTheme) => [
   // Navigation
-  {
+  ...NAV_TARGETS.map(({ id, to, ...rest }) => ({
+    ...rest,
     group: "Navigation",
-    id: "nav-home",
-    label: "Home",
-    description: "Go to homepage",
-    icon: Home,
-    keywords: ["home", "start", "main"],
-    action: () => navigate("/"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-about",
-    label: "About",
-    description: "About Aashiq",
-    icon: User,
-    keywords: ["about", "bio", "profile"],
-    action: () => navigate("/about"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-skills",
-    label: "Skills",
-    description: "Technical skills & expertise",
-    icon: Code2,
-    keywords: ["skills", "tech", "expertise", "languages"],
-    action: () => navigate("/skills"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-projects",
-    label: "Projects",
-    description: "View all projects",
-    icon: FolderKanban,
-    keywords: ["projects", "work", "portfolio", "builds"],
-    action: () => navigate("/projects"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-education",
-    label: "Education",
-    description: "Academic background",
-    icon: GraduationCap,
-    keywords: ["education", "degree", "university", "college"],
-    action: () => navigate("/education"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-blog",
-    label: "Blog",
-    description: "Technical writing & insights",
-    icon: BookOpen,
-    keywords: ["blog", "articles", "writing", "posts"],
-    action: () => navigate("/blog"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-dashboard",
-    label: "Developer Dashboard",
-    description: "GitHub activity & stats",
-    icon: LayoutDashboard,
-    keywords: ["dashboard", "github", "activity", "stats", "analytics"],
-    action: () => navigate("/developer-dashboard"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-now",
-    label: "Now",
-    description: "What I'm doing now",
-    icon: Compass,
-    keywords: ["now", "currently", "doing", "learning"],
-    action: () => navigate("/now"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-timeline",
-    label: "Timeline",
-    description: "My developer journey",
-    icon: Clock,
-    keywords: ["timeline", "journey", "history", "milestones"],
-    action: () => navigate("/timeline"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-resume",
-    label: "Resume",
-    description: "View & download resume",
-    icon: FileText,
-    keywords: ["resume", "cv", "download", "pdf"],
-    action: () => navigate("/resume"),
-  },
-  {
-    group: "Navigation",
-    id: "nav-contact",
-    label: "Contact",
-    description: "Get in touch",
-    icon: Mail,
-    keywords: ["contact", "hire", "email", "reach"],
-    action: () => navigate("/contactus"),
-  },
+    id: `nav-${id}`,
+    action: () => navigate(to),
+  })),
   // Actions
   {
     group: "Actions",
@@ -173,23 +86,11 @@ const buildCommands = (
   {
     group: "Actions",
     id: "action-theme-system",
-    label: "Use System Theme",
-    description: "Follow system preference",
+    label: "Match System Theme",
+    description: "Use your device's current setting",
     icon: Monitor,
     keywords: ["system", "theme", "auto", "mode"],
     action: () => setTheme("system"),
-    hidden: theme === "system",
-  },
-  {
-    group: "Actions",
-    id: "action-recruiter-mode",
-    label: isRecruiterMode ? "Exit Recruiter Mode" : "Enable Recruiter Mode",
-    description: isRecruiterMode
-      ? "Return to full portfolio"
-      : "Simplified view for recruiters",
-    icon: Briefcase,
-    keywords: ["recruiter", "mode", "hr", "simplified"],
-    action: () => toggleRecruiterMode(),
   },
   {
     group: "Actions",
@@ -267,43 +168,61 @@ const scoreCommand = (cmd, query) => {
 
 /* ─── Keyboard shortcut hint ──────────────────────────────── */
 const KbdHint = ({ keys }) => (
-  <div className="flex items-center gap-1">
+  <span className="flex items-center gap-1">
     {keys.map((k, i) => (
       <React.Fragment key={i}>
-        <kbd className="px-1.5 py-0.5 text-[10px] font-medium rounded border border-border bg-muted/40 text-muted-foreground font-sans leading-none">
+        <kbd className="rounded border border-line bg-background px-1.5 py-0.5 font-mono text-[10px] leading-none text-ink-dim">
           {k}
         </kbd>
         {i < keys.length - 1 && (
-          <span className="text-muted-foreground/50 text-[10px]">+</span>
+          <span aria-hidden="true" className="text-[10px] text-ink-dim">
+            +
+          </span>
         )}
       </React.Fragment>
     ))}
-  </div>
+  </span>
 );
+
+KbdHint.propTypes = {
+  keys: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+
+/* Keep Tab inside the dialog. */
+const trapTab = (e, root) => {
+  if (e.key !== "Tab" || !root) return;
+  const nodes = root.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  );
+  const first = nodes[0];
+  const last = nodes[nodes.length - 1];
+  if (!first) return;
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+};
 
 /* ─── Main Component ──────────────────────────────────────── */
 const CommandPalette = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const rootRef = useRef(null);
+  const panelRef = useRef(null);
   const inputRef = useRef(null);
-  const listRef = useRef(null);
   const selectedItemRef = useRef(null);
+  const reduced = usePrefersReducedMotion();
 
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { isRecruiterMode, toggleRecruiterMode } = useRecruiterMode();
 
   const allCommands = useMemo(
-    () =>
-      buildCommands(
-        navigate,
-        theme,
-        setTheme,
-        isRecruiterMode,
-        toggleRecruiterMode,
-      ).filter((c) => !c.hidden),
-    [navigate, theme, setTheme, isRecruiterMode, toggleRecruiterMode],
+    () => buildCommands(navigate, theme, setTheme).filter((c) => !c.hidden),
+    [navigate, theme, setTheme],
   );
 
   const filteredCommands = useMemo(() => {
@@ -323,20 +242,14 @@ const CommandPalette = () => {
     return groups;
   }, [filteredCommands]);
 
-  // Flatten for keyboard nav
-  const flatList = useMemo(() => filteredCommands, [filteredCommands]);
-
   const openPalette = useCallback(() => {
     setIsOpen(true);
     setQuery("");
     setSelectedIdx(0);
   }, []);
 
-  const closePalette = useCallback(() => {
-    setIsOpen(false);
-    setQuery("");
-    setSelectedIdx(0);
-  }, []);
+  // The query is kept while the panel fades out and reset on the next open.
+  const closePalette = useCallback(() => setIsOpen(false), []);
 
   const runCommand = useCallback(
     (cmd) => {
@@ -346,7 +259,7 @@ const CommandPalette = () => {
     [closePalette],
   );
 
-  // Global keyboard shortcut
+  // Global keyboard shortcut (the nav button dispatches a synthetic ⌘K too)
   useEffect(() => {
     const handler = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -360,11 +273,40 @@ const CommandPalette = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [isOpen, openPalette, closePalette]);
 
-  // Focus input on open
+  // Enter / exit. The root stays mounted; autoAlpha hides it once faded out.
+  useGSAP(
+    () => {
+      if (isOpen) {
+        gsap.set(rootRef.current, { visibility: "visible" });
+        gsap.to(rootRef.current, {
+          opacity: 1,
+          duration: 0.2,
+          ease: EASE.out,
+          overwrite: true,
+        });
+        gsap.fromTo(
+          panelRef.current,
+          { y: reduced ? 0 : -8 },
+          { y: 0, duration: DUR.fast, ease: EASE.out, overwrite: true },
+        );
+      } else {
+        gsap.to(rootRef.current, {
+          autoAlpha: 0,
+          duration: 0.2,
+          ease: EASE.soft,
+          overwrite: true,
+        });
+      }
+    },
+    { dependencies: [isOpen, reduced], scope: rootRef },
+  );
+
+  // Move focus in on open, hand it back on close.
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+    if (!isOpen) return undefined;
+    const previous = document.activeElement;
+    inputRef.current?.focus({ preventScroll: true });
+    return () => previous?.focus?.({ preventScroll: true });
   }, [isOpen]);
 
   // Arrow key navigation
@@ -372,17 +314,17 @@ const CommandPalette = () => {
     (e) => {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setSelectedIdx((i) => Math.min(i + 1, flatList.length - 1));
+        setSelectedIdx((i) => Math.min(i + 1, filteredCommands.length - 1));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedIdx((i) => Math.max(i - 1, 0));
       } else if (e.key === "Enter") {
         e.preventDefault();
-        const cmd = flatList[selectedIdx];
+        const cmd = filteredCommands[selectedIdx];
         if (cmd) runCommand(cmd);
       }
     },
-    [flatList, selectedIdx, runCommand],
+    [filteredCommands, selectedIdx, runCommand],
   );
 
   // Scroll selected item into view
@@ -395,161 +337,151 @@ const CommandPalette = () => {
     setSelectedIdx(0);
   }, [query]);
 
-  // Group icons
-  const groupIcon = {
-    Navigation: ArrowRight,
-    Projects: Star,
-    Blog: BookOpen,
-    Actions: Sparkles,
-  };
+  const activeId = filteredCommands[selectedIdx]
+    ? `cmd-opt-${filteredCommands[selectedIdx].id}`
+    : undefined;
 
   let globalIdx = 0;
 
   return (
-    <>
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              key="cmd-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-[200] bg-background/70 backdrop-blur-sm"
-              onClick={closePalette}
-            />
+    <div
+      ref={rootRef}
+      data-chrome
+      style={{ visibility: "hidden", opacity: 0 }}
+      className="fixed inset-0 z-[200] flex items-start justify-center px-4 pt-[12vh]">
+      {/* Backdrop */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-background/80"
+        onClick={closePalette}
+      />
 
-            {/* Palette */}
-            <motion.div
-              key="cmd-palette"
-              initial={{ opacity: 0, scale: 0.96, y: -12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: -12 }}
-              transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-              className="fixed top-[12vh] left-1/2 -translate-x-1/2 z-[201] w-full max-w-xl"
-              role="dialog"
-              aria-label="Command palette"
-              aria-modal="true">
-              <div className="relative overflow-hidden rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl shadow-black/30">
-                {/* Top shimmer */}
-                <div className="absolute top-0 left-[15%] right-[15%] h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+      {/* Palette */}
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        onKeyDown={(e) => trapTab(e, panelRef.current)}
+        className="relative w-full max-w-xl overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40">
+        {/* Search input */}
+        <div className="flex items-center gap-3 border-b border-line px-4 py-4">
+          <Search aria-hidden="true" className="h-4 w-4 shrink-0 text-ink-dim" />
+          <input
+            ref={inputRef}
+            type="text"
+            role="combobox"
+            aria-label="Search commands"
+            aria-expanded={isOpen}
+            aria-controls="cmd-listbox"
+            aria-activedescendant={activeId}
+            aria-autocomplete="list"
+            placeholder="Search commands, projects, blog posts..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-dim"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          <KbdHint keys={["ESC"]} />
+        </div>
 
-                {/* Search input */}
-                <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
-                  <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="Search commands, projects, blog posts..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                  <KbdHint keys={["ESC"]} />
+        {/* Results */}
+        <div
+          id="cmd-listbox"
+          role="listbox"
+          aria-label="Results"
+          data-lenis-prevent
+          className="max-h-[380px] overflow-y-auto py-2 scrollbar-hide">
+          {filteredCommands.length === 0 ? (
+            <div className="px-4 py-10 text-center text-sm text-ink-dim">
+              No results for &quot;{query}&quot;
+            </div>
+          ) : (
+            Object.entries(grouped).map(([groupName, cmds]) => (
+              <div
+                key={groupName}
+                role="group"
+                aria-labelledby={`cmd-group-${groupName}`}>
+                <div id={`cmd-group-${groupName}`} className="hud px-4 pb-1.5 pt-3">
+                  {groupName}
                 </div>
-
-                {/* Results */}
-                <div
-                  ref={listRef}
-                  data-lenis-prevent
-                  className="max-h-[380px] overflow-y-auto py-2 scrollbar-hide">
-                  {flatList.length === 0 ? (
-                    <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                      No results for &quot;{query}&quot;
-                    </div>
-                  ) : (
-                    Object.entries(grouped).map(([groupName, cmds]) => (
-                      <div key={groupName}>
-                        <div className="px-4 py-2 flex items-center gap-2">
-                          <span className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/60">
-                            {groupName}
-                          </span>
+                {cmds.map((cmd) => {
+                  const idx = globalIdx++;
+                  const isSelected = idx === selectedIdx;
+                  const Icon = cmd.icon;
+                  return (
+                    <div
+                      key={cmd.id}
+                      id={`cmd-opt-${cmd.id}`}
+                      role="option"
+                      aria-selected={isSelected}
+                      ref={isSelected ? selectedItemRef : null}
+                      onMouseEnter={() => setSelectedIdx(idx)}
+                      onClick={() => runCommand(cmd)}
+                      className={`mx-2 mb-0.5 flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-200 ease-out ${
+                        isSelected ? "bg-ink/[0.06] text-ink" : "text-ink-dim"
+                      }`}>
+                      <span
+                        aria-hidden="true"
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line transition-colors duration-200 ease-out ${
+                          isSelected ? "text-accent-ink" : ""
+                        }`}>
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium text-ink">
+                          {cmd.label}
                         </div>
-                        {cmds.map((cmd) => {
-                          const idx = globalIdx++;
-                          const isSelected = idx === selectedIdx;
-                          const Icon = cmd.icon;
-                          return (
-                            <div
-                              key={cmd.id}
-                              ref={isSelected ? selectedItemRef : null}
-                              onMouseEnter={() => setSelectedIdx(idx)}
-                              onClick={() => runCommand(cmd)}
-                              className={`mx-2 mb-0.5 flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors duration-100 ${
-                                isSelected
-                                  ? "bg-primary/10 text-foreground"
-                                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
-                              }`}>
-                              <div
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                                  isSelected
-                                    ? "bg-primary/15 text-accent-ink"
-                                    : "bg-muted/40"
-                                }`}>
-                                <Icon className="w-4 h-4" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium truncate">
-                                  {cmd.label}
-                                </div>
-                                {cmd.description && (
-                                  <div className="text-[11px] text-muted-foreground/70 truncate mt-0.5">
-                                    {cmd.description}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                {cmd.tag && (
-                                  <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-primary/10 text-accent-ink border border-primary/20">
-                                    {cmd.tag}
-                                  </span>
-                                )}
-                                {isSelected && (
-                                  <motion.div
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}>
-                                    <ChevronRight className="w-3.5 h-3.5 text-accent-ink" />
-                                  </motion.div>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
+                        {cmd.description && (
+                          <div className="mt-0.5 truncate text-xs text-ink-dim">
+                            {cmd.description}
+                          </div>
+                        )}
                       </div>
-                    ))
-                  )}
-                </div>
-
-                {/* Footer */}
-                <div className="px-4 py-2.5 border-t border-border bg-muted/10 flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60">
-                    <KbdHint keys={["↑", "↓"]} />
-                    <span>navigate</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60">
-                    <KbdHint keys={["↵"]} />
-                    <span>select</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60">
-                    <KbdHint keys={["ESC"]} />
-                    <span>close</span>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
-                    <KbdHint keys={["⌘", "K"]} />
-                    <span>toggle</span>
-                  </div>
-                </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        {cmd.tag && (
+                          <span className="rounded-full border border-line px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-dim">
+                            {cmd.tag}
+                          </span>
+                        )}
+                        <ChevronRight
+                          aria-hidden="true"
+                          className={`h-3.5 w-3.5 text-accent-ink transition-opacity duration-200 ease-out ${
+                            isSelected ? "opacity-100" : "opacity-0"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center gap-4 border-t border-line px-4 py-2.5 text-[11px] text-ink-dim">
+          <span className="flex items-center gap-1.5">
+            <KbdHint keys={["↑", "↓"]} />
+            navigate
+          </span>
+          <span className="flex items-center gap-1.5">
+            <KbdHint keys={["↵"]} />
+            select
+          </span>
+          <span className="flex items-center gap-1.5">
+            <KbdHint keys={["ESC"]} />
+            close
+          </span>
+          <span className="ml-auto hidden items-center gap-1.5 sm:flex">
+            <KbdHint keys={["⌘", "K"]} />
+            toggle
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -14,6 +14,7 @@
 
 ## Case studies
 
+- [Studio Tools](https://www.aashikkumarmahato.com.np/projects/studio-tools): AI image, OCR and PDF toolkit — React 19, Express 5, FastAPI + rembg, Upscayl
 - [Automated Attendance System](https://www.aashikkumarmahato.com.np/projects/automated-attendance-system): Face-recognition attendance with Python, YOLOv8, React and MongoDB
 - [Ultrasonic Blind Stick with GSM/GPS](https://www.aashikkumarmahato.com.np/projects/ultrasonic-blind-stick): Arduino assistive device with obstacle detection and emergency location sharing
 - [Smart School Management System](https://www.aashikkumarmahato.com.np/projects/smart-school-management): MERN school administration platform

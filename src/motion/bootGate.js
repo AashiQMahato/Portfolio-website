@@ -1,8 +1,8 @@
 /**
- * Session-scoped boot state shared by BootLoader (writer) and the hero
+ * Session-scoped boot state shared by the Preloader (writer) and the hero
  * entrance (reader) so the intro timeline waits for the overlay to clear.
  */
-const KEY = "aashiq-boot-done";
+const KEY = "akm-boot-done";
 
 export const BOOT_DONE_EVENT = "aashiq:boot-done";
 
@@ -25,4 +25,14 @@ export const markBootDone = () => {
     /* private mode — boot simply reruns next load */
   }
   window.dispatchEvent(new Event(BOOT_DONE_EVENT));
+};
+
+/** Run `fn` once the preloader has cleared (immediately if it never ran). */
+export const onBootDone = (fn) => {
+  if (!active) {
+    fn();
+    return () => {};
+  }
+  window.addEventListener(BOOT_DONE_EVENT, fn, { once: true });
+  return () => window.removeEventListener(BOOT_DONE_EVENT, fn);
 };

@@ -1,136 +1,157 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Users, Eye, MousePointerClick, TrendingUp, Globe2, ShieldCheck, Github } from 'lucide-react';
-import { ScrollReveal } from '../components/ui';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from "recharts";
+import { Reveal, SplitText } from "../motion";
 
-// Mock Data
+// Sample data — this page is a layout demo, not real visitor analytics.
 const trafficData = [
-  { name: 'Mon', views: 400, visitors: 240 },
-  { name: 'Tue', views: 300, visitors: 139 },
-  { name: 'Wed', views: 520, visitors: 380 },
-  { name: 'Thu', views: 450, visitors: 290 },
-  { name: 'Fri', views: 600, visitors: 480 },
-  { name: 'Sat', views: 350, visitors: 210 },
-  { name: 'Sun', views: 420, visitors: 300 },
+  { name: "Mon", views: 400, visitors: 240 },
+  { name: "Tue", views: 300, visitors: 139 },
+  { name: "Wed", views: 520, visitors: 380 },
+  { name: "Thu", views: 450, visitors: 290 },
+  { name: "Fri", views: 600, visitors: 480 },
+  { name: "Sat", views: 350, visitors: 210 },
+  { name: "Sun", views: 420, visitors: 300 },
 ];
 
 const sourceData = [
-  { name: 'GitHub Profile', value: 450 },
-  { name: 'LinkedIn', value: 300 },
-  { name: 'Direct', value: 200 },
-  { name: 'Google Search', value: 150 },
+  { name: "GitHub Profile", value: 450 },
+  { name: "LinkedIn", value: 300 },
+  { name: "Direct", value: 200 },
+  { name: "Google Search", value: 150 },
 ];
+
+const KPIS = [
+  { label: "Total visitors", value: "2,481", change: "+12%" },
+  { label: "Page views", value: "14,290", change: "+24%" },
+  { label: "Project clicks", value: "842", change: "+18%" },
+  { label: "GitHub referrals", value: "450", change: "+5%" },
+];
+
+// Chart chrome reads the live theme tokens, so both themes recolor for free.
+const AXIS_TICK = { fontSize: 12, fill: "rgb(var(--ink-dim))" };
+const TOOLTIP = {
+  contentStyle: {
+    backgroundColor: "rgb(var(--panel))",
+    border: "1px solid rgb(var(--line))",
+    borderRadius: 8,
+    color: "rgb(var(--ink))",
+  },
+  labelStyle: { color: "rgb(var(--ink-dim))" },
+  itemStyle: { color: "rgb(var(--ink))" },
+};
 
 const AnalyticsDashboard = () => {
   return (
-    <div className="relative min-h-screen bg-background">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px]" />
+    <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
+      <header className="max-w-5xl">
+        <Reveal variant="fade">
+          <p className="hud">
+            (Analytics) — <span className="text-accent-ink">Demo data</span>
+          </p>
+        </Reveal>
+        <Reveal variant="lines" className="mt-6">
+          <SplitText as="h1" text="Analytics" className="text-display text-ink" />
+        </Reveal>
+        <Reveal variant="rise" delay={0.2}>
+          <p className="mt-8 max-w-2xl text-lede text-ink-dim">
+            A preview of the portfolio traffic dashboard. Every number below is sample data,
+            not real visitor metrics.
+          </p>
+        </Reveal>
+      </header>
+
+      <Reveal
+        as="dl"
+        variant="rise"
+        className="mt-[clamp(4rem,10vh,7rem)] grid grid-cols-2 border-y border-line lg:grid-cols-4">
+        {KPIS.map((stat, i) => (
+          <div
+            key={stat.label}
+            className={`flex flex-col gap-3 py-6 pr-6 ${i % 2 ? "border-l border-line pl-6" : ""} ${
+              i > 1 ? "border-t border-line lg:border-t-0" : ""
+            } ${i === 2 ? "lg:border-l lg:pl-6" : ""}`}>
+            <dt className="hud">{stat.label}</dt>
+            <dd className="flex items-baseline gap-3">
+              <span className="text-4xl font-semibold tracking-tight tabular-nums text-ink">
+                {stat.value}
+              </span>
+              <span className="hud tabular-nums text-accent-ink">{stat.change}</span>
+            </dd>
+          </div>
+        ))}
+      </Reveal>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        <Reveal as="section" variant="rise" className="panel flex h-[400px] flex-col p-6 lg:col-span-2">
+          <div className="mb-6 flex items-baseline justify-between gap-4">
+            <h2 className="text-lg font-semibold text-ink">Traffic</h2>
+            <p className="hud">Last 7 days · views</p>
+          </div>
+          <div className="min-h-0 w-full flex-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid vertical={false} stroke="rgb(var(--line))" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={AXIS_TICK} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={AXIS_TICK} />
+                <Tooltip {...TOOLTIP} cursor={{ stroke: "rgb(var(--line))" }} />
+                <Area
+                  type="monotone"
+                  dataKey="views"
+                  stroke="rgb(var(--signal))"
+                  strokeWidth={2}
+                  fill="rgb(var(--signal))"
+                  fillOpacity={0.08}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Reveal>
+
+        <Reveal as="section" variant="rise" delay={0.08} className="panel flex h-[400px] flex-col p-6">
+          <div className="mb-6 flex items-baseline justify-between gap-4">
+            <h2 className="text-lg font-semibold text-ink">Top sources</h2>
+            <p className="hud">Visits</p>
+          </div>
+          <div className="min-h-0 w-full flex-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={sourceData} layout="vertical" margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
+                <CartesianGrid horizontal={false} stroke="rgb(var(--line))" />
+                <XAxis type="number" hide />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ ...AXIS_TICK, fill: "rgb(var(--ink))" }}
+                  width={90}
+                />
+                <Tooltip {...TOOLTIP} cursor={{ fill: "rgb(var(--line) / 0.5)" }} />
+                <Bar dataKey="value" fill="rgb(var(--signal))" radius={[0, 2, 2, 0]} barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Reveal>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl section-padding pt-28">
-        {/* Header */}
-        <ScrollReveal className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-border pb-8">
-          <div>
-            <h1 className="text-3xl font-bold font-display flex items-center gap-3">
-              <TrendingUp className="w-8 h-8 text-accent-ink" /> Analytics
-            </h1>
-            <p className="text-muted-foreground mt-2">Portfolio traffic and engagement metrics</p>
-          </div>
-          
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card/60 backdrop-blur text-sm text-muted-foreground">
-            <ShieldCheck className="w-4 h-4 text-green-500" /> Powered by privacy-first mock analytics
-          </div>
-        </ScrollReveal>
-
-        {/* Top KPIs */}
-        <ScrollReveal delay={0.1}>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[
-              { label: 'Total Visitors', value: '2,481', change: '+12%', icon: Users },
-              { label: 'Page Views', value: '14,290', change: '+24%', icon: Eye },
-              { label: 'Project Clicks', value: '842', change: '+18%', icon: MousePointerClick },
-              { label: 'GitHub Referrals', value: '450', change: '+5%', icon: Github },
-            ].map((stat, i) => (
-              <div key={i} className="p-6 rounded-2xl border border-border bg-card/40 hover:bg-card/60 transition-colors">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-2.5 rounded-xl bg-primary/10 text-accent-ink">
-                    <stat.icon className="w-5 h-5" />
-                  </div>
-                  <span className="text-xs font-semibold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">{stat.change}</span>
-                </div>
-                <div className="text-2xl font-bold font-display">{stat.value}</div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </ScrollReveal>
-
-        {/* Charts */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
-          
-          {/* Traffic Area Chart */}
-          <ScrollReveal delay={0.2} className="lg:col-span-2">
-            <div className="p-6 rounded-2xl border border-border bg-card/40 h-[400px] flex flex-col">
-              <h2 className="text-lg font-bold font-display mb-6">Traffic (Last 7 Days)</h2>
-              <div className="flex-1 min-h-0 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trafficData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="rgb(var(--primary))" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="rgb(var(--primary))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }}
-                      itemStyle={{ color: 'hsl(var(--foreground))' }}
-                    />
-                    <Area type="monotone" dataKey="views" stroke="rgb(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#colorViews)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Sources Bar Chart */}
-          <ScrollReveal delay={0.3}>
-            <div className="p-6 rounded-2xl border border-border bg-card/40 h-[400px] flex flex-col">
-              <h2 className="text-lg font-bold font-display mb-6">Top Sources</h2>
-              <div className="flex-1 min-h-0 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={sourceData} layout="vertical" margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
-                    <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }} width={90} />
-                    <Tooltip cursor={{ fill: 'hsl(var(--muted))' }} contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px' }} />
-                    <Bar dataKey="value" fill="rgb(var(--primary))" radius={[0, 4, 4, 0]} barSize={24} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </ScrollReveal>
-
-        </div>
-
-        {/* Global Reach */}
-        <ScrollReveal delay={0.4}>
-          <div className="p-6 rounded-2xl border border-border bg-card/40 flex flex-col md:flex-row items-center gap-8">
-            <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center shrink-0">
-              <Globe2 className="w-8 h-8 text-secondary-foreground" />
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <h2 className="text-xl font-bold font-display mb-2">Global Reach</h2>
-              <p className="text-muted-foreground text-sm">Visitors from 42 different countries this month. Top regions: United States, Nepal, India, United Kingdom.</p>
-            </div>
-          </div>
-        </ScrollReveal>
-
-      </div>
+      <Reveal
+        as="section"
+        variant="rise"
+        className="mt-8 grid gap-4 border-t border-line pt-8 md:grid-cols-12 md:gap-8">
+        <h2 className="text-lg font-semibold text-ink md:col-span-3">Global reach</h2>
+        <p className="text-ink-dim md:col-span-9">
+          Visitors from 42 different countries this month. Top regions: United States, Nepal,
+          India, United Kingdom.
+        </p>
+      </Reveal>
     </div>
   );
 };

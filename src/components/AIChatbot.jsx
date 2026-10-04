@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, Send, Trash2, Sparkles } from "lucide-react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { useGSAP } from "@gsap/react";
+import { X, Send, Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -19,7 +19,10 @@ import {
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { useTheme } from "../context/ThemeContext";
+import useLauncherVisible from "./chrome/useLauncherVisible";
+import { gsap, EASE, DUR, usePrefersReducedMotion, useMediaQuery } from "../motion";
 import assistantAvatar from "../assets/assistant-avatar.png";
+import { CV, projects, siteConfig } from "../data/portfolioData";
 
 [
   ["jsx", jsxLang],
@@ -35,33 +38,25 @@ import assistantAvatar from "../assets/assistant-avatar.png";
 // Self-hosted: the remote CDN set third-party cookies on every load.
 const AVATAR_URL = assistantAvatar;
 
-const SYSTEM_PROMPT = `You are Aashiq's AI Assistant on his portfolio website (Aashiq.dev). You are knowledgeable, friendly, and professional.
+// Built from the same data the site renders, so the assistant can only
+// repeat facts that are on the page — and stays in sync when they change.
+const SYSTEM_PROMPT = `You are the AI assistant on the portfolio of ${CV.name} (also written Aashiq Mahato). Be friendly, concise and professional.
 
-About Aashiq:
-- Roles: Electronics Engineer & Full-Stack Web Developer
-- Top Skills: React.js (95%), Node.js (88%), MongoDB, Python (85%), Arduino (92%), C/C++
-- Experience: 4+ years, built 8+ production/hardware systems.
+About him:
+- ${CV.title}, based in Kathmandu, Nepal. ${siteConfig.availability}.
+- ${CV.summary}
+- Education: ${CV.education[0].degree}, ${CV.education[0].institution} (${CV.education[0].period}).
+- Experience:
+${CV.experience.map((e) => `  - ${e.role}, ${e.company} (${e.period})`).join("\n")}
+- Skills: ${CV.skills.join(", ")}.
 
-Projects (When mentioning projects, ALWAYS link them as [Project Name](/projects/project-slug)):
-1. [Automated Attendance System](/projects/automated-attendance-system): Python, YOLOv8, React, MongoDB. Face recognition for schools. Reduced manual attendance time from 15 mins to 0 (100% automated).
-2. [Smart School Management System](/projects/smart-school-management): React, Node.js, Express, MongoDB. Role-based platform for education.
-3. [Ultrasonic Blind Stick](/projects/ultrasonic-blind-stick): Arduino, GSM, GPS. Hardware assist for visually impaired. 12-hour battery, instant SMS.
-4. [WeatherApp AI](/projects/weather-app): Next.js, OpenAI. AI-powered PWA.
-5. [Cable Network Website](/projects/cable-network-website): Next.js, Framer Motion, 3D Fiber. Reduced page load by 73%.
+Projects (ALWAYS link as [Title](/projects/slug)):
+${projects.map((p) => `- [${p.title}](/projects/${p.slug}) — ${p.year}; ${p.tags.join(", ")}. ${p.shortDesc}`).join("\n")}
 
-Your behavior:
-- Answer questions about his skills, projects, and availability concisely and enthusiastically.
-- Keep responses brief, skimmable, and well-formatted.
-- ALWAYS use Markdown links (e.g., [Project](/projects/slug)) when mentioning projects so users can click them!
-- Use short bullet points and bold text for emphasis.
-- If asked to hire him, point them to the [Contact page](/contactus) or mention he's available.`;
-
-const getResolvedIsDark = (theme) => {
-  if (theme === "dark") return true;
-  if (theme === "light") return false;
-  if (typeof window === "undefined") return true;
-  return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? true;
-};
+Rules:
+- Only state facts listed above. If something isn't covered, say you don't know and suggest the [Contact section](/#contact).
+- Keep answers brief and skimmable: short bullets, bold for emphasis, Markdown links for projects.
+- For hiring or collaboration, point to the [Contact section](/#contact) or ${CV.contact.email}.`;
 
 const normalizeAssistantMarkdown = (content) => {
   const text = String(content ?? "").trim();
@@ -100,9 +95,7 @@ const MarkdownMessage = ({ content, isDark }) => {
             </h3>
           ),
           p: ({ children, ...props }) => (
-            <p
-              className="my-2 leading-relaxed break-words text-foreground/95"
-              {...props}>
+            <p className="my-2 leading-relaxed break-words text-ink" {...props}>
               {children}
             </p>
           ),
@@ -132,27 +125,27 @@ const MarkdownMessage = ({ content, isDark }) => {
             </a>
           ),
           table: ({ children, ...props }) => (
-            <div className="max-w-full my-3 overflow-x-auto border rounded-xl border-border/70 bg-background/30">
+            <div className="max-w-full my-3 overflow-x-auto border rounded-lg border-line">
               <table className="w-full text-left border-collapse" {...props}>
                 {children}
               </table>
             </div>
           ),
           thead: ({ children, ...props }) => (
-            <thead className="bg-muted/25" {...props}>
+            <thead className="bg-ink/[0.04]" {...props}>
               {children}
             </thead>
           ),
           th: ({ children, ...props }) => (
             <th
-              className="px-3 py-2 text-[12.5px] font-semibold text-foreground border-b border-border/70"
+              className="px-3 py-2 text-[12.5px] font-semibold text-ink border-b border-line"
               {...props}>
               {children}
             </th>
           ),
           td: ({ children, ...props }) => (
             <td
-              className="px-3 py-2 text-[12.5px] text-foreground/90 border-b border-border/40 align-top"
+              className="px-3 py-2 text-[12.5px] text-ink border-b border-line align-top"
               {...props}>
               {children}
             </td>
@@ -165,7 +158,7 @@ const MarkdownMessage = ({ content, isDark }) => {
             if (inline) {
               return (
                 <code
-                  className="px-1.5 py-0.5 rounded-md border border-border/60 bg-muted/30 font-mono text-[12.5px]"
+                  className="px-1.5 py-0.5 rounded-md border border-line bg-ink/[0.04] font-mono text-[12.5px]"
                   {...props}>
                   {children}
                 </code>
@@ -173,11 +166,9 @@ const MarkdownMessage = ({ content, isDark }) => {
             }
 
             return (
-              <div className="my-3 overflow-hidden border rounded-xl border-border/70 bg-background/30">
-                <div className="flex items-center justify-between px-3 py-2 border-b border-border/60 bg-muted/20">
-                  <span className="text-[11px] font-medium text-muted-foreground font-mono">
-                    {language || "code"}
-                  </span>
+              <div className="my-3 overflow-hidden border rounded-lg border-line bg-panel">
+                <div className="px-3 py-2 border-b border-line">
+                  <span className="hud">{language || "code"}</span>
                 </div>
                 <div className="max-w-full overflow-x-auto">
                   <SyntaxHighlighter
@@ -213,85 +204,111 @@ MarkdownMessage.propTypes = {
 };
 
 const suggestedChips = [
-  { emoji: "⚡", text: "View his top skills" },
-  { emoji: "🛠️", text: "What projects has he built?" },
-  { emoji: "📬", text: "How to hire him?" },
-  { emoji: "🔧", text: "Hardware experience?" },
+  "View his top skills",
+  "What projects has he built?",
+  "How to hire him?",
+  "Hardware experience?",
 ];
 
-/* Animated avatar component */
-const AvatarImage = ({ size = 40, ring = true, className = "" }) => (
-  <div
-    className={`relative shrink-0 ${className}`}
-    style={className ? undefined : { width: size, height: size }}>
-    {ring && (
-      <>
-        <motion.div
-          className="absolute rounded-full -inset-1 bg-gradient-to-r from-primary via-accent to-primary opacity-70"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-        />
-        <div className="absolute -inset-[1px] rounded-full bg-background" />
-      </>
-    )}
-    <img
-      src={AVATAR_URL}
-      alt="AI Avatar"
-      className="absolute inset-0 object-cover object-top w-full h-full rounded-full"
-      loading="lazy"
-    />
-  </div>
-);
-
-AvatarImage.propTypes = {
-  size: PropTypes.number,
-  ring: PropTypes.bool,
-  className: PropTypes.string,
+/* Keep Tab inside the dialog. */
+const trapTab = (e, root) => {
+  if (e.key !== "Tab" || !root) return;
+  const nodes = root.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  );
+  const first = nodes[0];
+  const last = nodes[nodes.length - 1];
+  if (!first) return;
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
 };
 
+// Sits above the FAB: safe-area offset + FAB size + a 12–16px gap.
+const PANEL_POSITION =
+  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_3.75rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.5rem)]";
+
 const AIChatbot = () => {
+  const launcherShown = useLauncherVisible();
+  // Full-screen sheet with a backdrop on phones (modal); a parallel,
+  // non-blocking panel on wider screens, so the page stays reachable.
+  const isModal = !useMediaQuery("(min-width: 768px)");
   const themeContext = useTheme();
-  const theme = themeContext?.theme ?? "dark";
+  const isDark = (themeContext?.theme ?? "dark") !== "light";
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showChips, setShowChips] = useState(true);
-  const [isDark, setIsDark] = useState(() => getResolvedIsDark(theme));
-  const messagesEndRef = useRef(null);
+  const rootRef = useRef(null);
+  const panelRef = useRef(null);
+  const listRef = useRef(null);
   const inputRef = useRef(null);
-  const prefersReducedMotion = useReducedMotion();
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
-    setIsDark(getResolvedIsDark(theme));
-
-    if (theme !== "system" || typeof window === "undefined") return;
-    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
-    if (!mql) return;
-    const handler = (e) => setIsDark(e.matches);
-    mql.addEventListener?.("change", handler);
-    return () => mql.removeEventListener?.("change", handler);
-  }, [theme]);
-
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: prefersReducedMotion ? "auto" : "smooth",
+    const el = listRef.current;
+    el?.scrollTo({
+      top: el.scrollHeight,
+      behavior: reduced ? "auto" : "smooth",
     });
-  }, [prefersReducedMotion]);
+  }, [messages, isTyping, reduced]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping, scrollToBottom]);
+  // Enter / exit. The root stays mounted; autoAlpha hides it once faded out.
+  useGSAP(
+    () => {
+      if (isOpen) {
+        gsap.set(rootRef.current, { visibility: "visible" });
+        gsap.to(rootRef.current, {
+          opacity: 1,
+          duration: 0.2,
+          ease: EASE.out,
+          overwrite: true,
+        });
+        gsap.fromTo(
+          panelRef.current,
+          { y: reduced ? 0 : 16 },
+          { y: 0, duration: DUR.fast, ease: EASE.out, overwrite: true },
+        );
+      } else {
+        gsap.to(rootRef.current, {
+          autoAlpha: 0,
+          duration: 0.2,
+          ease: EASE.soft,
+          overwrite: true,
+        });
+      }
+    },
+    { dependencies: [isOpen, reduced], scope: rootRef },
+  );
 
+  // Newest message rises in.
+  useGSAP(
+    () => {
+      const nodes = panelRef.current.querySelectorAll("[data-msg]");
+      const last = nodes[nodes.length - 1];
+      if (!last) return;
+      gsap.from(last, {
+        opacity: 0,
+        y: reduced ? 0 : 8,
+        duration: DUR.fast,
+        ease: EASE.out,
+      });
+    },
+    { dependencies: [messages.length], scope: panelRef },
+  );
+
+  // Move focus in on open, hand it back on close.
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      const timeoutId = window.setTimeout(
-        () => inputRef.current?.focus(),
-        prefersReducedMotion ? 0 : 250,
-      );
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [isOpen, prefersReducedMotion]);
+    if (!isOpen) return undefined;
+    const previous = document.activeElement;
+    inputRef.current?.focus({ preventScroll: true });
+    return () => previous?.focus?.({ preventScroll: true });
+  }, [isOpen]);
 
   const sendMessage = async (text) => {
     if (isTyping) return;
@@ -348,7 +365,7 @@ const AIChatbot = () => {
         {
           role: "assistant",
           content:
-            "### Connection issue\n\nI'm having trouble connecting right now. Feel free to reach out via the **Contact** page!",
+            "### Connection issue\n\nI'm having trouble connecting right now. Feel free to reach out via the **Contact** section!",
         },
       ]);
     } finally {
@@ -360,6 +377,7 @@ const AIChatbot = () => {
     setMessages([]);
     setShowChips(true);
     setInput("");
+    inputRef.current?.focus();
   };
 
   const handleKeyDown = (e) => {
@@ -369,291 +387,235 @@ const AIChatbot = () => {
     }
   };
 
+  const onPanelKeyDown = (e) => {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      setIsOpen(false);
+      return;
+    }
+    if (isModal) trapTab(e, panelRef.current);
+  };
+
   const canSend = input.trim().length > 0 && !isTyping;
 
   return (
     <>
       {/* FAB */}
-      <motion.button
+      <button
         type="button"
+        data-chrome
+        data-cursor="button"
         onClick={() => setIsOpen((v) => !v)}
+        aria-label={isOpen ? "Close AI assistant" : "Chat with Aashiq's AI assistant"}
+        aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-controls="ai-chat-window"
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-7 lg:right-7 z-[100] w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px] rounded-full bg-transparent flex items-center justify-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.94 }}
-        title="Chat with AI Assistant">
-        {/* Outer glow pulse (motion-safe) */}
-        {!prefersReducedMotion && (
-          <motion.div
-            className="absolute rounded-full -inset-2"
-            style={{
-              background:
-                "radial-gradient(circle, rgb(var(--primary) / 0.35) 0%, transparent 70%)",
-            }}
-            animate={{ scale: [1, 1.25, 1], opacity: [0.7, 0.2, 0.7] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        className={`fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-[102] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-line bg-panel text-ink transition-[transform,opacity,border-color] duration-500 ease-out hover:border-ink-dim active:scale-95 md:h-14 md:w-14 ${
+          launcherShown || isOpen ? "" : "pointer-events-none translate-y-4 opacity-0"
+        }`}
+        tabIndex={launcherShown || isOpen ? undefined : -1}>
+        {isOpen ? (
+          <X aria-hidden="true" className="h-5 w-5" />
+        ) : (
+          <img
+            src={AVATAR_URL}
+            alt=""
+            className="h-full w-full object-cover object-top"
+            loading="lazy"
           />
         )}
+      </button>
 
-        <AvatarImage
-          ring={true}
-          className="w-14 h-14 sm:w-16 sm:h-16 lg:w-[68px] lg:h-[68px]"
+      {/* Chat layer */}
+      <div
+        ref={rootRef}
+        data-chrome
+        style={{ visibility: "hidden", opacity: 0 }}
+        className="pointer-events-none fixed inset-0 z-[101]">
+        {/* Mobile backdrop */}
+        <div
+          aria-hidden="true"
+          onClick={() => setIsOpen(false)}
+          className="pointer-events-auto absolute inset-0 bg-background/80 md:hidden"
         />
 
-        {/* Sparkle badge */}
-        <div className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-4 h-4 sm:w-[18px] sm:h-[18px] rounded-full bg-primary text-primary-foreground flex items-center justify-center border-2 border-background">
-          <Sparkles size={8} />
-        </div>
-
-        {/* Tooltip */}
-        <div className="absolute right-[calc(100%+14px)] top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg text-xs whitespace-nowrap pointer-events-none opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 border border-border bg-card/90 backdrop-blur-sm text-foreground shadow-md">
-          Chat with Aashiq&apos;s AI
-        </div>
-      </motion.button>
-
-      {/* Chat Window */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Mobile overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-[101] bg-black/60 backdrop-blur md:hidden"
+        <div
+          ref={panelRef}
+          id="ai-chat-window"
+          role="dialog"
+          aria-modal={isModal}
+          aria-label="Chat with Aashiq's AI assistant"
+          onKeyDown={onPanelKeyDown}
+          className={`pointer-events-auto absolute left-3 right-3 flex h-[min(580px,calc(100dvh_-_7rem))] flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40 md:left-auto md:right-5 md:w-[400px] ${PANEL_POSITION}`}>
+          {/* Header */}
+          <div className="flex items-center gap-3 border-b border-line px-4 py-3">
+            <img
+              src={AVATAR_URL}
+              alt=""
+              className="h-10 w-10 shrink-0 rounded-full border border-line object-cover object-top"
+              loading="lazy"
             />
-
-            <motion.div
-              id="ai-chat-window"
-              initial={{ opacity: 0, y: 24, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 24, scale: 0.96 }}
-              transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-              className="fixed bottom-28 right-6 z-[102] w-[400px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-8rem)] rounded-2xl overflow-hidden flex flex-col border border-border bg-card/90 backdrop-blur-sm shadow-xl">
-              {/* Decorative top shimmer line */}
-              <div className="absolute top-0 left-[10%] right-[10%] h-px rounded-full bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-
-              {/* Ambient blobs */}
-              <div
-                className="absolute rounded-full pointer-events-none -top-10 -right-8 w-44 h-44"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgb(var(--accent) / 0.10) 0%, transparent 70%)",
-                }}
-              />
-              <div
-                className="absolute rounded-full pointer-events-none bottom-16 -left-10 w-52 h-52"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgb(var(--primary) / 0.08) 0%, transparent 70%)",
-                }}
-              />
-
-              {/* Header */}
-              <div className="relative z-10 flex items-center gap-3 px-5 py-4 border-b border-border bg-card/60">
-                <AvatarImage size={46} ring={true} />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold truncate font-display text-accent-ink">
-                    Aashiq&apos;s AI Assistant
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <motion.div
-                      className="w-2 h-2 rounded-full bg-primary"
-                      animate={
-                        prefersReducedMotion ? {} : { opacity: [1, 0.4, 1] }
-                      }
-                      transition={
-                        prefersReducedMotion
-                          ? {}
-                          : { duration: 1.8, repeat: Infinity }
-                      }
-                    />
-                    <span className="text-[11px] text-muted-foreground">
-                      Online · Ask me anything
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={clearChat}
-                  className="w-8 h-8 border rounded-lg border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                  title="Clear chat">
-                  <Trash2 size={14} className="mx-auto" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 border rounded-lg border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                  title="Close chat">
-                  <X size={14} className="mx-auto" />
-                </button>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-sm font-semibold text-ink">
+                Aashiq&apos;s AI Assistant
               </div>
-
-              {/* Messages */}
-              <div data-lenis-prevent className="relative z-10 flex-1 px-4 py-4 space-y-3 overflow-y-auto">
-                {/* Welcome */}
-                {messages.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="pt-2 pb-1 text-center">
-                    <div className="w-20 h-20 mx-auto mb-4">
-                      <AvatarImage size={80} ring={true} />
-                    </div>
-                    <p className="mb-1 text-base font-bold font-display text-foreground">
-                      Hello there!
-                    </p>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      I&apos;m Aashiq&apos;s personal AI assistant.
-                      <br />
-                      Ask me anything about his work!
-                    </p>
-                  </motion.div>
-                )}
-
-                {/* Suggested chips */}
-                {showChips && messages.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25 }}
-                    className="flex flex-wrap justify-center gap-2">
-                    {suggestedChips.map((chip, idx) => (
-                      <motion.button
-                        key={chip.text}
-                        type="button"
-                        onClick={() => sendMessage(chip.text)}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 + idx * 0.07 }}
-                        whileTap={{ scale: 0.96 }}
-                        className="px-3.5 py-1.5 text-xs font-medium rounded-full border border-border bg-card/40 text-muted-foreground hover:text-foreground hover:bg-card/60 hover:border-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50">
-                        {chip.emoji} {chip.text}
-                      </motion.button>
-                    ))}
-                  </motion.div>
-                )}
-
-                {/* Conversation */}
-                {messages.map((msg, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.28 }}
-                    className={`flex gap-2.5 items-end ${
-                      msg.role === "user" ? "justify-end" : "justify-start"
-                    }`}>
-                    {msg.role === "assistant" && (
-                      <img
-                        src={AVATAR_URL}
-                        alt="AI"
-                        className="object-cover object-top border rounded-full w-7 h-7 border-primary/20 shrink-0"
-                        loading="lazy"
-                      />
-                    )}
-
-                    <div
-                      className={
-                        msg.role === "user"
-                          ? "max-w-[86%] sm:max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-br-md text-sm leading-relaxed border border-primary/30 bg-primary text-primary-foreground shadow-soft"
-                          : "max-w-[92%] sm:max-w-[78%] px-4 py-2.5 rounded-[18px] rounded-bl-md text-[13.5px] sm:text-sm leading-relaxed border border-border/80 bg-card/60 text-foreground shadow-soft backdrop-blur-sm animate-fade-in"
-                      }>
-                      {msg.role === "assistant" ? (
-                        <MarkdownMessage
-                          content={msg.content}
-                          isDark={isDark}
-                        />
-                      ) : (
-                        <span className="break-words whitespace-pre-wrap">
-                          {msg.content}
-                        </span>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-
-                {/* Typing */}
-                {isTyping && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-2.5 items-end">
-                    <img
-                      src={AVATAR_URL}
-                      alt="AI"
-                      className="object-cover object-top border rounded-full w-7 h-7 border-primary/20 shrink-0"
-                      loading="lazy"
-                    />
-                    <div className="flex gap-1.5 items-center px-4 py-3 rounded-[18px] rounded-bl-md border border-border bg-card/60">
-                      {[0, 1, 2].map((dot) => (
-                        <motion.div
-                          key={dot}
-                          className="w-2 h-2 rounded-full bg-primary"
-                          animate={
-                            prefersReducedMotion
-                              ? {}
-                              : { y: [-3, 3, -3], opacity: [1, 0.4, 1] }
-                          }
-                          transition={
-                            prefersReducedMotion
-                              ? {}
-                              : {
-                                  duration: 0.7,
-                                  repeat: Infinity,
-                                  delay: dot * 0.15,
-                                }
-                          }
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                <div ref={messagesEndRef} />
+              <div className="mt-1 flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 rounded-full bg-signal"
+                />
+                <span className="hud">Online · Ask me anything</span>
               </div>
+            </div>
 
-              {/* Input */}
-              <div className="relative z-10 px-4 pt-3 pb-4 border-t border-border bg-card/60">
-                <div className="flex items-center gap-2 px-3 py-2 border rounded-xl border-border bg-background/40 focus-within:ring-2 focus-within:ring-ring/50 focus-within:border-primary/30">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Ask about skills, projects…"
-                    className="flex-1 text-sm bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
-                  />
+            <button
+              type="button"
+              onClick={clearChat}
+              aria-label="Clear conversation"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-ink-dim transition-colors duration-200 ease-out hover:bg-ink/[0.06] hover:text-ink">
+              <Trash2 aria-hidden="true" size={15} />
+            </button>
 
-                  <motion.button
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close chat"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-ink-dim transition-colors duration-200 ease-out hover:bg-ink/[0.06] hover:text-ink">
+              <X aria-hidden="true" size={15} />
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div
+            ref={listRef}
+            data-lenis-prevent
+            role="log"
+            aria-live="polite"
+            aria-label="Conversation"
+            className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            {/* Welcome */}
+            {messages.length === 0 && (
+              <div className="pb-1 pt-2 text-center">
+                <img
+                  src={AVATAR_URL}
+                  alt=""
+                  className="mx-auto mb-4 h-16 w-16 rounded-full border border-line object-cover object-top"
+                  loading="lazy"
+                />
+                <p className="mb-1 text-base font-semibold text-ink">
+                  Hello there!
+                </p>
+                <p className="text-sm leading-relaxed text-ink-dim">
+                  I&apos;m Aashiq&apos;s personal AI assistant.
+                  <br />
+                  Ask me anything about his work!
+                </p>
+              </div>
+            )}
+
+            {/* Suggested chips */}
+            {showChips && messages.length === 0 && (
+              <div className="flex flex-wrap justify-center gap-2">
+                {suggestedChips.map((chip) => (
+                  <button
+                    key={chip}
                     type="button"
-                    onClick={() => sendMessage(input)}
-                    disabled={!canSend}
-                    whileHover={canSend ? { scale: 1.06 } : {}}
-                    whileTap={canSend ? { scale: 0.94 } : {}}
-                    className={
-                      canSend
-                        ? "w-10 h-10 rounded-lg border border-primary/30 bg-primary text-primary-foreground flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                        : "w-10 h-10 rounded-lg border border-border bg-card/40 text-muted-foreground/50 flex items-center justify-center cursor-not-allowed"
-                    }>
-                    <Send size={15} />
-                  </motion.button>
-                </div>
+                    onClick={() => sendMessage(chip)}
+                    className="rounded-full border border-line px-3.5 py-1.5 text-xs font-medium text-ink-dim transition-colors duration-200 ease-out hover:border-ink-dim hover:text-ink">
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            )}
 
-                <div className="text-center mt-2 text-[10.5px] text-muted-foreground/60 tracking-wide">
-                  Powered by AI · Aashiq.dev
+            {/* Conversation */}
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                data-msg
+                className={`flex items-end gap-2.5 ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
+                }`}>
+                {msg.role === "assistant" && (
+                  <img
+                    src={AVATAR_URL}
+                    alt=""
+                    className="h-7 w-7 shrink-0 rounded-full border border-line object-cover object-top"
+                    loading="lazy"
+                  />
+                )}
+
+                <div
+                  className={
+                    msg.role === "user"
+                      ? "max-w-[86%] rounded-xl rounded-br-sm bg-signal px-4 py-2.5 text-sm leading-relaxed text-primary-foreground sm:max-w-[78%]"
+                      : "max-w-[92%] rounded-xl rounded-bl-sm border border-line bg-background px-4 py-2.5 text-[13.5px] leading-relaxed text-ink sm:max-w-[78%] sm:text-sm"
+                  }>
+                  {msg.role === "assistant" ? (
+                    <MarkdownMessage content={msg.content} isDark={isDark} />
+                  ) : (
+                    <span className="whitespace-pre-wrap break-words">
+                      {msg.content}
+                    </span>
+                  )}
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            ))}
+
+            {/* Typing */}
+            {isTyping && (
+              <div className="flex items-end gap-2.5">
+                <img
+                  src={AVATAR_URL}
+                  alt=""
+                  className="h-7 w-7 shrink-0 rounded-full border border-line object-cover object-top"
+                  loading="lazy"
+                />
+                <div
+                  role="status"
+                  aria-label="Assistant is typing"
+                  className="flex items-center gap-1.5 rounded-xl rounded-bl-sm border border-line bg-background px-4 py-3">
+                  {[0, 1, 2].map((dot) => (
+                    <span
+                      key={dot}
+                      aria-hidden="true"
+                      className="h-1.5 w-1.5 rounded-full bg-ink-dim motion-safe:animate-pulse"
+                      style={{ animationDelay: `${dot * 150}ms` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="border-t border-line px-4 pb-3 pt-3">
+            <div className="flex items-center gap-2 rounded-full border border-line bg-background py-1.5 pl-4 pr-1.5 transition-colors duration-200 ease-out focus-within:border-ink-dim">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask about skills, projects…"
+                aria-label="Message"
+                className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-dim"
+              />
+
+              <button
+                type="button"
+                onClick={() => sendMessage(input)}
+                disabled={!canSend}
+                aria-label="Send message"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-signal text-primary-foreground transition-opacity duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-40">
+                <Send aria-hidden="true" size={15} />
+              </button>
+            </div>
+
+            <div className="hud mt-2 text-center">Powered by AI · Aashiq.dev</div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
