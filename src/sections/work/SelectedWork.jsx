@@ -13,19 +13,19 @@ import {
 } from "../../motion";
 import { SectionHeader } from "../../components/ui";
 import { projects } from "../../data/portfolioData";
+import { PROJECT_ACCENTS } from "../../data/projectAccents";
 import WorkSlide from "./WorkSlide";
 
-// Order + a supporting accent sampled from each product's own UI.
 const ORDER = [
-  ["studio-tools", "#38BDF8"],
-  ["automated-attendance-system", "#2DD4BF"],
-  ["cable-network-website", "#4ADE80"],
-  ["smart-school-management", "#6366F1"],
-  ["ultrasonic-blind-stick", "#FF6A33"],
+  "studio-tools",
+  "automated-attendance-system",
+  "cable-network-website",
+  "smart-school-management",
+  "ultrasonic-blind-stick",
 ];
-const SHOWCASE = ORDER.map(([slug, accent]) => {
+const SHOWCASE = ORDER.map((slug) => {
   const p = projects.find((x) => x.slug === slug);
-  return p && { ...p, accent };
+  return p && { ...p, accent: PROJECT_ACCENTS[slug] };
 }).filter(Boolean);
 /** Each hand-over wipes in from a different edge: up, right, centre, left. */
 const WIPES = ["inset(100% 0% 0% 0%)", "inset(0% 0% 0% 100%)", "inset(50% 50% 50% 50%)", "inset(0% 100% 0% 0%)"];

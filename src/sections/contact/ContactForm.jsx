@@ -8,10 +8,20 @@ const WEB3FORMS_ACCESS_KEY =
   import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "18a22bbb-2e79-4455-b38e-193a751289de";
 
 const FIELDS = [
-  { name: "user_name", label: "Name", type: "text", autoComplete: "name" },
-  { name: "user_email", label: "Email", type: "email", autoComplete: "email" },
-  { name: "subject", label: "Subject", type: "text", autoComplete: "off" },
+  { name: "user_name", label: "Name", type: "text", autoComplete: "name", placeholder: "Your name" },
+  { name: "user_email", label: "Email", type: "email", autoComplete: "email", placeholder: "you@company.com" },
+  { name: "subject", label: "Subject", type: "text", autoComplete: "off", placeholder: "What's it about? (optional)" },
 ];
+
+/** Field-level checks; returns { field: message } for anything invalid. */
+const validate = (f) => {
+  const errors = {};
+  if (!f.user_name.trim()) errors.user_name = "Please add your name.";
+  if (!f.user_email.trim()) errors.user_email = "Please add an email so I can reply.";
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.user_email.trim())) errors.user_email = "That email doesn't look right.";
+  if (!f.message.trim()) errors.message = "Please write a short message.";
+  return errors;
+};
 
 const EMPTY = { user_name: "", user_email: "", subject: "", message: "" };
 
@@ -24,19 +34,36 @@ const formatError = (err) => {
 };
 
 /**
- * Short note form (Web3Forms). Underlined fields with floating-free labels,
- * native validation, and inline status: sending → sent / error, announced
- * through a live region rather than a toast.
+ * Short note form (Web3Forms). Underlined fields, inline field errors
+ * (aria-invalid + described-by, focus moves to the first problem), and an
+ * inline status: sending → sent / error, announced through a live region.
+ * "Sent" appears only after the service confirms delivery.
  */
 const ContactForm = () => {
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
 
-  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const onChange = (e) => {
+    const next = { ...form, [e.target.name]: e.target.value };
+    setForm(next);
+    // Clear a field's error as soon as it's fixed (never add new ones while typing).
+    if (errors[e.target.name] && !validate(next)[e.target.name]) {
+      setErrors((prev) => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== e.target.name)));
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (status === "sending") return;
+    const found = validate(form);
+    setErrors(found);
+    const first = Object.keys(found)[0];
+    if (first) {
+      document.getElementById(first)?.focus();
+      return;
+    }
     setStatus("sending");
     reactAvatar("working", 15000);
     setError(null);
@@ -74,7 +101,7 @@ const ContactForm = () => {
     "peer w-full border-0 border-b border-line bg-transparent px-0 pb-3 pt-2 text-lg text-ink placeholder:text-ink-dim/70 transition-colors duration-300 focus:border-signal focus:outline-none focus:ring-0";
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8">
+    <form onSubmit={onSubmit} noValidate className="space-y-8">
       <div className="grid gap-8 sm:grid-cols-2">
         {FIELDS.map((f) => (
           <div key={f.name} className={f.name === "subject" ? "sm:col-span-2" : ""}>
@@ -89,10 +116,18 @@ const ContactForm = () => {
               type={f.type}
               autoComplete={f.autoComplete}
               required={f.name !== "subject"}
+              placeholder={f.placeholder}
+              aria-invalid={errors[f.name] ? true : undefined}
+              aria-describedby={errors[f.name] ? `${f.name}-error` : undefined}
               value={form[f.name]}
               onChange={onChange}
-              className={field}
+              className={`${field} ${errors[f.name] ? "border-accent-ink" : ""}`}
             />
+            {errors[f.name] && (
+              <p id={`${f.name}-error`} className="mt-2 text-sm text-accent-ink">
+                {errors[f.name]}
+              </p>
+            )}
           </div>
         ))}
       </div>
@@ -107,10 +142,18 @@ const ContactForm = () => {
           rows={4}
           required
           data-lenis-prevent
+          placeholder="A few lines about the project or role…"
+          aria-invalid={errors.message ? true : undefined}
+          aria-describedby={errors.message ? "message-error" : undefined}
           value={form.message}
           onChange={onChange}
-          className={`${field} resize-none`}
+          className={`${field} resize-none ${errors.message ? "border-accent-ink" : ""}`}
         />
+        {errors.message && (
+          <p id="message-error" className="mt-2 text-sm text-accent-ink">
+            {errors.message}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-6">
@@ -125,7 +168,15 @@ const ContactForm = () => {
         </MagneticButton>
         <p role="status" aria-live="polite" className={`text-sm ${status === "error" ? "text-accent-ink" : "text-ink-dim"}`}>
           {status === "sent" && "Thanks — I'll reply within a day."}
-          {status === "error" && error}
+          {status === "error" && (
+            <>
+              {error} You can also email{" "}
+              <a href="mailto:aashikkrmahatoo@gmail.com" className="link-line text-ink">
+                aashikkrmahatoo@gmail.com
+              </a>
+              .
+            </>
+          )}
         </p>
       </div>
     </form>

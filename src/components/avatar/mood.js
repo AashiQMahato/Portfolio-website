@@ -43,7 +43,9 @@ export const SECTION_ABOUT = {
   experience: "Roles and study so far: frontend work, technical writing, and the engineering degree.",
   skills: "Six disciplines; pick one and every tool traces back to a real project.",
   writing: "Notes from the workbench: IoT dashboards and UI motion.",
+  "resume-cta": "The one-page version: roles, education, projects and stack.",
   contact: "Email is fastest — replies usually within 24 hours.",
+  footer: "The end of the page. Everything worth clicking is above — or one email away.",
 };
 
 /** Said once, after the visitor has settled in a section (never on a fly-by). */
@@ -51,8 +53,14 @@ export const ARRIVAL = {
   work: "Need a recommendation?",
   about: "Hardware first, software on top — that's the whole story.",
   skills: "Curious how these tools get used? Pick a discipline.",
-  contact: "Ready to say hello?",
+  writing: "Knowledge compilation in progress. Please don't unplug.",
+  "resume-cta": "The professional paperwork has entered the chat.",
+  contact: "You've reached the final boss: saying hello.",
+  footer: "That's a wrap. Thanks for exploring.",
 };
+
+/** When a visitor opens or downloads the CV. */
+export const CHOICE_LINE = "Excellent choice. Very professional of you.";
 
 /** Hovering a project. Specific where the project data supports it. */
 export const PROJECT_LINES = {

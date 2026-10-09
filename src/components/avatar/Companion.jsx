@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { gsap, EASE, usePrefersReducedMotion, useScrollToSection } from "../../motion";
 import { CV, projects } from "../../data/portfolioData";
 import { capabilities } from "../../data/stack";
+import { blogPosts } from "../../data/blogPosts";
 import Avatar from "./Avatar";
 import useAvatarMood from "./useAvatarMood";
 import useAvatarTour from "./useAvatarTour";
@@ -10,6 +11,7 @@ import {
   ARRIVAL,
   AVATAR_SAY_EVENT,
   BEHAVIOR,
+  CHOICE_LINE,
   DESTINATIONS,
   GREETING,
   PLAYFUL,
@@ -22,7 +24,7 @@ import {
 const BASE = 64; // px the avatar renders at; scaled to each anchor's box
 const FOCUS = 0.42; // anchors compete for this line of the viewport
 const NAV = 72; // fixed header height
-const SWITCH_MS = 220; // a new anchor must stay best this long (fast scrolls skip)
+const SWITCH_MS = 120; // a new anchor must stay best this long (a flick past a section skips it)
 const ARRIVE_MS = 1200; // settle time before an arrival line may play
 const INTERACTIVE = "a, button, input, textarea, select, [data-avatar]";
 const QUIET_KEY = "companion:quiet";
@@ -42,14 +44,16 @@ const store = {
     }
   },
 };
-const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+const MAX_SPEED = 1.8; // px per ms
 const sectionOf = (el) => el.closest("section[id]")?.id ?? (el.closest("footer") ? "footer" : "page");
 const FEATURED = ["studio-tools", "automated-attendance-system", "cable-network-website", "smart-school-management", "ultrasonic-blind-stick"];
 
 /**
  * The site's one character. It has no fixed home: it settles into whichever
- * layout anchor (<SectionAvatar>) sits nearest the reading line, hopping a
- * short way or peeking out/in for longer jumps, and takes that anchor's mood.
+ * layout anchor (<SectionAvatar>) sits nearest the reading line and glides
+ * there as you scroll — riding the screen edge between sections, leaning
+ * into the move — and takes that anchor's mood.
  * It reacts to real events (project hover, capability choice, article pick),
  * speaks rarely, and a click starts a conversation with a few useful actions —
  * navigation is only the last of them.
@@ -66,6 +70,7 @@ const Companion = () => {
   const posRef = useRef(null); // live avatar box, shared with the bubble placement
 
   const [spot, setSpot] = useState(null); // { el, section, mood, hover }
+  const [motionMood, setMotionMood] = useState(null); // excited / curious / searching while travelling
   const [hot, setHot] = useState(null);
   const [bubble, setBubble] = useState(null); // { kind: "panel" | "message", text, view?, link?, actions? }
   const [quiet, setQuiet] = useState(() => store.get(QUIET_KEY) === "1");
@@ -79,7 +84,7 @@ const Companion = () => {
   bubbleOpen.current = Boolean(bubble);
 
   const tour = useAvatarTour({ scrollTo, reduced });
-  const mood = useAvatarMood({ base: spot?.mood, hot, panelOpen: bubble?.kind === "panel", override: tour.step?.mood });
+  const mood = useAvatarMood({ base: spot?.mood, hot, panelOpen: bubble?.kind === "panel", override: tour.step?.mood ?? motionMood });
 
   const say = useCallback((text, extra = {}) => setBubble({ kind: "message", text, ...extra }), []);
 
@@ -87,7 +92,16 @@ const Companion = () => {
   useEffect(() => {
     const root = rootRef.current;
     const body = bodyRef.current;
-    const st = { anchor: null, cand: null, candAt: 0, from: null, blend: 1, shown: false, lastPick: 0 };
+    const st = { anchor: null, cand: null, candAt: 0, shown: false, lastPick: 0, pos: null, v: { x: 0, y: 0 }, stride: 0, tilt: 0, motion: null, px: -999, py: -999 };
+    const onPointer = (e) => {
+      st.px = e.clientX;
+      st.py = e.clientY;
+    };
+    // A happy little landing when a trip ends.
+    const onArrive = () => {
+      reactAvatar(BEHAVIOR.greeting, 1200);
+      gsap.fromTo(body, { scaleX: 1.12, scaleY: 0.88 }, { scaleX: 1, scaleY: 1, duration: 0.6, ease: "elastic.out(1, 0.45)", overwrite: "auto" });
+    };
 
     const measure = (a) => {
       const r = a.getBoundingClientRect();
@@ -114,58 +128,97 @@ const Companion = () => {
       root.style.pointerEvents = on ? "auto" : "none";
       gsap.to(body, { autoAlpha: on ? 1 : 0, scale: on ? 1 : 0.6, duration: reduced ? 0 : on ? 0.35 : 0.2, ease: on ? EASE.out : "power2.in", overwrite: "auto" });
     };
-    const place = () => {
+    // Where the character wants to be: its spot, but kept on screen — when the
+    // spot scrolls away it rides the viewport edge until the next spot takes over.
+    const target = (a) => {
+      const m = measure(a);
+      const half = (BASE * m.s) / 2;
+      const x = clamp(m.x, half + 12, window.innerWidth - half - 12);
+      const y = clamp(m.y, NAV + half + 12, window.innerHeight - half - 96); // 96: clear of the chat button
+      return { x, y, s: m.s, riding: x !== m.x || y !== m.y };
+    };
+    // Spring physics (per ms): a little momentum and overshoot, so moves read as a body travelling.
+    const OMEGA = 0.009; // stiffness: ~0.7 s to settle a long move
+    const ZETA = 0.78; // damping ratio: <1 = slight, soft overshoot
+    const place = (dt) => {
       if (!st.anchor) return;
-      const m = measure(st.anchor);
-      const b = st.blend;
-      const p = b >= 1 || !st.from ? m : { x: lerp(st.from.x, m.x, b), y: lerp(st.from.y, m.y, b), s: lerp(st.from.s, m.s, b) };
-      posRef.current = { x: p.x, y: p.y, size: BASE * p.s };
-      root.style.transform = `translate3d(${p.x - BASE / 2}px, ${p.y - BASE / 2}px, 0) scale(${p.s})`;
+      const t = target(st.anchor);
+      if (!st.pos || reduced) {
+        st.pos = { x: t.x, y: t.y, s: t.s };
+        st.v = { x: 0, y: 0 };
+      } else {
+        const v = st.v;
+        for (const ax of ["x", "y"]) {
+          v[ax] += ((t[ax] - st.pos[ax]) * OMEGA * OMEGA - 2 * ZETA * OMEGA * v[ax]) * dt;
+        }
+        // Speed cap: long cross-screen trips become an even glide rather than a dart.
+        const speed = Math.hypot(v.x, v.y);
+        if (speed > MAX_SPEED) {
+          v.x *= MAX_SPEED / speed;
+          v.y *= MAX_SPEED / speed;
+        }
+        st.pos.x += v.x * dt;
+        st.pos.y += v.y * dt;
+        st.pos.s += (t.s - st.pos.s) * (1 - Math.exp(-dt / 200));
+      }
+      const { x, y, s } = st.pos;
+      const speed = Math.hypot(st.v.x, st.v.y);
+      let tf = `translate3d(${x - BASE / 2}px, ${y - BASE / 2}px, 0)`;
+      if (!reduced) {
+        // A hop rhythm tied to distance travelled, so it bounds along rather than slides.
+        st.stride = (st.stride + speed * dt * 0.012) % Math.PI;
+        const hop = speed > 0.12 ? -Math.sin(st.stride) * Math.min(speed * 7, 7) : 0;
+        // Stretch along the direction of travel, squash across it (volume-preserving).
+        const stretch = 1 + Math.min(speed * 0.12, 0.2);
+        const ang = (Math.atan2(st.v.y, st.v.x) * 180) / Math.PI;
+        // Lean into the move; at rest, lean a little toward a nearby pointer.
+        const near = Math.hypot(st.px - x, st.py - y) < 180;
+        const tilt = speed > 0.05 ? clamp(st.v.x * 14, -14, 14) : near ? clamp((st.px - x) / 18, -9, 9) : 0;
+        st.tilt += (tilt - st.tilt) * (1 - Math.exp(-dt / 120));
+        tf += ` translateY(${hop}px) rotate(${ang}deg) scale(${stretch}, ${1 / stretch}) rotate(${-ang}deg) rotate(${st.tilt}deg)`;
+      }
+      root.style.transform = `${tf} scale(${s})`;
+      posRef.current = { x, y, size: BASE * s };
+
+      // Moods from motion — React hears only the transitions.
+      const riding = t.riding;
+      const moving = speed > 0.08 || Math.hypot(t.x - x, t.y - y) > 24;
+      const next = reduced ? null : riding ? "searching" : moving ? (speed > 0.9 ? "excited" : "curious") : null;
+      if (next !== st.motion) {
+        // Celebrate only reaching a new section, not every pause in scrolling.
+        if (!next && st.arrivedAt !== sectionOf(st.anchor)) {
+          st.arrivedAt = sectionOf(st.anchor);
+          if (st.motion) onArrive();
+        }
+        st.motion = next;
+        setMotionMood(next);
+      }
     };
     const switchTo = (a) => {
-      const prev = st.anchor;
       st.anchor = a;
       if (!a) {
         show(false);
+        st.pos = null;
         posRef.current = null;
         setSpot(null);
         return;
       }
       setSpot({ el: a, section: sectionOf(a), mood: a.dataset.mood, hover: a.dataset.hover });
-      const next = measure(a);
-      const cur = posRef.current;
-      if (!prev || !st.shown || reduced || !cur) {
-        st.blend = 1;
-        place();
+      if (!st.shown) {
+        st.pos = null; // first appearance: start on the spot, no glide in from the corner
         show(true);
-        return;
-      }
-      if (Math.hypot(next.x - cur.x, next.y - cur.y) > window.innerHeight * 0.45) {
-        // Too far to walk: peek out here, peek in there.
-        gsap.to(body, {
-          autoAlpha: 0,
-          scale: 0.6,
-          duration: 0.18,
-          ease: "power2.in",
-          overwrite: "auto",
-          onComplete: () => {
-            st.blend = 1;
-            place();
-            gsap.to(body, { autoAlpha: 1, scale: 1, duration: 0.35, ease: EASE.out });
-          },
-        });
-      } else {
-        st.from = { x: cur.x, y: cur.y, s: cur.size / BASE };
-        st.blend = 0;
-        gsap.to(st, { blend: 1, duration: 0.6, ease: EASE.out, overwrite: "auto" });
       }
     };
-    const tick = () => {
+    const tick = (time, deltaTime) => {
       const now = performance.now();
       if (now - st.lastPick > 150) {
         st.lastPick = now;
         const best = pick();
-        if (best === st.anchor) st.cand = null;
+        // Nothing on screen right now (between sections): keep the current spot and ride the edge.
+        if (!best) {
+          if (st.anchor && !st.anchor.isConnected) switchTo(null);
+          st.cand = null;
+        } else if (best === st.anchor) st.cand = null;
         else if (best !== st.cand) {
           st.cand = best;
           st.candAt = now;
@@ -174,12 +227,14 @@ const Companion = () => {
           switchTo(best);
         }
       }
-      place();
+      place(Math.min(deltaTime, 50));
     };
     gsap.set(body, { autoAlpha: 0, scale: 0.6 });
     gsap.ticker.add(tick);
+    window.addEventListener("pointermove", onPointer, { passive: true });
     return () => {
       gsap.ticker.remove(tick);
+      window.removeEventListener("pointermove", onPointer);
       gsap.killTweensOf([st, body]);
     };
   }, [reduced, pathname]);
@@ -264,6 +319,10 @@ const Companion = () => {
       if (rootRef.current.contains(e.target) || bubbleRef.current?.contains(e.target)) return;
       if (e.target.closest?.('a[href^="/projects/"]')) reactAvatar(BEHAVIOR.celebration, 1600);
       else if (e.target.closest?.('a[href^="/blog/"]') && !quietRef.current) say("Good pick. I'll keep quiet while you read.");
+      else if (e.target.closest?.('a[href="/resume"], a[href$=".pdf"]') && !quietRef.current) {
+        reactAvatar(BEHAVIOR.celebration, 1600);
+        say(CHOICE_LINE);
+      }
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("pointerover", onOver);
@@ -291,13 +350,25 @@ const Companion = () => {
   useEffect(() => {
     const section = spot?.section;
     if (!section || !isHome || !ARRIVAL[section] || seen.current.arrival.has(section)) return undefined;
-    const t = window.setTimeout(() => {
-      if (quietRef.current || bubbleOpen.current || tour.active) return;
+    // Settle first; if another message is still up, wait for it rather than dropping this one.
+    let t = 0;
+    const attempt = () => {
+      if (quietRef.current || tour.active) return;
+      if (bubbleOpen.current) {
+        t = window.setTimeout(attempt, 700);
+        return;
+      }
       seen.current.arrival.add(section);
       say(ARRIVAL[section], { actions: true });
-    }, ARRIVE_MS);
+    };
+    t = window.setTimeout(attempt, ARRIVE_MS);
     return () => window.clearTimeout(t);
   }, [spot?.section, isHome, tour.active, say]);
+
+  // A section's message (and its actions) leaves with the section; a conversation the visitor opened stays.
+  useEffect(() => {
+    setBubble((b) => (b?.kind === "message" ? null : b));
+  }, [spot?.section]);
 
   // Messages fade on their own; the panel waits for the visitor.
   useEffect(() => {
@@ -353,6 +424,7 @@ const Companion = () => {
   if (section === "work" || pathname.startsWith("/projects")) {
     actions.push({
       label: "Show me an interesting project",
+      primary: true,
       run: () => {
         const pool = FEATURED.map((s) => projects.find((p) => p.slug === s)).filter(Boolean);
         const p = pool[Math.floor(Math.random() * pool.length)];
@@ -364,6 +436,7 @@ const Companion = () => {
   if (section === "skills") {
     actions.push({
       label: "Find a related project",
+      primary: true,
       run: () => {
         const cap = capabilities.find((c) => c.id === lastCapability.current) ?? capabilities[0];
         const p = cap.projects[0];
@@ -372,19 +445,40 @@ const Companion = () => {
       },
     });
   }
+  if (section === "writing") {
+    const latest = [...blogPosts].sort((a, b) => b.date.localeCompare(a.date))[0];
+    if (latest) actions.push({ label: "Explore an article", primary: true, to: `/blog/${latest.slug}` });
+  }
+  if (section === "resume-cta") {
+    actions.push({ label: "View résumé", primary: true, to: "/resume" });
+    actions.push({ label: "Download CV", primary: true, href: "/AashikKumarMahatoResume.pdf", download: "AashikKumarMahatoResume.pdf" });
+  }
+  if ((section === "writing" || section === "footer") && isHome) {
+    actions.push({
+      label: "Back to the top",
+      primary: true,
+      run: () => {
+        setBubble(null);
+        scrollTo("#top");
+      },
+    });
+  }
   if (section === "contact") {
     actions.push({
       label: "Copy email",
+      primary: true,
       run: async () => {
         try {
           await navigator.clipboard.writeText(CV.contact.email);
           reactAvatar(BEHAVIOR.celebration, 1800);
-          setBubble((b) => ({ ...b, kind: "panel", text: `Copied ${CV.contact.email}.`, link: { href: CV.contact.linkedin, label: "LinkedIn" } }));
+          setBubble((b) => ({ ...b, kind: "panel", text: `Copied ${CV.contact.email}.`, link: null }));
         } catch {
+          // No clipboard access: never claim a copy — open the mail app instead.
           window.location.href = `mailto:${CV.contact.email}`;
         }
       },
     });
+    actions.push({ label: "Open LinkedIn ↗", primary: true, href: CV.contact.linkedin, external: true });
   }
   if (section === "top" && isHome) {
     actions.push({
@@ -405,8 +499,8 @@ const Companion = () => {
       setBubble(next ? null : { kind: "message", text: "I'm back. I'll keep it short." });
     },
   });
-  // An arrival message offers just the most relevant action.
-  const offered = bubble?.actions ? actions.filter((a) => /interesting|related|Copy/.test(a.label)).slice(0, 1) : [];
+  // An arrival message offers at most the two most relevant actions.
+  const offered = bubble?.actions ? actions.filter((a) => a.primary).slice(0, 2) : [];
 
   const goTo = (id, e) => {
     if (isHome) {
@@ -470,11 +564,28 @@ const Companion = () => {
         )}
         {list.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {list.map((a) => (
-              <button key={a.label} type="button" onClick={a.run} className={btn}>
-                {a.label}
-              </button>
-            ))}
+            {list.map((a) =>
+              a.to ? (
+                <Link key={a.label} to={a.to} onClick={() => setBubble(null)} className={btn}>
+                  {a.label}
+                </Link>
+              ) : a.href ? (
+                <a
+                  key={a.label}
+                  href={a.href}
+                  onClick={() => setBubble(null)}
+                  {...(a.external ? { target: "_blank", rel: "noopener noreferrer" } : { download: a.download })}
+                  className={btn}
+                >
+                  {a.label}
+                  {a.external && <span className="sr-only"> (opens in a new tab)</span>}
+                </a>
+              ) : (
+                <button key={a.label} type="button" onClick={a.run} className={btn}>
+                  {a.label}
+                </button>
+              ),
+            )}
           </div>
         )}
       </>
@@ -488,6 +599,11 @@ const Companion = () => {
           <button
             type="button"
             onClick={onClick}
+            onPointerEnter={(e) => {
+              if (e.pointerType !== "mouse" || reduced) return;
+              reactAvatar(BEHAVIOR.playful, 1500);
+              gsap.fromTo(bodyRef.current, { scaleX: 1.1, scaleY: 0.9 }, { scaleX: 1, scaleY: 1, duration: 0.7, ease: "elastic.out(1, 0.4)", overwrite: "auto" });
+            }}
             aria-label={bubble?.kind === "panel" ? "Close the conversation" : "Talk to Aashik's sidekick"}
             aria-expanded={bubble?.kind === "panel"}
             aria-controls="companion-bubble"
@@ -503,7 +619,7 @@ const Companion = () => {
         id="companion-bubble"
         data-chrome
         data-kind={bubble?.kind ?? ""}
-        aria-live="polite"
+        aria-live={bubble?.kind === "panel" || tour.active ? "polite" : "off"}
         className={`fixed left-0 top-0 z-[91] w-[min(17rem,calc(100vw-1.5rem))] ${content ? "" : "hidden"}`}
       >
         {content && (
