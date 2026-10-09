@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { useGSAP } from "@gsap/react";
 import { gsap, EASE, usePrefersReducedMotion } from "../../motion";
+import { reactAvatar } from "../../components/avatar/mood";
 
 /**
  * The email, set large, as a copy-to-clipboard control. Copy confirmation
@@ -40,6 +41,7 @@ const CopyEmail = ({ email }) => {
       await navigator.clipboard.writeText(email);
       setCopied(true);
       play(true);
+      reactAvatar("happy", 2500);
     } catch {
       window.location.href = `mailto:${email}`;
     }

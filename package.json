@@ -13,6 +13,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@bible-strong/avatar-web": "^0.1.0",
     "@gsap/react": "^2.1.2",
     "gh-pages": "^6.3.0",
     "gsap": "^3.14.2",

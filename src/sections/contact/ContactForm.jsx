@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowUpRight, Check, Loader2 } from "lucide-react";
 import { MagneticButton } from "../../components/ui";
+import { reactAvatar } from "../../components/avatar/mood";
 
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 const WEB3FORMS_ACCESS_KEY =
@@ -37,6 +38,7 @@ const ContactForm = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setStatus("sending");
+    reactAvatar("working", 15000);
     setError(null);
     try {
       const res = await fetch(WEB3FORMS_ENDPOINT, {
@@ -59,10 +61,12 @@ const ContactForm = () => {
       }
       setForm(EMPTY);
       setStatus("sent");
+      reactAvatar("celebrate", 5000);
       setTimeout(() => setStatus("idle"), 6000);
     } catch (err) {
       setError(formatError(err));
       setStatus("error");
+      reactAvatar("sad", 4000);
     }
   };
 

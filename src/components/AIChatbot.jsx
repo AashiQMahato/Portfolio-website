@@ -21,7 +21,9 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import useLauncherVisible from "./chrome/useLauncherVisible";
 import { gsap, EASE, DUR, usePrefersReducedMotion, useMediaQuery } from "../motion";
-import assistantAvatar from "../assets/assistant-avatar.png";
+import Avatar from "./avatar/Avatar";
+import useAvatarMood from "./avatar/useAvatarMood";
+import { reactAvatar } from "./avatar/mood";
 import { CV, projects, siteConfig } from "../data/portfolioData";
 
 [
@@ -35,8 +37,6 @@ import { CV, projects, siteConfig } from "../data/portfolioData";
   ["c", cLang],
 ].forEach(([name, lang]) => SyntaxHighlighter.registerLanguage(name, lang));
 
-// Self-hosted: the remote CDN set third-party cookies on every load.
-const AVATAR_URL = assistantAvatar;
 
 // Built from the same data the site renders, so the assistant can only
 // repeat facts that are on the page — and stays in sync when they change.
@@ -249,6 +249,7 @@ const AIChatbot = () => {
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const reduced = usePrefersReducedMotion();
+  const mood = useAvatarMood({ chatOpen: isOpen, chatTyping: isTyping });
 
   useEffect(() => {
     const el = listRef.current;
@@ -336,7 +337,11 @@ const AIChatbot = () => {
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            model: "llama-3.1-8b-instant",
+            // Groq retires models; check https://console.groq.com/docs/deprecations if replies stop.
+            model: "openai/gpt-oss-20b",
+            // Without these, gpt-oss spends max_tokens on hidden reasoning and returns no content.
+            reasoning_effort: "low",
+            include_reasoning: false,
             messages: [
               { role: "system", content: SYSTEM_PROMPT },
               ...updatedMessages
@@ -359,6 +364,7 @@ const AIChatbot = () => {
         ...prev,
         { role: "assistant", content: normalizeAssistantMarkdown(aiContent) },
       ]);
+      reactAvatar("happy", 3500);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -368,6 +374,7 @@ const AIChatbot = () => {
             "### Connection issue\n\nI'm having trouble connecting right now. Feel free to reach out via the **Contact** section!",
         },
       ]);
+      reactAvatar("sad", 4000);
     } finally {
       setIsTyping(false);
     }
@@ -417,12 +424,7 @@ const AIChatbot = () => {
         {isOpen ? (
           <X aria-hidden="true" className="h-5 w-5" />
         ) : (
-          <img
-            src={AVATAR_URL}
-            alt=""
-            className="h-full w-full object-cover object-top"
-            loading="lazy"
-          />
+          <Avatar animation={launcherShown ? mood : undefined} className="h-full w-full p-1.5" />
         )}
       </button>
 
@@ -449,12 +451,7 @@ const AIChatbot = () => {
           className={`pointer-events-auto absolute left-3 right-3 flex h-[min(580px,calc(100dvh_-_7rem))] flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40 md:left-auto md:right-5 md:w-[400px] ${PANEL_POSITION}`}>
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-            <img
-              src={AVATAR_URL}
-              alt=""
-              className="h-10 w-10 shrink-0 rounded-full border border-line object-cover object-top"
-              loading="lazy"
-            />
+            <Avatar animation={isOpen ? mood : undefined} className="h-10 w-10 rounded-full border border-line bg-background p-0.5" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-ink">
                 Aashiq&apos;s AI Assistant
@@ -496,12 +493,7 @@ const AIChatbot = () => {
             {/* Welcome */}
             {messages.length === 0 && (
               <div className="pb-1 pt-2 text-center">
-                <img
-                  src={AVATAR_URL}
-                  alt=""
-                  className="mx-auto mb-4 h-16 w-16 rounded-full border border-line object-cover object-top"
-                  loading="lazy"
-                />
+                <Avatar animation={isOpen ? "playful" : undefined} className="mx-auto mb-4 block h-20 w-20" />
                 <p className="mb-1 text-base font-semibold text-ink">
                   Hello there!
                 </p>
@@ -537,12 +529,7 @@ const AIChatbot = () => {
                   msg.role === "user" ? "justify-end" : "justify-start"
                 }`}>
                 {msg.role === "assistant" && (
-                  <img
-                    src={AVATAR_URL}
-                    alt=""
-                    className="h-7 w-7 shrink-0 rounded-full border border-line object-cover object-top"
-                    loading="lazy"
-                  />
+                  <Avatar className="h-7 w-7 rounded-full border border-line bg-background" />
                 )}
 
                 <div
@@ -565,12 +552,7 @@ const AIChatbot = () => {
             {/* Typing */}
             {isTyping && (
               <div className="flex items-end gap-2.5">
-                <img
-                  src={AVATAR_URL}
-                  alt=""
-                  className="h-7 w-7 shrink-0 rounded-full border border-line object-cover object-top"
-                  loading="lazy"
-                />
+                <Avatar animation="thinking" className="h-7 w-7 rounded-full border border-line bg-background" />
                 <div
                   role="status"
                   aria-label="Assistant is typing"

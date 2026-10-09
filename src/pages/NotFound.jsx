@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Reveal, SplitText } from "../motion";
 import { MagneticButton } from "../components/ui";
+import Avatar from "../components/avatar/Avatar";
 
 /** Catch-all route: says where you are and offers two ways out. */
 const NotFound = () => (
@@ -9,6 +10,7 @@ const NotFound = () => (
     aria-labelledby="not-found-title"
     className="shell flex min-h-[100svh] flex-col justify-center pb-16 pt-[var(--nav-h)]"
   >
+    <Avatar animation="confused" className="mb-8 h-28 w-28 md:h-36 md:w-36" />
     <p className="hud mb-8">
       <span className="text-accent-ink">Error 404</span> — No signal on this route
     </p>
