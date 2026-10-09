@@ -15,14 +15,20 @@ import { SectionHeader } from "../../components/ui";
 import { projects } from "../../data/portfolioData";
 import WorkSlide from "./WorkSlide";
 
+// Order + a supporting accent sampled from each product's own UI.
 const ORDER = [
-  "studio-tools",
-  "automated-attendance-system",
-  "cable-network-website",
-  "smart-school-management",
-  "ultrasonic-blind-stick",
+  ["studio-tools", "#38BDF8"],
+  ["automated-attendance-system", "#2DD4BF"],
+  ["cable-network-website", "#4ADE80"],
+  ["smart-school-management", "#6366F1"],
+  ["ultrasonic-blind-stick", "#FF6A33"],
 ];
-const SHOWCASE = ORDER.map((slug) => projects.find((p) => p.slug === slug)).filter(Boolean);
+const SHOWCASE = ORDER.map(([slug, accent]) => {
+  const p = projects.find((x) => x.slug === slug);
+  return p && { ...p, accent };
+}).filter(Boolean);
+/** Each hand-over wipes in from a different edge: up, right, centre, left. */
+const WIPES = ["inset(100% 0% 0% 0%)", "inset(0% 0% 0% 100%)", "inset(50% 50% 50% 50%)", "inset(0% 100% 0% 0%)"];
 /** Each project's label as a 0–1 progress value of the stage timeline. */
 const labelStops = (tl) =>
   Object.values(tl.labels)
@@ -33,8 +39,9 @@ const MOBILE_REVEALS = ["clip", "side", "iris", "scale", "clip"];
 
 /**
  * Selected work. Desktop: the stage pins and scroll drives a single scrubbed
- * timeline — each next image wipes up over the last (clip-path + settling
- * scale) while the copy hands over, snapping to each project. Below lg or
+ * timeline — each next image wipes in over the last from a different edge
+ * (clip-path + settling scale) while the copy hands over, snapping to each
+ * project; the rail takes the active project's accent. Below lg or
  * under reduced motion the same DOM becomes an editorial vertical list with
  * varied image reveals. Inactive slides drop pointer events; keyboard focus
  * on a hidden slide scrolls the stage to it.
@@ -61,18 +68,25 @@ const SelectedWork = () => {
         const img = slide.querySelector("[data-media-frame] img");
         const copy = slide.querySelectorAll("[data-copy]");
         if (i === 0) return;
-        gsap.set(frame, { clipPath: "inset(100% 0% 0% 0%)" });
+        gsap.set(frame, { clipPath: WIPES[(i - 1) % WIPES.length] });
         gsap.set(img, { scale: 1.25 });
         gsap.set(copy, { opacity: 0, y: 60 });
         gsap.set(slide, { pointerEvents: "none" });
       });
 
       let current = 0;
+      gsap.set(q("[data-rail-fill]"), { backgroundColor: SHOWCASE[0].accent });
       const setActive = (idx) => {
         if (idx === current) return;
         current = idx;
-        slides.forEach((s, i) => gsap.set(s, { pointerEvents: i === idx ? "auto" : "none" }));
+        slides.forEach((s, i) => {
+          gsap.set(s, { pointerEvents: i === idx ? "auto" : "none" });
+          // Only the visible project's spot is eligible for the companion.
+          const spot = s.querySelector("[data-companion-anchor]");
+          if (spot) spot.dataset.active = String(i === idx);
+        });
         rail.forEach((r, i) => r.classList.toggle("text-ink", i === idx));
+        gsap.to(q("[data-rail-fill]"), { backgroundColor: SHOWCASE[idx].accent, duration: 0.4, overwrite: "auto" });
       };
 
       const tl = gsap.timeline({

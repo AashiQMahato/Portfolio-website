@@ -5,9 +5,16 @@ import { gsap, Flip, EASE, Reveal, SplitText, usePrefersReducedMotion } from "..
 import { FollowPreview } from "../components/ui";
 import SectionAvatar from "../components/avatar/SectionAvatar";
 import { projects } from "../data/portfolioData";
+import { BEHAVIOR, reactAvatar } from "../components/avatar/mood";
 
 const byYear = [...projects].sort((a, b) => Number(b.year) - Number(a.year));
 const FILTERS = ["All", ...new Set(byYear.flatMap((p) => p.cats || [p.category]))];
+// Every option is backed by real fields: `featured`, `year`, `title`.
+const SORTS = {
+  newest: { label: "Newest", list: byYear },
+  featured: { label: "Featured", list: [...byYear].sort((a, b) => Number(b.featured) - Number(a.featured)) },
+  az: { label: "A–Z", list: [...projects].sort((a, b) => a.title.localeCompare(b.title)) },
+};
 
 /**
  * Project index — an editorial list rather than a card grid. Filters
@@ -20,21 +27,32 @@ const Projects = () => {
   const listRef = useRef(null);
   const flipState = useRef(null);
   const reduced = usePrefersReducedMotion();
+  const flipTl = useRef(null);
   const [filter, setFilter] = useState("All");
+  const [sort, setSort] = useState("newest");
   const [active, setActive] = useState(null);
 
   const matches = (p) => filter === "All" || (p.cats || [p.category]).includes(filter);
-  const count = byYear.filter(matches).length;
+  const list = SORTS[sort].list;
+  const count = list.filter(matches).length;
 
+  // Record the layout, then let React re-render; a running transition is
+  // settled first so rapid clicks never stack animations.
+  const relayout = (apply) => {
+    flipTl.current?.progress(1).kill();
+    if (!reduced) flipState.current = Flip.getState(listRef.current.querySelectorAll("[data-row]"));
+    apply();
+  };
   const pick = (f) => {
     if (f === filter) return;
-    if (!reduced) flipState.current = Flip.getState(listRef.current.querySelectorAll("[data-row]"));
-    setFilter(f);
+    relayout(() => setFilter(f));
+    reactAvatar(BEHAVIOR.curious, 1400);
   };
+  const order = (k) => k !== sort && relayout(() => setSort(k));
 
   useLayoutEffect(() => {
     if (!flipState.current) return;
-    Flip.from(flipState.current, {
+    flipTl.current = Flip.from(flipState.current, {
       duration: 0.7,
       ease: EASE.expo,
       stagger: 0.03,
@@ -42,7 +60,7 @@ const Projects = () => {
       onLeave: (els) => gsap.to(els, { opacity: 0, duration: 0.25 }),
     });
     flipState.current = null;
-  }, [filter]);
+  }, [filter, sort]);
 
   return (
     <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
@@ -79,13 +97,39 @@ const Projects = () => {
             {f}
           </button>
         ))}
-        <p className="hud ml-auto tabular-nums" aria-live="polite">
-          {count} {count === 1 ? "project" : "projects"}
-        </p>
+        <div className="ml-auto flex items-center gap-4">
+          <div role="group" aria-label="Sort projects" className="flex items-center gap-3">
+            <span className="hud hidden sm:inline">Sort</span>
+            {Object.entries(SORTS).map(([k, s]) => (
+              <button
+                key={k}
+                type="button"
+                aria-pressed={sort === k}
+                onClick={() => order(k)}
+                className={`hud min-h-11 rounded-sm transition-colors md:min-h-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-signal ${
+                  sort === k ? "text-ink underline decoration-signal underline-offset-4" : "hover:text-ink"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <p className="hud tabular-nums" aria-live="polite">
+            {count} {count === 1 ? "project" : "projects"}
+          </p>
+        </div>
       </div>
 
       <ul ref={listRef} className="border-t border-line" onMouseLeave={() => setActive(null)}>
-        {byYear.map((p, i) => {
+        {count === 0 && (
+          <li className="py-10 text-ink-dim">
+            Nothing in {filter} yet.{" "}
+            <button type="button" onClick={() => pick("All")} className="link-line text-ink">
+              Show all projects
+            </button>
+          </li>
+        )}
+        {list.map((p, i) => {
           const visible = matches(p);
           return (
             <li key={p.slug} data-row data-flip-id={p.slug} className={`border-b border-line ${visible ? "" : "hidden"}`}>
@@ -134,7 +178,7 @@ const Projects = () => {
       <FollowPreview
         aspect="16/10"
         activeKey={active}
-        items={byYear.map((p) => ({
+        items={list.map((p) => ({
           key: p.slug,
           node: <img src={p.image} alt="" className="h-full w-full object-cover" />,
         }))}

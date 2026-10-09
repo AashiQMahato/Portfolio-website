@@ -1,6 +1,9 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
+import { techColor } from "../capabilities/techColor";
+import SectionAvatar from "../../components/avatar/SectionAvatar";
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -12,6 +15,8 @@ const pad = (n) => String(n).padStart(2, "0");
  */
 const WorkSlide = ({ project, index, total, pinned, onFocus, media }) => {
   const caseStudy = `/projects/${project.slug}`;
+  const { theme } = useTheme();
+  const accent = project.accent ? techColor(project.accent, theme) : "rgb(var(--signal))";
 
   const image = (
     <Link
@@ -24,15 +29,20 @@ const WorkSlide = ({ project, index, total, pinned, onFocus, media }) => {
     >
       {media || (
         <div data-media-frame className="relative aspect-[16/10] overflow-hidden rounded-lg bg-panel">
-          <img
-            src={project.image}
-            alt=""
-            width={1600}
-            height={974}
-            loading={index === 0 ? "eager" : "lazy"}
-            decoding="async"
-            className="h-full w-full object-cover will-change-transform"
-          />
+          {/* Inside the clipped frame, so stacked slides never show each other's accent. */}
+          <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-[2px]" style={{ background: accent }} />
+          {/* Hover zoom on its own layer: the scroll timeline owns the img's transform. */}
+          <span className="block h-full w-full transition-transform duration-700 ease-out group-hover/media:scale-[1.035] group-hover/media:translate-y-[-0.5%]">
+            <img
+              src={project.image}
+              alt=""
+              width={1600}
+              height={974}
+              loading={index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              className="h-full w-full object-cover will-change-transform"
+            />
+          </span>
         </div>
       )}
       <span className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-ink/10 transition-[box-shadow] duration-500 group-hover/media:ring-ink/25" />
@@ -44,7 +54,7 @@ const WorkSlide = ({ project, index, total, pinned, onFocus, media }) => {
       data-slide
       aria-labelledby={`work-${project.slug}`}
       onFocusCapture={onFocus}
-      className={pinned ? "absolute inset-0" : ""}
+      className={`group/slide ${pinned ? "absolute inset-0" : ""}`}
     >
       <div
         className={
@@ -56,11 +66,18 @@ const WorkSlide = ({ project, index, total, pinned, onFocus, media }) => {
         <div className={pinned ? "col-span-7 col-start-6 row-start-1" : ""}>{image}</div>
 
         <div className={pinned ? "col-span-4 row-start-1" : ""}>
-          <p data-copy className="hud mb-6 flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="tabular-nums text-ink">
-              {pad(index + 1)} <span className="text-ink-dim">/ {pad(total)}</span>
+          <p data-copy aria-hidden="true" className="mb-4 flex items-baseline gap-2 font-medium leading-none tracking-[-0.05em] tabular-nums">
+            <span className="text-[clamp(3.5rem,6vw,5.5rem)]" style={{ color: accent }}>
+              {pad(index + 1)}
             </span>
-            <span aria-hidden="true" className="h-px w-6 bg-line" />
+            <span className="hud tracking-[0.14em]">/ {pad(total)}</span>
+            <SectionAvatar mood="curious" hover="excited" active={pinned ? index === 0 : undefined} className="ml-auto h-12 w-12 self-center md:h-14 md:w-14" />
+          </p>
+          <p data-copy className="hud mb-6 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="sr-only">
+              Project {index + 1} of {total}:
+            </span>
+            <span aria-hidden="true" className="h-px w-6" style={{ background: accent }} />
             {project.category}
             <span aria-hidden="true" className="text-ink-dim">·</span>
             {project.year}
@@ -69,7 +86,7 @@ const WorkSlide = ({ project, index, total, pinned, onFocus, media }) => {
           <h3
             id={`work-${project.slug}`}
             data-copy
-            className="text-[clamp(2rem,3.6vw,3.6rem)] font-semibold leading-[0.98] tracking-[-0.04em] text-ink"
+            className="text-[clamp(2rem,3.6vw,3.6rem)] font-semibold leading-[0.98] tracking-[-0.04em] text-ink transition-transform duration-500 ease-out group-hover/slide:translate-x-1.5"
           >
             {project.title}
           </h3>
@@ -126,6 +143,7 @@ WorkSlide.propTypes = {
     image: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),
     live: PropTypes.string,
+    accent: PropTypes.string,
   }).isRequired,
   index: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,

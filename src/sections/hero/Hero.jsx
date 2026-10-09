@@ -15,14 +15,24 @@ import SectionAvatar from "../../components/avatar/SectionAvatar";
 
 const NAME = ["Aashik", "Kumar", "Mahato"];
 const BUILDS = ["Web platforms", "Embedded firmware", "IoT systems", "Interactive interfaces"];
+/** The trace read as a signal path, hardware in → interface out. x is % of
+ * width, kept in the open space right of the name. */
+const PATH = [
+  ["Sensor in", 61],
+  ["Firmware", 72],
+  ["Network", 83],
+  ["Interface out", 94],
+];
 
 /** Max pointer offset in px per layer — far layers move least. */
 const DEPTH = { field: 14, name: 6, meta: 18 };
 
 /**
  * Identity statement. The name is the composition; a live signal trace runs
- * beneath it. Entrance is one timeline (gated on the preloader): field →
- * nav → eyebrow → name → roles → CTAs → metadata. On desktop the name lines
+ * beneath it, annotated as a signal path from sensor to interface — the
+ * hardware-to-software range in one line. Entrance is one timeline (gated on
+ * the preloader): field → nav → eyebrow → name → role + statement → CTAs →
+ * path annotations + metadata. On desktop the name lines
  * drift apart with scroll and layers respond to the pointer at different
  * depths. Under reduced motion everything renders in place, the trace is a
  * single still frame.
@@ -41,6 +51,8 @@ const Hero = () => {
       gsap.set(q("[data-hero-fade]"), { opacity: 0 });
       gsap.set(q("[data-hero-char]"), { yPercent: 115 });
       gsap.set(q("[data-hero-rise]"), { opacity: 0, y: 24 });
+      gsap.set(q("[data-path-tick]"), { scaleY: 0 });
+      gsap.set(q("[data-path-label]"), { opacity: 0, y: 6 });
       gsap.set(nav, { opacity: 0, y: -12 });
 
       const tl = gsap.timeline({ paused: true, defaults: { ease: EASE.out } });
@@ -54,6 +66,8 @@ const Hero = () => {
           stagger: { each: 0.035, from: "start" },
         }, 0.25)
         .to(q("[data-hero-rise]"), { opacity: 1, y: 0, duration: 0.9, stagger: 0.08 }, 0.9)
+        .to(q("[data-path-tick]"), { scaleY: 1, duration: 0.7, ease: EASE.expo, stagger: 0.09 }, 1.1)
+        .to(q("[data-path-label]"), { opacity: 1, y: 0, duration: 0.6, stagger: 0.09 }, 1.2)
         .to(q("[data-hero-meta]"), { opacity: 1, duration: 0.8, stagger: 0.06 }, 1.15);
 
       const release = onBootDone(() => tl.play());
@@ -107,6 +121,24 @@ const Hero = () => {
         <div data-depth="field" data-hero-field className={`h-full w-full ${reduced ? "" : "opacity-0"}`}>
           <SignalField static={reduced} />
         </div>
+        {/* Signal-path annotations: hairline ticks down to the trace's baseline
+            (SignalField draws it at 62% of this box), mono labels above. */}
+        <div className="absolute inset-x-0 top-[62%] hidden xl:block">
+          {PATH.map(([label, x], i) => (
+            <span key={label} className="absolute bottom-0 -translate-x-1/2" style={{ left: `${x}%` }}>
+              <span
+                data-path-label
+                className={`hud absolute bottom-full mb-3 whitespace-nowrap ${
+                  i === PATH.length - 1 ? "right-0 translate-x-1" : "left-1/2 -translate-x-1/2"
+                }`}
+              >
+                {label}
+              </span>
+              <span data-path-tick className="block h-10 w-px origin-bottom bg-ink/25" />
+              <span className="absolute -bottom-[3px] left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full border border-ink/40 bg-background" />
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="shell relative flex flex-1 flex-col justify-between pb-8 pt-6 lg:pb-10">
@@ -156,11 +188,16 @@ const Hero = () => {
 
         {/* Roles · builds · actions */}
         <div data-hero-lower className="grid gap-10 border-t border-line pt-6 lg:grid-cols-12 lg:gap-6">
-          <p data-hero-rise className="text-lede text-ink lg:col-span-4">
-            Electronics Engineer
-            <br />
-            <span className="text-ink-dim">+</span> Full-Stack Developer
-          </p>
+          <div data-hero-rise className="lg:col-span-4">
+            <p className="text-lede text-ink">
+              Electronics Engineer
+              <br />
+              <span className="text-ink-dim">+</span> Full-Stack Developer
+            </p>
+            <p className="mt-4 max-w-xs text-[0.95rem] leading-relaxed text-ink-dim">
+              Building digital systems where software, electronics and interaction meet.
+            </p>
+          </div>
 
           <div data-hero-rise className="lg:col-span-4">
             <p className="hud mb-3">Builds</p>

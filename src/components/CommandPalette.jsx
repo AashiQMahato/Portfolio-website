@@ -35,7 +35,6 @@ import { useTheme } from "../context/ThemeContext";
 import { projects } from "../data/portfolioData";
 import { blogPosts } from "../data/blogPosts";
 import { gsap, EASE, DUR, usePrefersReducedMotion } from "../motion";
-import SectionAvatar from "./avatar/SectionAvatar";
 
 /* ─── Command definitions ─────────────────────────────────── */
 
@@ -328,10 +327,11 @@ const CommandPalette = () => {
     [filteredCommands, selectedIdx, runCommand],
   );
 
-  // Scroll selected item into view
+  // Scroll selected item into view — only while open: on a closed palette this
+  // ran at mount and could scroll the page itself.
   useEffect(() => {
-    selectedItemRef.current?.scrollIntoView({ block: "nearest" });
-  }, [selectedIdx]);
+    if (isOpen) selectedItemRef.current?.scrollIntoView({ block: "nearest" });
+  }, [selectedIdx, isOpen]);
 
   // Reset selection on query change
   useEffect(() => {
@@ -385,12 +385,6 @@ const CommandPalette = () => {
             autoComplete="off"
             spellCheck={false}
           />
-          {isOpen && (
-            <SectionAvatar
-              mood={!query.trim() ? "listening" : filteredCommands.length ? "searching" : "confused"}
-              className="-my-2 h-9 w-9"
-            />
-          )}
           <KbdHint keys={["ESC"]} />
         </div>
 

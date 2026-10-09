@@ -4,7 +4,6 @@ import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { projects } from "../data/portfolioData";
 import { gsap, EASE, DUR, usePrefersReducedMotion } from "../motion";
-import SectionAvatar from "./avatar/SectionAvatar";
 
 const PROMPT = "aashiq@portfolio:~$";
 
@@ -335,16 +334,7 @@ const Terminal = () => {
         className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-3 right-3 z-[150] overflow-hidden rounded-xl border border-white/10 bg-[#0d1117] shadow-2xl shadow-black/40 sm:left-5 sm:right-auto sm:w-[560px]">
         {/* Title bar */}
         <div className="flex items-center gap-3 border-b border-white/10 bg-[#161b22] py-2 pl-4 pr-2">
-          {isOpen ? (
-            <SectionAvatar
-              mood={
-                isBooting ? "waking" : lines.at(-1)?.type === "error" ? "confused" : input ? "working" : "listening"
-              }
-              className="-my-1 h-7 w-7"
-            />
-          ) : (
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#ff8052]" />
-          )}
+          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#ff8052]" />
           <span className="hud flex-1 truncate text-[#8b949e]">
             Terminal — aashiq@portfolio
           </span>

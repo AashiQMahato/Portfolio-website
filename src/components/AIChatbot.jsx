@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
-import { X, Send, Trash2, MessageCircle } from "lucide-react";
+import { X, Send, Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -21,7 +21,8 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import useLauncherVisible from "./chrome/useLauncherVisible";
 import { gsap, EASE, DUR, usePrefersReducedMotion, useMediaQuery } from "../motion";
-import Avatar from "./avatar/Avatar";
+// Self-hosted: the remote CDN set third-party cookies on every load.
+import assistantAvatar from "../assets/assistant-avatar.png";
 import { reactAvatar } from "./avatar/mood";
 import { CV, projects, siteConfig } from "../data/portfolioData";
 
@@ -227,11 +228,10 @@ const trapTab = (e, root) => {
   }
 };
 
-// The FAB stacks above the avatar navigator; the panel sits above the FAB.
-const FAB_POSITION =
-  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.25rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.75rem)]";
+// Sits above the FAB: safe-area offset + FAB size + a 12–16px gap.
+const FAB_POSITION = "bottom-[max(1.25rem,env(safe-area-inset-bottom))]";
 const PANEL_POSITION =
-  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_7.5rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_8.75rem)]";
+  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_3.75rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.5rem)]";
 
 const AIChatbot = () => {
   const launcherShown = useLauncherVisible();
@@ -417,14 +417,14 @@ const AIChatbot = () => {
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-controls="ai-chat-window"
-        className={`fixed ${FAB_POSITION} right-5 z-[102] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-line bg-panel text-ink transition-[transform,opacity,border-color] duration-500 ease-out hover:border-ink-dim active:scale-95 md:h-12 md:w-12 ${
+        className={`fixed ${FAB_POSITION} right-5 z-[102] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-line bg-panel text-ink transition-[transform,opacity,border-color] duration-500 ease-out hover:border-ink-dim active:scale-95 md:h-14 md:w-14 ${
           launcherShown || isOpen ? "" : "pointer-events-none translate-y-4 opacity-0"
         }`}
         tabIndex={launcherShown || isOpen ? undefined : -1}>
         {isOpen ? (
           <X aria-hidden="true" className="h-5 w-5" />
         ) : (
-          <MessageCircle aria-hidden="true" className="h-5 w-5" />
+          <img src={assistantAvatar} alt="" className="h-full w-full object-cover object-top" loading="lazy" />
         )}
       </button>
 
@@ -448,10 +448,10 @@ const AIChatbot = () => {
           aria-modal={isModal}
           aria-label="Chat with Aashiq's AI assistant"
           onKeyDown={onPanelKeyDown}
-          className={`pointer-events-auto absolute left-3 right-3 flex h-[min(580px,calc(100dvh_-_11rem))] flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40 md:left-auto md:right-5 md:w-[400px] ${PANEL_POSITION}`}>
+          className={`pointer-events-auto absolute left-3 right-3 flex h-[min(580px,calc(100dvh_-_7rem))] flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40 md:left-auto md:right-5 md:w-[400px] ${PANEL_POSITION}`}>
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-            <Avatar animation={isOpen ? (isTyping ? "thinking" : "listening") : undefined} className="h-10 w-10 rounded-full border border-line bg-background p-0.5" />
+            <img src={assistantAvatar} alt="" className="h-10 w-10 shrink-0 rounded-full border border-line object-cover object-top" loading="lazy" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-ink">
                 Aashiq&apos;s AI Assistant
@@ -493,7 +493,7 @@ const AIChatbot = () => {
             {/* Welcome */}
             {messages.length === 0 && (
               <div className="pb-1 pt-2 text-center">
-                <Avatar animation={isOpen ? "playful" : undefined} className="mx-auto mb-4 block h-20 w-20" />
+                <img src={assistantAvatar} alt="" className="mx-auto mb-4 h-16 w-16 rounded-full border border-line object-cover object-top" loading="lazy" />
                 <p className="mb-1 text-base font-semibold text-ink">
                   Hello there!
                 </p>
@@ -529,7 +529,7 @@ const AIChatbot = () => {
                   msg.role === "user" ? "justify-end" : "justify-start"
                 }`}>
                 {msg.role === "assistant" && (
-                  <Avatar className="h-7 w-7 rounded-full border border-line bg-background" />
+                  <img src={assistantAvatar} alt="" className="h-7 w-7 shrink-0 rounded-full border border-line object-cover object-top" loading="lazy" />
                 )}
 
                 <div
@@ -552,7 +552,7 @@ const AIChatbot = () => {
             {/* Typing */}
             {isTyping && (
               <div className="flex items-end gap-2.5">
-                <Avatar animation="thinking" className="h-7 w-7 rounded-full border border-line bg-background" />
+                <img src={assistantAvatar} alt="" className="h-7 w-7 shrink-0 rounded-full border border-line object-cover object-top" loading="lazy" />
                 <div
                   role="status"
                   aria-label="Assistant is typing"

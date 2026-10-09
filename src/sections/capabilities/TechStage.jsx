@@ -33,7 +33,11 @@ const TechStage = ({ capability, entered, active, previewing, onHover, onPick, p
     sceneRef.current = scene;
     const ro = new ResizeObserver(() => scene.resize());
     ro.observe(hostRef.current);
+    // Idle float only while the stage is visible and motion is welcome.
+    const io = new IntersectionObserver(([e]) => scene.setFloating(e.isIntersecting && !scene.reduced));
+    io.observe(hostRef.current);
     return () => {
+      io.disconnect();
       ro.disconnect();
       scene.dispose();
       sceneRef.current = null;
@@ -123,7 +127,7 @@ const TechStage = ({ capability, entered, active, previewing, onHover, onPick, p
               style={{ opacity: 0, width: 0, height: 0 }}
               className="tech-mark group absolute left-0 top-0 rounded-md outline-none focus-visible:ring-1 focus-visible:ring-signal focus-visible:ring-offset-4 focus-visible:ring-offset-background"
             >
-              <span className="tech-mark__label pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 whitespace-nowrap font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-dim transition-[color,opacity] duration-300 group-hover:text-ink group-focus-visible:text-ink group-data-[state=dim]:opacity-40 group-data-[state=on]:text-ink">
+              <span className="tech-mark__label pointer-events-none absolute left-1/2 top-full mt-3 -translate-x-1/2 whitespace-nowrap font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-dim transition-[color,opacity] duration-300 group-hover:text-ink group-focus-visible:text-ink group-data-[state=dim]:opacity-40 group-data-[state=on]:text-ink group-data-[state=related]:text-ink">
                 {t.name}
               </span>
             </button>

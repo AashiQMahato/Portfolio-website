@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
-import useActiveSection from "../../motion/useActiveSection";
 import { useTheme } from "../../context/ThemeContext";
-import { AVATAR_REACT_EVENT, BEHAVIOR, SECTION_MOODS, routeMood } from "./mood";
+import { AVATAR_REACT_EVENT, BEHAVIOR } from "./mood";
 
-const SECTION_IDS = Object.keys(SECTION_MOODS);
 // Inactivity ladder: ms without input → mood.
 const IDLE_STEPS = [
   [150_000, "sleeping"],
@@ -14,25 +11,23 @@ const IDLE_STEPS = [
 const ACTIVITY = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"];
 
 /**
- * The navigator's behaviour controller: current animation key + active section.
- * Priority: tour stop → transient reaction → open menu → inactivity → section / route.
- * Reactions replace each other (one timer), so rapid triggers never stack.
+ * The companion's expression controller. Priority: tour stop → transient
+ * reaction → open panel → hover in the current section → inactivity → the
+ * anchor's resting mood. Reactions share one timer, so rapid triggers
+ * replace each other instead of stacking.
  */
-export default function useAvatarMood({ menuOpen = false, override = null } = {}) {
-  const { pathname } = useLocation();
-  const section = useActiveSection(pathname === "/" ? SECTION_IDS : []);
+export default function useAvatarMood({ base = BEHAVIOR.idle, hot = null, panelOpen = false, override = null } = {}) {
   const { theme } = useTheme();
   const [reaction, setReaction] = useState(null);
   const [idleMood, setIdleMood] = useState(null);
   const reactionTimer = useRef(0);
 
-  const react = (animation, ms) => {
+  const reactRef = useRef(null);
+  reactRef.current = (animation, ms) => {
     window.clearTimeout(reactionTimer.current);
     setReaction(animation);
     reactionTimer.current = window.setTimeout(() => setReaction(null), ms);
   };
-  const reactRef = useRef(react);
-  reactRef.current = react;
 
   // Reactions dispatched from anywhere via reactAvatar().
   useEffect(() => {
@@ -77,12 +72,5 @@ export default function useAvatarMood({ menuOpen = false, override = null } = {}
     };
   }, []);
 
-  const mood =
-    override ||
-    reaction ||
-    (menuOpen && BEHAVIOR.attentive) ||
-    idleMood ||
-    (section && SECTION_MOODS[section]) ||
-    routeMood(pathname);
-  return { mood, section };
+  return override || reaction || (panelOpen && BEHAVIOR.attentive) || hot || idleMood || base;
 }

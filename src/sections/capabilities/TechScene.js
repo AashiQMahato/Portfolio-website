@@ -385,7 +385,7 @@ export default class TechScene {
 
   applyNode(node) {
     const { state, group, slot, mesh, trace } = node;
-    group.position.set(slot.pos.x, slot.pos.y, slot.pos.z + state.z + state.lift);
+    group.position.set(slot.pos.x, slot.pos.y + (node.floatY ?? 0), slot.pos.z + state.z + state.lift);
     group.scale.setScalar(state.scale * (1 + state.lift * 0.16));
     mesh.traverse((o) => {
       if (o.material) o.material.opacity = state.opacity * state.dim;
@@ -481,9 +481,13 @@ export default class TechScene {
   highlight(name) {
     this.highlighted = name;
     const r = this.reduced;
+    // Related = shares at least one real project with the focused technology; those stay lit.
+    const focus = this.nodes.find((n) => n.tech.name === name);
+    const shared = new Set(focus?.tech.projects.map((p) => p.href));
     this.nodes.forEach((n) => {
       const on = n.tech.name === name;
-      const dim = name && !on;
+      const related = !on && n.tech.projects.some((p) => shared.has(p.href));
+      const dim = name && !on && !related;
       const redraw = () => {
         this.applyNode(n);
         this.invalidate();
@@ -499,7 +503,7 @@ export default class TechScene {
       });
       const traceColor = new Color(on ? (n.tech.icon ? techColor(n.tech.icon.hex, this.theme) : "#ff6a33") : PALETTE[this.theme].trace);
       gsap.to(n.trace.material.color, { r: traceColor.r, g: traceColor.g, b: traceColor.b, duration: D(r, 0.3), onUpdate: redraw });
-      if (n.label) n.label.dataset.state = on ? "on" : dim ? "dim" : "";
+      if (n.label) n.label.dataset.state = on ? "on" : related ? "related" : dim ? "dim" : "";
     });
     this.invalidate();
   }
@@ -585,7 +589,27 @@ export default class TechScene {
     this.invalidate();
   }
 
+  /** Slow idle float while the stage is on screen (off otherwise: no frames drawn). */
+  setFloating(on) {
+    if (on === Boolean(this.floatTick)) return;
+    if (on) {
+      this.floatTick = () => {
+        const t = performance.now() / 1000;
+        this.nodes.forEach((n, i) => {
+          n.floatY = Math.sin(t * 0.7 + i * 1.9) * 0.06;
+          this.applyNode(n);
+        });
+        this.invalidate();
+      };
+      gsap.ticker.add(this.floatTick);
+    } else {
+      gsap.ticker.remove(this.floatTick);
+      this.floatTick = null;
+    }
+  }
+
   dispose() {
+    this.setFloating(false);
     cancelAnimationFrame(this.frame);
     [this.introTl, this.enterTl, this.exitTl].forEach((t) => t?.kill());
     gsap.killTweensOf(this.rig.rotation);

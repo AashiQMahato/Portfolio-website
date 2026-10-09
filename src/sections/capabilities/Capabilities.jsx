@@ -2,6 +2,8 @@ import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, EASE, useMediaQuery, usePrefersReducedMotion } from "../../motion";
 import { SectionHeader } from "../../components/ui";
+import SectionAvatar from "../../components/avatar/SectionAvatar";
+import { BEHAVIOR, CAPABILITY_LINES, sayAvatar } from "../../components/avatar/mood";
 import { capabilities } from "../../data/stack";
 import CapabilityList from "./CapabilityList";
 import TechDetails from "./TechDetails";
@@ -48,6 +50,7 @@ const Capabilities = () => {
   const select = (id) => {
     if (id === activeId) return;
     setActiveId(id);
+    sayAvatar(CAPABILITY_LINES[id], { mood: BEHAVIOR.focused, context: { capability: id } });
     setHovered(null);
     setPinned(null);
     setPreviewing(false);
@@ -130,6 +133,9 @@ const Capabilities = () => {
                 <p data-stage-meta className="hud pointer-events-none absolute left-5 top-4 z-10">
                   <span className="text-ink">Fig. 05.{capability.index}</span> — Software → silicon
                 </p>
+                <span className="absolute right-4 top-3 z-10">
+                  <SectionAvatar mood={BEHAVIOR.focused} hover="excited" className="h-12 w-12" />
+                </span>
                 <p data-stage-meta className="hud pointer-events-none absolute bottom-4 right-5 z-10 tabular-nums">
                   {capability.techs.length} marks · {capability.label}
                 </p>

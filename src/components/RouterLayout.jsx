@@ -13,7 +13,7 @@ import useRouteSeo from "../seo/useRouteSeo";
 const AIChatbot = lazy(() => import("./AIChatbot"));
 const CommandPalette = lazy(() => import("./CommandPalette"));
 const Terminal = lazy(() => import("./Terminal"));
-const AvatarNavigator = lazy(() => import("./avatar/AvatarNavigator"));
+const Companion = lazy(() => import("./avatar/Companion"));
 
 /** Mounts children after the main thread goes idle post-load. */
 const useIdleMount = () => {
@@ -69,7 +69,7 @@ const RouterLayout = () => {
               <AIChatbot />
               <CommandPalette />
               <Terminal />
-              <AvatarNavigator />
+              <Companion />
             </Suspense>
           )}
 
