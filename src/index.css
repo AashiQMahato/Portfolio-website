@@ -163,6 +163,23 @@
   html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
     cursor: auto !important;
   }
+  /* Ring looks per state (set by Cursor.jsx); geometry is tweened in JS. */
+  .cursor-ring {
+    color: rgb(var(--ink));
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+  .cursor-ring:is([data-state="link"], [data-state="external"]) {
+    border-color: rgb(var(--ink) / 0.7);
+    background-color: rgb(var(--ink) / 0.04);
+  }
+  .cursor-ring[data-state="magnet"] {
+    border-color: rgb(var(--signal) / 0.85);
+  }
+  .cursor-ring[data-state="pill"] {
+    border-color: transparent;
+    background-color: rgb(var(--signal));
+    color: rgb(var(--primary-foreground));
+  }
 
   /* ── Lenis smooth scroll (class applied to <html> when active) ── */
   html.lenis,
