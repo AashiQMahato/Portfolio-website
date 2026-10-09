@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="140 320 905 585" role="img" aria-label="Aashik Kumar Mahato logo">
+  <defs>
+    <linearGradient id="am-letter" x1="160" y1="340" x2="1015" y2="880" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14E6FF"/>
+      <stop offset=".5" stop-color="#2F6BFF"/>
+      <stop offset="1" stop-color="#8A1CFF"/>
+    </linearGradient>
+    <linearGradient id="am-ribbon" x1="160" y1="740" x2="845" y2="740" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1C6DFF"/>
+      <stop offset=".55" stop-color="#5F86FF"/>
+      <stop offset="1" stop-color="#9B3DFF"/>
+    </linearGradient>
+    <linearGradient id="am-shade" x1="560" y1="690" x2="760" y2="880" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A1FA8" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#5A10D8" stop-opacity=".25"/>
+    </linearGradient>
+  </defs>
+  <!-- A + M ligature -->
+  <path fill="url(#am-letter)" d="M160 860 L497 337 L745 690 L860 565 C888 537 912 530 945 530 L1015 530 L1015 875 L915 875 L915 648 L690 885 L487 522 L230 845 Z"/>
+  <!-- depth under the ribbon -->
+  <path fill="url(#am-shade)" d="M594 693 L690 885 L775 800 C720 785 660 740 594 693 Z"/>
+  <!-- wave ribbon -->
+  <path fill="url(#am-ribbon)" d="M160 860 C230 830 300 770 380 700 C440 645 480 615 540 612 C620 610 690 650 745 688 C780 710 810 722 845 722 L770 805 C730 795 690 775 640 745 C600 720 560 695 510 695 C450 695 400 740 350 790 C300 840 280 862 240 862 Z"/>
+  <!-- </> -->
+  <g fill="none" stroke-width="17" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="#2A8CFF" d="M878 407 L830 440 L878 474"/>
+    <path stroke="#6A6CFF" d="M944 384 L908 498"/>
+    <path stroke="#8A3BFF" d="M974 407 L1022 440 L974 474"/>
+  </g>
+</svg>

@@ -95,12 +95,15 @@ const Nav = () => {
         >
           <Link
             to="/"
-            className="group flex items-baseline gap-3 text-[1.05rem] font-semibold tracking-[-0.03em] text-ink"
+            className="group flex items-center gap-3 text-[1.05rem] font-semibold tracking-[-0.03em] text-ink"
           >
-            <span>
-              Aashik<span className="sr-only"> Kumar Mahato, home</span>
-              <span aria-hidden="true" className="inline-block text-signal transition-transform duration-500 ease-out group-hover:translate-x-0.5">.</span>
-            </span>
+            <img
+              src="/logo.svg"
+              alt="Aashik Kumar Mahato, home"
+              width="905"
+              height="585"
+              className="h-8 w-auto transition-transform duration-500 ease-out group-hover:-translate-y-0.5"
+            />
             <span className="hud hidden lg:inline">Engineer / Developer</span>
           </Link>
 

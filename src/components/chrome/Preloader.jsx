@@ -75,14 +75,14 @@ const Preloader = () => {
       </div>
 
       <div data-mark className="overflow-clip text-center opacity-0">
-        <p className="font-mono text-[clamp(2.5rem,9vw,7rem)] font-medium tracking-[-0.04em]">
-          {"AKM".split("").map((c, i) => (
-            <span key={i} data-split-char className="inline-block">
-              {c}
-            </span>
-          ))}
-          <span data-split-char className="inline-block text-signal">.</span>
-        </p>
+        <img
+          src="/logo.svg"
+          alt=""
+          width="905"
+          height="585"
+          data-split-char
+          className="mx-auto h-[clamp(4rem,14vw,10rem)] w-auto"
+        />
       </div>
 
       <div data-meter className="opacity-0">
