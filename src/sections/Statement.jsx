@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, Reveal, usePrefersReducedMotion } from "../motion";
 import { CV, projects } from "../data/portfolioData";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 
 const TEXT =
   "I build digital systems where software, electronics and interaction meet — from sensor traces on a breadboard to the interfaces people actually touch.";
@@ -54,6 +55,7 @@ const Statement = () => {
           <p className="hud flex items-center gap-3">
             <span className="tabular-nums text-ink">(01)</span> Statement
           </p>
+          <SectionAvatar mood="thinking" className="mt-6 h-14 w-14 md:h-16 md:w-16" />
         </Reveal>
 
         <div className="lg:col-span-9">
@@ -72,7 +74,7 @@ const Statement = () => {
 
           <Reveal as="dl" variant="rise" selector="[data-fact]" className="mt-[clamp(4rem,10vh,7rem)] grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
             {FACTS.map((f) => (
-              <div key={f.label} data-fact className="flex flex-col justify-between gap-10 bg-background p-6">
+              <div key={f.label} data-fact data-avatar="proud" className="flex flex-col justify-between gap-10 bg-background p-6">
                 <dt className="order-2 text-sm text-ink-dim">{f.label}</dt>
                 <dd className="order-1 font-mono text-4xl font-medium tracking-[-0.04em] text-ink">{f.value}</dd>
               </div>

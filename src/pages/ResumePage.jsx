@@ -11,6 +11,7 @@ import {
   Code,
 } from "lucide-react";
 import { CV } from "../data/portfolioData";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 
 const ResumePage = () => {
   const handlePrint = () => {
@@ -24,7 +25,10 @@ const ResumePage = () => {
         data-chrome
         className="sticky top-[var(--nav-h)] z-40 border-b border-line bg-background print:hidden">
         <div className="shell flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="hud">(Résumé) — Printable document</p>
+          <div className="flex items-center gap-3">
+            <SectionAvatar mood="proud" hover="celebrate" className="-my-2 h-10 w-10" />
+            <p className="hud">(Résumé) — Printable document</p>
+          </div>
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/AashikKumarMahatoResume.pdf"

@@ -31,6 +31,7 @@ const About = () => (
     <div className="shell">
       <SectionHeader
         index="03"
+        avatar={{ mood: "happy", hover: "shy" }}
         label="About"
         id="about-title"
         title={["I like building things", "that sit between software", "and the physical world."]}

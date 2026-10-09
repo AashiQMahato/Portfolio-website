@@ -35,6 +35,7 @@ import { useTheme } from "../context/ThemeContext";
 import { projects } from "../data/portfolioData";
 import { blogPosts } from "../data/blogPosts";
 import { gsap, EASE, DUR, usePrefersReducedMotion } from "../motion";
+import SectionAvatar from "./avatar/SectionAvatar";
 
 /* ─── Command definitions ─────────────────────────────────── */
 
@@ -384,6 +385,12 @@ const CommandPalette = () => {
             autoComplete="off"
             spellCheck={false}
           />
+          {isOpen && (
+            <SectionAvatar
+              mood={!query.trim() ? "listening" : filteredCommands.length ? "searching" : "confused"}
+              className="-my-2 h-9 w-9"
+            />
+          )}
           <KbdHint keys={["ESC"]} />
         </div>
 

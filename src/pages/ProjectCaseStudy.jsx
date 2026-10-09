@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap, EASE, ImageReveal, Reveal, SplitText, usePrefersReducedMotion } from "../motion";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 import { projects } from "../data/portfolioData";
 import NotFound from "./NotFound";
 
@@ -85,6 +86,9 @@ const ProjectCaseStudy = () => {
         />
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/10" />
         <div className="shell relative flex h-full flex-col justify-end pb-[clamp(2.5rem,7vh,5rem)] text-white">
+          <span data-hero-copy className="mb-4 block">
+            <SectionAvatar mood="searching" hover="excited" className="block h-14 w-14 md:h-16 md:w-16" />
+          </span>
           <p data-hero-copy className="hud mb-6 flex flex-wrap gap-x-4 text-white/80">
             <span>Case study — {String(idx + 1).padStart(2, "0")}</span>
             <span>{project.category}</span>

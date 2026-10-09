@@ -67,3 +67,8 @@ public/
 - Update profile info and images in `/src/assets` and `/src/components`.
 - Add your projects in `Projects.jsx`.
 - Tweak colors or styles in `index.css`.
+
+## Third-party notices
+
+- **Avatar runtime** — [`@bible-strong/avatar-web`](https://github.com/smontlouis/bible-strong-avatar-lab) and `@bible-strong/avatar-core` by Stéphane Montlouis-Calixte, licensed **AGPL-3.0-only**. Used unmodified to render the site guide from `src/assets/aashik.avatar.json` (generated from the Avatar Lab project export kept in `docs/avatar-studio-project.json`).
+- **Technology logos** — [Simple Icons](https://simpleicons.org) (CC0-1.0); each mark remains a trademark of its owner.

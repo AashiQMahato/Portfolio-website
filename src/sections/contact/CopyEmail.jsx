@@ -50,6 +50,7 @@ const CopyEmail = ({ email }) => {
   return (
     <div ref={ref}>
       <button
+        data-avatar="happy"
         type="button"
         onClick={copy}
         data-cursor="copy"

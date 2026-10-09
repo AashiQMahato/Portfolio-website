@@ -83,6 +83,7 @@ const ContactForm = () => {
               {f.name !== "subject" && <span className="text-accent-ink"> *</span>}
             </label>
             <input
+              data-avatar="listening"
               id={f.name}
               name={f.name}
               type={f.type}
@@ -100,6 +101,7 @@ const ContactForm = () => {
           Message <span className="text-accent-ink">*</span>
         </label>
         <textarea
+          data-avatar="listening"
           id="message"
           name="message"
           rows={4}

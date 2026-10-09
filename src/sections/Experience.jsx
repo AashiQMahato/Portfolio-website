@@ -79,6 +79,7 @@ const Experience = () => {
       <div className="shell">
         <SectionHeader
           index="04"
+          avatar={{ mood: "proud", hover: "curious" }}
           label="Experience"
           id="experience-title"
           title={["The path so far."]}

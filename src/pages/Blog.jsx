@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Reveal, SplitText } from "../motion";
 import { FeaturedPost, PostList } from "../components/ui";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 import { blogPosts } from "../data/blogPosts";
 import { CV } from "../data/portfolioData";
 
@@ -16,10 +17,11 @@ const Blog = () => {
   return (
     <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
       <header className="mb-[clamp(3rem,8vh,5rem)]">
-        <Reveal variant="fade" className="mb-6">
+        <Reveal variant="fade" className="mb-6 flex items-center gap-4">
           <p className="hud">
             <span className="tabular-nums text-ink">({String(blogPosts.length).padStart(2, "0")})</span> — Writing
           </p>
+          <SectionAvatar mood="listening" hover="curious" className="-my-3 h-12 w-12 md:h-14 md:w-14" />
         </Reveal>
         <Reveal variant="lines">
           <SplitText as="h1" lines={["Notes from", "the workbench."]} className="text-display text-ink" />
@@ -36,6 +38,7 @@ const Blog = () => {
         <div role="group" aria-label="Filter by topic" className="mb-12 flex flex-wrap gap-2">
           {CATEGORIES.map((c) => (
             <button
+              data-avatar="searching"
               key={c}
               type="button"
               aria-pressed={category === c}

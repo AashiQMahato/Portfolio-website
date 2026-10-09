@@ -15,12 +15,19 @@ export default function Avatar({ animation, expression = "neutral", label, class
   const ctlRef = useRef(null);
 
   useEffect(() => {
-    const ctl = createAvatar(hostRef.current, {
-      definition,
-      size: "100%",
-      ariaLabel: label ?? "",
-      ...(animation ? { defaultAnimation: animation } : { defaultExpression: expression }),
-    });
+    let ctl;
+    try {
+      ctl = createAvatar(hostRef.current, {
+        definition,
+        size: "100%",
+        ariaLabel: label ?? "",
+        ...(animation ? { defaultAnimation: animation } : { defaultExpression: expression }),
+      });
+    } catch (err) {
+      // Never take the page down for a decorative avatar; callers keep their fallback.
+      console.warn("[Avatar] failed to initialise:", err);
+      return undefined;
+    }
     ctlRef.current = ctl;
     return () => {
       ctl.destroy();

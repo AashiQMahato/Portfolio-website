@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap, EASE, useLenis, usePrefersReducedMotion } from "../../motion";
 import { useTheme } from "../../context/ThemeContext";
 import { CV } from "../../data/portfolioData";
+import SectionAvatar from "../avatar/SectionAvatar";
 
 /**
  * Full-screen mobile navigation. One timeline, played forward to open and
@@ -97,11 +98,15 @@ const MobileMenu = ({ open, onClose, sections, active, onSection, onHome }) => {
       aria-modal="true"
       aria-label="Site menu"
       data-chrome
+      data-avatar-scope
       style={{ visibility: "hidden" }}
       className="fixed inset-0 z-[120] flex flex-col bg-background px-[var(--gutter)] pb-8 pt-5 md:hidden"
     >
       <div className="flex h-11 items-center justify-between">
-        <span className="hud">Index</span>
+        <span className="flex items-center gap-3">
+          {open && <SectionAvatar mood="playful" hover="excited" className="h-10 w-10" />}
+          <span className="hud">Index</span>
+        </span>
         <button
           type="button"
           onClick={onClose}

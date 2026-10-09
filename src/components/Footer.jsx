@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap, EASE, Magnetic, useLenis, usePrefersReducedMotion } from "../motion";
 import { CV } from "../data/portfolioData";
 import { LocalTime } from "./ui";
+import SectionAvatar from "./avatar/SectionAvatar";
 
 const PAGES = [
   { label: "Projects", to: "/projects" },
@@ -60,6 +61,7 @@ const Footer = () => {
       <div className="shell">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
+            <SectionAvatar mood="playful" hover="happy" className="mb-6 h-14 w-14 md:h-16 md:w-16" />
             <p className="text-lede text-ink">
               Electronics Engineer
               <br />

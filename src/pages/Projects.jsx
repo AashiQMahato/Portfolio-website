@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { gsap, Flip, EASE, Reveal, SplitText, usePrefersReducedMotion } from "../motion";
 import { FollowPreview } from "../components/ui";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 import { projects } from "../data/portfolioData";
 
 const byYear = [...projects].sort((a, b) => Number(b.year) - Number(a.year));
@@ -46,10 +47,11 @@ const Projects = () => {
   return (
     <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
       <header className="mb-[clamp(3rem,8vh,5rem)]">
-        <Reveal variant="fade" className="mb-6">
+        <Reveal variant="fade" className="mb-6 flex items-center gap-4">
           <p className="hud">
             <span className="tabular-nums text-ink">({String(projects.length).padStart(2, "0")})</span> — Project index
           </p>
+          <SectionAvatar mood="curious" hover="excited" className="-my-3 h-12 w-12 md:h-14 md:w-14" />
         </Reveal>
         <Reveal variant="lines">
           <SplitText as="h1" lines={["Work, from the", "breadboard up."]} className="text-display text-ink" />
@@ -65,6 +67,7 @@ const Projects = () => {
       <div role="group" aria-label="Filter by discipline" className="mb-8 flex flex-wrap items-center gap-2">
         {FILTERS.map((f) => (
           <button
+            data-avatar="searching"
             key={f}
             type="button"
             aria-pressed={filter === f}

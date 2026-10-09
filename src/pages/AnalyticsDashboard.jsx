@@ -10,6 +10,7 @@ import {
   Area,
 } from "recharts";
 import { Reveal, SplitText } from "../motion";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 
 // Sample data — this page is a layout demo, not real visitor analytics.
 const trafficData = [
@@ -53,10 +54,11 @@ const AnalyticsDashboard = () => {
   return (
     <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
       <header className="max-w-5xl">
-        <Reveal variant="fade">
+        <Reveal variant="fade" className="flex items-center gap-4">
           <p className="hud">
             (Analytics) — <span className="text-accent-ink">Demo data</span>
           </p>
+          <SectionAvatar mood="working" hover="surprised" className="-my-3 h-12 w-12 md:h-14 md:w-14" />
         </Reveal>
         <Reveal variant="lines" className="mt-6">
           <SplitText as="h1" text="Analytics" className="text-display text-ink" />

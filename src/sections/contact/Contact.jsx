@@ -4,6 +4,7 @@ import { gsap, Reveal, SplitText, usePrefersReducedMotion } from "../../motion";
 import { CV, siteConfig } from "../../data/portfolioData";
 import CopyEmail from "./CopyEmail";
 import ContactForm from "./ContactForm";
+import SectionAvatar from "../../components/avatar/SectionAvatar";
 
 const LINKS = [
   { label: "LinkedIn", href: CV.contact.linkedin, external: true },
@@ -43,14 +44,17 @@ const Contact = () => {
   return (
     <section ref={ref} id="contact" aria-labelledby="contact-title" className="relative overflow-clip py-[clamp(7rem,16vh,13rem)]">
       <div className="shell">
-        <Reveal variant="clip" className="mb-10 flex items-center gap-4 border-t border-line pt-4">
-          <span className="hud tabular-nums text-ink">(08)</span>
-          <span className="hud">Contact</span>
-          <span className="hud ml-auto flex items-center gap-2 text-ink">
-            <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden="true" />
-            {siteConfig.availability}
-          </span>
-        </Reveal>
+        <div className="mb-10 flex items-end gap-4">
+          <Reveal variant="clip" className="flex flex-1 items-center gap-4 border-t border-line pt-4">
+            <span className="hud tabular-nums text-ink">(08)</span>
+            <span className="hud">Contact</span>
+            <span className="hud ml-auto flex items-center gap-2 text-ink">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden="true" />
+              {siteConfig.availability}
+            </span>
+          </Reveal>
+          <SectionAvatar mood="excited" hover="playful" className="-mb-1 h-10 w-10 md:h-12 md:w-12" />
+        </div>
 
         <div data-contact-drift>
           <Reveal variant="lines">

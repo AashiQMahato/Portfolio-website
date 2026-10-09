@@ -11,6 +11,7 @@ import {
 import { MagneticButton, LocalTime } from "../../components/ui";
 import { siteConfig } from "../../data/portfolioData";
 import SignalField from "./SignalField";
+import SectionAvatar from "../../components/avatar/SectionAvatar";
 
 const NAME = ["Aashik", "Kumar", "Mahato"];
 const BUILDS = ["Web platforms", "Embedded firmware", "IoT systems", "Interactive interfaces"];
@@ -111,8 +112,11 @@ const Hero = () => {
       <div className="shell relative flex flex-1 flex-col justify-between pb-8 pt-6 lg:pb-10">
         {/* Eyebrow */}
         <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-2">
-          <p data-hero-eyebrow data-hero-fade className="hud">
-            Portfolio <span aria-hidden="true">/</span> 2026
+          <p data-hero-eyebrow data-hero-fade className="hud flex items-center gap-3">
+            <SectionAvatar mood="idle" hover="excited" className="-my-4 h-14 w-14 md:h-16 md:w-16" />
+            <span>
+              Portfolio <span aria-hidden="true">/</span> 2026
+            </span>
           </p>
           <p data-hero-eyebrow data-hero-fade className="hud hidden sm:block">
             Kathmandu, Nepal <span aria-hidden="true">—</span> 27.71° N 85.32° E

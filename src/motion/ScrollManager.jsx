@@ -29,6 +29,9 @@ const ScrollManager = () => {
       const el = document.querySelector(hash);
       if (el) {
         requestAnimationFrame(() => {
+          // Re-measure first: Lenis still holds the previous route's height and
+          // would clamp a cross-page hash target (e.g. /projects → /#contact).
+          lenis?.resize();
           if (lenis) lenis.scrollTo(el, { offset: NAV_OFFSET });
           else el.scrollIntoView({ block: "start" });
         });

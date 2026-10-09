@@ -148,6 +148,7 @@ const SelectedWork = () => {
       <div className="shell">
         <SectionHeader
           index="02"
+          avatar={{ mood: "curious", hover: "excited" }}
           label="Selected work"
           id="work-title"
           title={["Proof,", "not promises."]}

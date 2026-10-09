@@ -12,6 +12,7 @@ const Writing = () => {
       <div className="shell">
         <SectionHeader
           index="06"
+          avatar={{ mood: "listening", hover: "curious" }}
           label="Writing"
           id="writing-title"
           title={["Notes from", "the workbench."]}

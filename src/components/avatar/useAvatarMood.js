@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import useActiveSection from "../../motion/useActiveSection";
 import { useTheme } from "../../context/ThemeContext";
-import { AVATAR_REACT_EVENT, SECTION_MOODS, routeMood } from "./mood";
+import { AVATAR_REACT_EVENT, BEHAVIOR, SECTION_MOODS, routeMood } from "./mood";
 
 const SECTION_IDS = Object.keys(SECTION_MOODS);
 // Inactivity ladder: ms without input → mood.
@@ -14,10 +14,11 @@ const IDLE_STEPS = [
 const ACTIVITY = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"];
 
 /**
- * The companion's current animation key.
- * Priority: transient reaction → chat state → inactivity → section / route.
+ * The navigator's behaviour controller: current animation key + active section.
+ * Priority: tour stop → transient reaction → open menu → inactivity → section / route.
+ * Reactions replace each other (one timer), so rapid triggers never stack.
  */
-export default function useAvatarMood({ chatOpen, chatTyping }) {
+export default function useAvatarMood({ menuOpen = false, override = null } = {}) {
   const { pathname } = useLocation();
   const section = useActiveSection(pathname === "/" ? SECTION_IDS : []);
   const { theme } = useTheme();
@@ -76,9 +77,12 @@ export default function useAvatarMood({ chatOpen, chatTyping }) {
     };
   }, []);
 
-  if (reaction) return reaction;
-  if (chatTyping) return "thinking";
-  if (chatOpen) return "listening";
-  if (idleMood) return idleMood;
-  return (section && SECTION_MOODS[section]) || routeMood(pathname);
+  const mood =
+    override ||
+    reaction ||
+    (menuOpen && BEHAVIOR.attentive) ||
+    idleMood ||
+    (section && SECTION_MOODS[section]) ||
+    routeMood(pathname);
+  return { mood, section };
 }

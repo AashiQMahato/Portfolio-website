@@ -3,7 +3,7 @@ import Statement from "../sections/Statement";
 import SelectedWork from "../sections/work/SelectedWork";
 import About from "../sections/About";
 import Experience from "../sections/Experience";
-import Skills from "../sections/Skills";
+import Capabilities from "../sections/capabilities/Capabilities";
 import Writing from "../sections/Writing";
 import ResumeCta from "../sections/ResumeCta";
 import Contact from "../sections/contact/Contact";
@@ -19,7 +19,7 @@ const Home = () => (
     <SelectedWork />
     <About />
     <Experience />
-    <Skills />
+    <Capabilities />
     <Writing />
     <ResumeCta />
     <Contact />

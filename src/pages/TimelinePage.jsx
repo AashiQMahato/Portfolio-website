@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { CV } from "../data/portfolioData";
 import { Reveal, SplitText } from "../motion";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 
 // Grouped rather than date-sorted: experience → education → projects
 // (projects carry no dates in the CV data).
@@ -81,8 +82,9 @@ const TimelinePage = () => {
   return (
     <div className="shell pb-[clamp(5rem,12vh,9rem)] pt-[calc(var(--nav-h)+clamp(3rem,10vh,7rem))]">
       <header className="max-w-5xl">
-        <Reveal variant="fade">
+        <Reveal variant="fade" className="flex items-center gap-4">
           <p className="hud">(Timeline) — Experience, education &amp; projects</p>
+          <SectionAvatar mood="thinking" hover="curious" className="-my-3 h-12 w-12 md:h-14 md:w-14" />
         </Reveal>
         <Reveal variant="lines" className="mt-6">
           <SplitText as="h1" text="Timeline" className="text-display text-ink" />

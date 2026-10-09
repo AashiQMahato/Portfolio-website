@@ -29,6 +29,7 @@ import cppLang from 'react-syntax-highlighter/dist/esm/languages/prism/cpp';
 ].forEach(([name, lang]) => SyntaxHighlighter.registerLanguage(name, lang));
 import { blogPosts } from "../data/blogPosts";
 import { Reveal, SplitText } from "../motion";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 import { formatDate } from "../lib/format";
 import NotFound from "./NotFound";
 
@@ -172,6 +173,7 @@ const BlogPost = () => {
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> All writing
         </Link>
         <Reveal variant="fade">
+          <SectionAvatar mood="listening" hover="happy" className="mb-4 block h-12 w-12 md:h-14 md:w-14" />
           <p className="hud mb-6 flex flex-wrap gap-x-4 gap-y-1">
             <span className="text-accent-ink">{post.category}</span>
             <time dateTime={post.date}>{formatDate(post.date)}</time>

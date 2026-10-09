@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
-import { X, Send, Trash2 } from "lucide-react";
+import { X, Send, Trash2, MessageCircle } from "lucide-react";
 import PropTypes from "prop-types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -22,7 +22,6 @@ import { useTheme } from "../context/ThemeContext";
 import useLauncherVisible from "./chrome/useLauncherVisible";
 import { gsap, EASE, DUR, usePrefersReducedMotion, useMediaQuery } from "../motion";
 import Avatar from "./avatar/Avatar";
-import useAvatarMood from "./avatar/useAvatarMood";
 import { reactAvatar } from "./avatar/mood";
 import { CV, projects, siteConfig } from "../data/portfolioData";
 
@@ -228,9 +227,11 @@ const trapTab = (e, root) => {
   }
 };
 
-// Sits above the FAB: safe-area offset + FAB size + a 12–16px gap.
+// The FAB stacks above the avatar navigator; the panel sits above the FAB.
+const FAB_POSITION =
+  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.25rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.75rem)]";
 const PANEL_POSITION =
-  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_3.75rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_4.5rem)]";
+  "bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_7.5rem)] md:bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))_+_8.75rem)]";
 
 const AIChatbot = () => {
   const launcherShown = useLauncherVisible();
@@ -249,7 +250,6 @@ const AIChatbot = () => {
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const reduced = usePrefersReducedMotion();
-  const mood = useAvatarMood({ chatOpen: isOpen, chatTyping: isTyping });
 
   useEffect(() => {
     const el = listRef.current;
@@ -417,14 +417,14 @@ const AIChatbot = () => {
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-controls="ai-chat-window"
-        className={`fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-[102] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-line bg-panel text-ink transition-[transform,opacity,border-color] duration-500 ease-out hover:border-ink-dim active:scale-95 md:h-14 md:w-14 ${
+        className={`fixed ${FAB_POSITION} right-5 z-[102] flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-line bg-panel text-ink transition-[transform,opacity,border-color] duration-500 ease-out hover:border-ink-dim active:scale-95 md:h-12 md:w-12 ${
           launcherShown || isOpen ? "" : "pointer-events-none translate-y-4 opacity-0"
         }`}
         tabIndex={launcherShown || isOpen ? undefined : -1}>
         {isOpen ? (
           <X aria-hidden="true" className="h-5 w-5" />
         ) : (
-          <Avatar animation={launcherShown ? mood : undefined} className="h-full w-full p-1.5" />
+          <MessageCircle aria-hidden="true" className="h-5 w-5" />
         )}
       </button>
 
@@ -448,10 +448,10 @@ const AIChatbot = () => {
           aria-modal={isModal}
           aria-label="Chat with Aashiq's AI assistant"
           onKeyDown={onPanelKeyDown}
-          className={`pointer-events-auto absolute left-3 right-3 flex h-[min(580px,calc(100dvh_-_7rem))] flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40 md:left-auto md:right-5 md:w-[400px] ${PANEL_POSITION}`}>
+          className={`pointer-events-auto absolute left-3 right-3 flex h-[min(580px,calc(100dvh_-_11rem))] flex-col overflow-hidden rounded-xl border border-line bg-panel shadow-2xl shadow-black/40 md:left-auto md:right-5 md:w-[400px] ${PANEL_POSITION}`}>
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-            <Avatar animation={isOpen ? mood : undefined} className="h-10 w-10 rounded-full border border-line bg-background p-0.5" />
+            <Avatar animation={isOpen ? (isTyping ? "thinking" : "listening") : undefined} className="h-10 w-10 rounded-full border border-line bg-background p-0.5" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-ink">
                 Aashiq&apos;s AI Assistant

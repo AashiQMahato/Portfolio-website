@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { Reveal, SplitText } from "../motion";
 import { MagneticButton } from "../components/ui";
+import SectionAvatar from "../components/avatar/SectionAvatar";
 
 /** A short pause before the ending: the compact version, two ways. */
 const ResumeCta = () => (
@@ -10,9 +11,12 @@ const ResumeCta = () => (
       <div className="micro-grid relative overflow-hidden rounded-xl border border-line px-[clamp(1.5rem,5vw,4.5rem)] py-[clamp(3.5rem,9vh,6rem)]">
         <div className="grid items-end gap-10 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <p className="hud mb-6">
-              <span className="tabular-nums text-ink">(07)</span> — Résumé
-            </p>
+            <div className="mb-6 flex items-center gap-4">
+              <p className="hud">
+                <span className="tabular-nums text-ink">(07)</span> — Résumé
+              </p>
+              <SectionAvatar mood="proud" hover="celebrate" className="-my-3 h-10 w-10 md:h-12 md:w-12" />
+            </div>
             <Reveal variant="lines">
               <SplitText as="h2" id="resume-cta-title" lines={["Want the", "compact version?"]} className="text-display-2 text-ink" />
             </Reveal>
