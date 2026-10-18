@@ -279,16 +279,6 @@
     margin-bottom: -0.08em;
   }
 
-  /* Scroll-resolved words (Statement): --w 0 → faint, 1 → full colour */
-  .word-mix {
-    --w: 1;
-    --to: var(--ink);
-    color: color-mix(in srgb, rgb(var(--to)) calc(var(--w) * 100%), rgb(var(--ink-faint)));
-  }
-  .word-mix-signal {
-    --to: var(--signal);
-  }
-
   .perspective-1000 {
     perspective: 1000px;
   }
@@ -301,6 +291,55 @@
   .rotate-y-180 {
     transform: rotateY(180deg);
   }
+}
+
+/*
+ * Statement signal path — one hue per stage, physical → digital:
+ * teal (sense) → blue (process) → violet (connect) → the site signal
+ * (experience). Scoped to the section (.signal-flow); a .stage-* child
+ * exposes its hue as --stage, used as rgb(var(--stage) / α). Light values
+ * hold ≥4.5:1 on paper, dark values ≥7:1 on the near-black canvas.
+ * Outside @layer on purpose: stage classes are composed at runtime
+ * (`stage-${id}`), so Tailwind's content scan must not purge them.
+ */
+.signal-flow {
+  --c-sense: 45 212 191;
+  --c-process: 96 165 250;
+  --c-connect: 192 132 252;
+  --c-experience: var(--signal);
+}
+html.light .signal-flow {
+  --c-sense: 15 118 110;
+  --c-process: 29 78 216;
+  --c-connect: 126 34 206;
+  --c-experience: var(--accent-ink);
+}
+.stage-sense {
+  --stage: var(--c-sense);
+}
+.stage-process {
+  --stage: var(--c-process);
+}
+.stage-connect {
+  --stage: var(--c-connect);
+}
+.stage-experience {
+  --stage: var(--c-experience);
+}
+.signal-rail {
+  background: linear-gradient(
+    var(--rail-dir, to bottom),
+    rgb(var(--c-sense)),
+    rgb(var(--c-process)) 35%,
+    rgb(var(--c-connect)) 65%,
+    rgb(var(--c-experience))
+  );
+}
+
+/* Emphasised statement word: --e 0 → ink, 1 → its stage colour */
+.emph-word {
+  --e: 1;
+  color: color-mix(in srgb, rgb(var(--stage)) calc(var(--e) * 100%), rgb(var(--ink)));
 }
 
 /* Hero scroll cue: a line that draws in from the left and exits right */
