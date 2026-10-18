@@ -1,5 +1,5 @@
 import Hero from "../sections/hero/Hero";
-import Statement from "../sections/Statement";
+import Statement from "../sections/statement/Statement";
 import SelectedWork from "../sections/work/SelectedWork";
 import About from "../sections/About";
 import Experience from "../sections/Experience";
