@@ -14,7 +14,7 @@ const OPEN_TARGETS = {
   about: "/#about",
   experience: "/#experience",
   skills: "/#skills",
-  writing: "/#writing",
+  writing: "/blog",
   contact: "/#contact",
   projects: "/projects",
   blog: "/blog",

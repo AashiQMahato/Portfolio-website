@@ -10,12 +10,11 @@ export const NAV_SECTIONS = [
   { id: "work", label: "Work" },
   { id: "about", label: "About" },
   { id: "experience", label: "Experience" },
-  { id: "writing", label: "Writing" },
   { id: "contact", label: "Contact" },
 ];
 
 /** Route → nav item that should read as "current" off the home page. */
-const ROUTE_ACTIVE = { "/projects": "work", "/blog": "writing" };
+const ROUTE_ACTIVE = { "/projects": "work" };
 
 const openPalette = () =>
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
@@ -134,6 +133,13 @@ const Nav = () => {
             <span aria-hidden="true" className="h-4 w-px bg-line" />
 
             <div className="flex items-center gap-1">
+              <Link
+                to="/blog"
+                aria-current={pathname.startsWith("/blog") ? "page" : undefined}
+                className={`rounded-full px-3 py-1.5 text-sm transition-colors hover:text-ink ${pathname.startsWith("/blog") ? "text-ink" : "text-ink-dim"}`}
+              >
+                Writing
+              </Link>
               <Link
                 to="/resume"
                 className="rounded-full px-3 py-1.5 text-sm text-ink-dim transition-colors hover:text-ink"

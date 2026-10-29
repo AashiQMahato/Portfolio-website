@@ -5,23 +5,11 @@ import { ArrowUpRight } from "lucide-react";
 import { gsap, EASE } from "../../motion";
 import { techColor } from "../capabilities/techColor";
 import { STAGES, CHAIN } from "./stages";
+import { offsetBox } from "./wire";
 import { SenseScene, ProcessScene, ConnectScene, ExperienceScene } from "./StageScenes";
 
 const byId = Object.fromEntries(STAGES.map((s) => [s.id, s]));
 const SCENES = { sense: SenseScene, process: ProcessScene, connect: ConnectScene, experience: ExperienceScene };
-
-/** Layout position of `el` inside `root`, ignoring transforms (so motion never bends the wire). */
-const offsetBox = (el, root) => {
-  let x = 0;
-  let y = 0;
-  let n = el;
-  while (n && n !== root) {
-    x += n.offsetLeft;
-    y += n.offsetTop;
-    n = n.offsetParent;
-  }
-  return { x, y, w: el.offsetWidth, h: el.offsetHeight };
-};
 
 /*
  * Shape of each leg, as in the reference: drop from Sense into the top of

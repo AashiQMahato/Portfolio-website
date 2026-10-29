@@ -358,9 +358,22 @@
   --g1: #22d3b4;
   --g2: #3ee08f;
 }
-.emph-interaction {
+.emph-interaction,
+.emph-violet {
   --g1: #8b5cf6;
   --g2: #b98cff;
+}
+.emph-teal {
+  --g1: #22d3b4;
+  --g2: #3ee08f;
+}
+.emph-blue {
+  --g1: #3b82f6;
+  --g2: #5b9bff;
+}
+.emph-pink {
+  --g1: #e05ad1;
+  --g2: #f59ae8;
 }
 
 /* Stage glass card: a hairline in the stage hue over a soft tinted wash */

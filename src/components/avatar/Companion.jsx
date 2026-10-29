@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { gsap, EASE, usePrefersReducedMotion, useScrollToSection } from "../../motion";
 import { CV, projects } from "../../data/portfolioData";
 import { capabilities } from "../../data/stack";
-import { blogPosts } from "../../data/blogPosts";
 import Avatar from "./Avatar";
 import useAvatarMood from "./useAvatarMood";
 import useAvatarTour from "./useAvatarTour";
@@ -512,15 +511,11 @@ const Companion = () => {
       },
     });
   }
-  if (section === "writing") {
-    const latest = [...blogPosts].sort((a, b) => b.date.localeCompare(a.date))[0];
-    if (latest) actions.push({ label: "Explore an article", primary: true, to: `/blog/${latest.slug}` });
-  }
   if (section === "resume-cta") {
     actions.push({ label: "View résumé", primary: true, to: "/resume" });
     actions.push({ label: "Download CV", primary: true, href: "/AashikKumarMahatoResume.pdf", download: "AashikKumarMahatoResume.pdf" });
   }
-  if ((section === "writing" || section === "footer") && isHome) {
+  if (section === "footer" && isHome) {
     actions.push({
       label: "Back to the top",
       primary: true,

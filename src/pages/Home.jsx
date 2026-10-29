@@ -4,13 +4,12 @@ import SelectedWork from "../sections/work/SelectedWork";
 import About from "../sections/About";
 import Experience from "../sections/Experience";
 import Capabilities from "../sections/capabilities/Capabilities";
-import Writing from "../sections/Writing";
 import ResumeCta from "../sections/ResumeCta";
 import Contact from "../sections/contact/Contact";
 
 /**
  * The narrative: identity → philosophy → proof → person → journey →
- * range → knowledge → the compact version → action.
+ * range → the compact version → action.
  */
 const Home = () => (
   <>
@@ -20,7 +19,6 @@ const Home = () => (
     <About />
     <Experience />
     <Capabilities />
-    <Writing />
     <ResumeCta />
     <Contact />
   </>

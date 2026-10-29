@@ -46,7 +46,7 @@ const Contact = () => {
       <div className="shell">
         <div className="mb-10 flex items-end gap-4">
           <Reveal variant="clip" className="flex flex-1 items-center gap-4 border-t border-line pt-4">
-            <span className="hud tabular-nums text-ink">(08)</span>
+            <span className="hud tabular-nums text-ink">(07)</span>
             <span className="hud">Contact</span>
             <span className="hud ml-auto flex items-center gap-2 text-ink">
               <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden="true" />

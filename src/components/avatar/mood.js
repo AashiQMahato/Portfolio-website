@@ -42,8 +42,7 @@ export const SECTION_ABOUT = {
   about: "How an electronics degree turned into building the software on top of it.",
   experience: "Roles and study so far: frontend work, technical writing, and the engineering degree.",
   skills: "Six disciplines; pick one and every tool traces back to a real project.",
-  writing: "Notes from the workbench: IoT dashboards and UI motion.",
-  "resume-cta": "The one-page version: roles, education, projects and stack.",
+  "resume-cta": "The compact version: roles, education, projects and stack in a two-page PDF.",
   contact: "Email is fastest — replies usually within 24 hours.",
   footer: "The end of the page. Everything worth clicking is above — or one email away.",
 };
@@ -60,8 +59,7 @@ export const TIPS = {
   about: "Hardware first, software on top — that's the whole story.",
   experience: "Want the long version? The Timeline page has every step.",
   skills: "Pick a discipline — each tool links back to a real project.",
-  writing: "Notes from the workbench. Every article lives on the Writing page.",
-  "resume-cta": "Short on time? The résumé is a one-page PDF.",
+  "resume-cta": "Short on time? The whole story fits in a two-page PDF.",
   contact: "Email is fastest — replies usually within 24 hours.",
   footer: "Point at the big name below — it reacts to you.",
 };
@@ -102,7 +100,6 @@ export const DESTINATIONS = [
   { id: "about", label: "About" },
   { id: "experience", label: "Experience" },
   { id: "skills", label: "Capabilities" },
-  { id: "writing", label: "Writing" },
   { id: "contact", label: "Contact" },
 ];
 
