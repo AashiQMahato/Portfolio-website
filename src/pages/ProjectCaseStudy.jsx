@@ -113,7 +113,8 @@ const ProjectCaseStudy = () => {
   const total = projects.length;
   const prev = projects[(idx - 1 + total) % total];
   const next = projects[(idx + 1) % total];
-  const isDiagram = project.image.endsWith(".svg") || (project.cats || [project.category]).includes("Hardware");
+  const isSvg = project.image.endsWith(".svg");
+  const isDiagram = isSvg || (project.cats || [project.category]).includes("Hardware");
   const extraShots = (project.gallery || []).filter((g) => g && g !== project.image);
 
   const facts = [
@@ -203,10 +204,10 @@ const ProjectCaseStudy = () => {
         <div data-cs-art className="mt-[clamp(3rem,8vh,5rem)]">
           <ProductFrame
             src={project.image}
-            alt={`${project.title} — ${isDiagram ? "system diagram" : "product interface"}`}
+            alt={`${project.title} — ${isSvg ? "system diagram" : isDiagram ? "product showcase" : "product interface"}`}
             kind={isDiagram ? "figure" : "browser"}
             url={project.live || undefined}
-            caption={isDiagram ? "System diagram" : undefined}
+            caption={isDiagram ? (isSvg ? "System diagram" : "Product showcase") : undefined}
             priority
           />
         </div>

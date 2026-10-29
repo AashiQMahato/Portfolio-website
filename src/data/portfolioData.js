@@ -3,7 +3,7 @@ import attendeaseShot from "../assets/projects/attendease.jpg";
 import smartSchoolShot from "../assets/projects/smart-school.jpg";
 import cableNetworkShot from "../assets/projects/cable-network.jpg";
 import weatherImage from "../assets/projects/weather.jpg";
-import blindStickDiagram from "../assets/projects/blind-stick.svg";
+import blindStickShot from "../assets/projects/blind-stick.jpg";
 import studioToolsShot from "../assets/projects/studio-tools.jpg";
 const DEVICON = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
@@ -268,8 +268,8 @@ export const projects = [
         improvement: "Instant SMS via GSM",
       },
     ],
-    gallery: [blindStickDiagram],
-    image: blindStickDiagram,
+    gallery: [blindStickShot],
+    image: blindStickShot,
     tags: ["Arduino", "GSM Module", "GPS", "Sensors"],
     features: [
       "2m ultrasonic obstacle detection",
