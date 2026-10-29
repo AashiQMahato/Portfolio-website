@@ -152,6 +152,7 @@ const Statement = () => {
     <section
       ref={ref}
       aria-labelledby="statement-title"
+      data-tip-section="statement"
       onKeyDown={(e) => {
         if (e.key === "Escape" && (pinned || probe)) {
           setPinned(null);

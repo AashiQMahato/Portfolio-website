@@ -8,7 +8,6 @@ import Avatar from "./Avatar";
 import useAvatarMood from "./useAvatarMood";
 import useAvatarTour from "./useAvatarTour";
 import {
-  ARRIVAL,
   AVATAR_SAY_EVENT,
   BEHAVIOR,
   CHOICE_LINE,
@@ -18,6 +17,8 @@ import {
   PROJECT_FALLBACK,
   PROJECT_LINES,
   SECTION_ABOUT,
+  TIPS,
+  TOUCH_TIPS,
   reactAvatar,
 } from "./mood";
 
@@ -46,7 +47,11 @@ const store = {
 };
 const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 const MAX_SPEED = 1.8; // px per ms
-const sectionOf = (el) => el.closest("section[id]")?.id ?? (el.closest("footer") ? "footer" : "page");
+const TIP_MS = 5500; // how long a section tip stays up
+const sectionOf = (el) => {
+  const s = el.closest("[data-tip-section], section[id]");
+  return s?.dataset.tipSection ?? s?.id ?? (el.closest("footer") ? "footer" : "page");
+};
 const FEATURED = ["studio-tools", "automated-attendance-system", "cable-network-website", "smart-school-management", "ultrasonic-blind-stick"];
 
 /**
@@ -67,17 +72,19 @@ const Companion = () => {
   const rootRef = useRef(null);
   const bodyRef = useRef(null);
   const bubbleRef = useRef(null);
+  const tipRef = useRef(null);
   const posRef = useRef(null); // live avatar box, shared with the bubble placement
 
   const [spot, setSpot] = useState(null); // { el, section, mood, hover }
   const [motionMood, setMotionMood] = useState(null); // excited / curious / searching while travelling
   const [hot, setHot] = useState(null);
   const [bubble, setBubble] = useState(null); // { kind: "panel" | "message", text, view?, link?, actions? }
+  const [tip, setTip] = useState(null); // { section, text } — the small per-section tip
   const [quiet, setQuiet] = useState(() => store.get(QUIET_KEY) === "1");
   const clicks = useRef(0);
   const lastClick = useRef(0);
   const lastCapability = useRef(capabilities[0].id);
-  const seen = useRef({ arrival: new Set(), projects: new Set() });
+  const seen = useRef({ tips: new Set(), projects: new Set() });
   const quietRef = useRef(quiet);
   quietRef.current = quiet;
   const bubbleOpen = useRef(false);
@@ -346,11 +353,11 @@ const Companion = () => {
     return () => window.removeEventListener(AVATAR_SAY_EVENT, onSay);
   }, [say]);
 
-  // Arrival lines: only after the character has settled in a section, once each.
+  // Section tips: once the character has settled in a section, once each per visit.
   useEffect(() => {
     const section = spot?.section;
-    if (!section || !isHome || !ARRIVAL[section] || seen.current.arrival.has(section)) return undefined;
-    // Settle first; if another message is still up, wait for it rather than dropping this one.
+    if (!section || !isHome || !TIPS[section] || seen.current.tips.has(section)) return undefined;
+    // Settle first; if a message is still up, wait for it rather than talking over it.
     let t = 0;
     const attempt = () => {
       if (quietRef.current || tour.active) return;
@@ -358,12 +365,71 @@ const Companion = () => {
         t = window.setTimeout(attempt, 700);
         return;
       }
-      seen.current.arrival.add(section);
-      say(ARRIVAL[section], { actions: true });
+      seen.current.tips.add(section);
+      const touch = window.matchMedia("(hover: none)").matches;
+      setTip({ section, text: (touch && TOUCH_TIPS[section]) || TIPS[section] });
     };
     t = window.setTimeout(attempt, ARRIVE_MS);
     return () => window.clearTimeout(t);
-  }, [spot?.section, isHome, tour.active, say]);
+  }, [spot?.section, isHome, tour.active]);
+
+  // A tip belongs to its section and steps aside for anything bigger.
+  useEffect(() => {
+    setTip((t) => (t && t.section !== spot?.section ? null : t));
+  }, [spot?.section]);
+  useEffect(() => {
+    if (bubble || tour.active || quiet) setTip(null);
+  }, [bubble, tour.active, quiet]);
+  useEffect(() => {
+    if (!tip) return undefined;
+    const t = window.setTimeout(() => setTip(null), TIP_MS);
+    const onKey = (e) => e.key === "Escape" && setTip(null);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [tip]);
+
+  // The tip sits right beside the character, its tail pointing back at it.
+  useEffect(() => {
+    const el = tipRef.current;
+    if (!tip || !el) return undefined;
+    const GAP = 12;
+    const placeTip = () => {
+      const p = posRef.current;
+      if (!p) return;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const bw = el.offsetWidth;
+      const bh = el.offsetHeight;
+      const r = p.size / 2;
+      let side = p.x > vw * 0.55 ? "left" : "right";
+      let left = side === "right" ? p.x + r + GAP : p.x - r - GAP - bw;
+      let top = p.y - bh / 2;
+      if (left < 8 || left + bw > vw - 8) {
+        // No room beside it (phones): above, or below when it hugs the header.
+        side = p.y - r - GAP - bh > NAV + 8 ? "top" : "bottom";
+        left = p.x - bw / 2;
+        top = side === "top" ? p.y - r - GAP - bh : p.y + r + GAP;
+      }
+      left = clamp(left, 8, vw - bw - 8);
+      top = clamp(top, NAV + 8, vh - bh - 8);
+      el.dataset.side = side;
+      // Tail offset along the bubble edge, aimed at the character's centre.
+      const along = side === "left" || side === "right" ? clamp(p.y - top, 14, bh - 14) : clamp(p.x - left, 16, bw - 16);
+      el.style.setProperty("--tail", `${Math.round(along)}px`);
+      el.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
+    };
+    placeTip();
+    gsap.ticker.add(placeTip);
+    const card = el.firstElementChild;
+    if (!reduced && card) {
+      const origin = { left: "100% 50%", right: "0% 50%", top: "50% 100%", bottom: "50% 0%" }[el.dataset.side];
+      gsap.fromTo(card, { autoAlpha: 0, scale: 0.8, transformOrigin: origin }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" });
+    }
+    return () => gsap.ticker.remove(placeTip);
+  }, [tip, reduced]);
 
   // A section's message (and its actions) leaves with the section; a conversation the visitor opened stays.
   useEffect(() => {
@@ -395,6 +461,7 @@ const Companion = () => {
   /* ---------------------------------------------------------- the click */
 
   const onClick = (e) => {
+    setTip(null);
     const now = Date.now();
     if (now - lastClick.current < 350) return; // no double-fire, no overlapping replies
     lastClick.current = now;
@@ -626,6 +693,22 @@ const Companion = () => {
           <div className="rounded-2xl border border-line bg-panel/95 p-4 shadow-xl shadow-black/25 backdrop-blur-xl [@media(prefers-reduced-transparency:reduce)]:bg-panel">
             {content}
           </div>
+        )}
+      </div>
+      {/* Section tip: small, beside the character; a click opens the full conversation. */}
+      <div ref={tipRef} data-chrome className={`companion-tip fixed left-0 top-0 z-[91] w-max max-w-[min(15rem,calc(100vw-1rem))] ${tip ? "" : "hidden"}`}>
+        {tip && (
+          <button
+            type="button"
+            onClick={onClick}
+            data-cursor="button"
+            className="companion-tip-card relative block rounded-2xl border px-3.5 py-2.5 text-left text-[0.8125rem] leading-snug text-ink shadow-lg backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d8bfd]"
+          >
+            <span className="mb-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.16em] text-[#7fb2ff]">Tip</span>
+            {tip.text}
+            <span className="sr-only"> — open the sidekick&apos;s menu</span>
+            <span aria-hidden="true" className="companion-tip-tail" />
+          </button>
         )}
       </div>
     </>

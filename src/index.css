@@ -386,6 +386,47 @@
     0 30px 70px -20px rgb(var(--stage) / 0.55);
 }
 
+/* Companion tip: a small blue-edged bubble, its tail aimed at the character */
+.companion-tip-card {
+  border-color: rgb(61 139 253 / 0.55);
+  background: color-mix(in srgb, rgb(var(--panel)) 92%, #3d8bfd);
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.5), 0 0 24px -10px rgb(61 139 253 / 0.6);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .companion-tip-card {
+    backdrop-filter: none;
+  }
+}
+.companion-tip-tail {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: inherit;
+  border: inherit;
+  border-width: 0 0 1px 1px;
+  backdrop-filter: none;
+}
+.companion-tip[data-side="right"] .companion-tip-tail {
+  left: -5.5px;
+  top: calc(var(--tail, 50%) - 5px);
+  transform: rotate(45deg);
+}
+.companion-tip[data-side="left"] .companion-tip-tail {
+  right: -5.5px;
+  top: calc(var(--tail, 50%) - 5px);
+  transform: rotate(-135deg);
+}
+.companion-tip[data-side="top"] .companion-tip-tail {
+  bottom: -5.5px;
+  left: calc(var(--tail, 50%) - 5px);
+  transform: rotate(-45deg);
+}
+.companion-tip[data-side="bottom"] .companion-tip-tail {
+  top: -5.5px;
+  left: calc(var(--tail, 50%) - 5px);
+  transform: rotate(135deg);
+}
+
 /* Footer wordmark: hollow letter + a fill that rises on pointer proximity */
 /* Stroke painted under an opaque body: only the outer half shows, so the
    variable font's overlapping contours (H, A crossbars) never draw inside. */
