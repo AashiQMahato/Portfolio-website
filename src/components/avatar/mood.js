@@ -48,14 +48,27 @@ export const SECTION_ABOUT = {
   footer: "The end of the page. Everything worth clicking is above — or one email away.",
 };
 
-/** Said once, after the visitor has settled in a section (never on a fly-by). */
-export const ARRIVAL = {
-  work: "Need a recommendation?",
+/**
+ * One short, friendly tip per home section, shown in the small bubble beside
+ * the character once the visitor has settled there (never on a fly-by),
+ * once per section per visit. Keys are section ids (or data-tip-section).
+ */
+export const TIPS = {
+  top: "Press Ctrl K (⌘K on Mac) to jump anywhere on the site.",
+  statement: "Hover or tap a stage to trace the signal from sensor to screen.",
+  work: "Click any project to open its full case study.",
   about: "Hardware first, software on top — that's the whole story.",
-  skills: "Curious how these tools get used? Pick a discipline.",
-  writing: "Knowledge compilation in progress. Please don't unplug.",
-  "resume-cta": "The professional paperwork has entered the chat.",
-  contact: "You've reached the final boss: saying hello.",
+  experience: "Want the long version? The Timeline page has every step.",
+  skills: "Pick a discipline — each tool links back to a real project.",
+  writing: "Notes from the workbench. Every article lives on the Writing page.",
+  "resume-cta": "Short on time? The résumé is a one-page PDF.",
+  contact: "Email is fastest — replies usually within 24 hours.",
+  footer: "Point at the big name below — it reacts to you.",
+};
+/** Touch screens have no keyboard shortcut or hover: these replace the tips that assume one. */
+export const TOUCH_TIPS = {
+  top: "Tap me any time for shortcuts and a quick tour.",
+  statement: "Tap a stage to trace the signal from sensor to screen.",
   footer: "That's a wrap. Thanks for exploring.",
 };
 
