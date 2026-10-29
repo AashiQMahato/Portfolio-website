@@ -1,141 +1,219 @@
-import { useEffect, useId, useRef } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
 import { gsap, EASE } from "../../motion";
-import { useTheme } from "../../context/ThemeContext";
 import { techColor } from "../capabilities/techColor";
-import { STAGES, PLATES, LAYOUTS, segment } from "./stages";
+import { STAGES, CHAIN } from "./stages";
+import { SenseScene, ProcessScene, ConnectScene, ExperienceScene } from "./StageScenes";
 
 const byId = Object.fromEntries(STAGES.map((s) => [s.id, s]));
-const pct = (v, total) => `${(v / total) * 100}%`;
+const SCENES = { sense: SenseScene, process: ProcessScene, connect: ConnectScene, experience: ExperienceScene };
 
-/** Official mark (Simple Icons) or nothing — never an invented logo. */
-const PartChip = ({ part }) => {
-  const { theme } = useTheme();
-  return (
+/** Layout position of `el` inside `root`, ignoring transforms (so motion never bends the wire). */
+const offsetBox = (el, root) => {
+  let x = 0;
+  let y = 0;
+  let n = el;
+  while (n && n !== root) {
+    x += n.offsetLeft;
+    y += n.offsetTop;
+    n = n.offsetParent;
+  }
+  return { x, y, w: el.offsetWidth, h: el.offsetHeight };
+};
+
+/*
+ * Shape of each leg, as in the reference: drop from Sense into the top of
+ * the Process card, climb back up between the columns, settle onto Connect,
+ * then wave across to the laptop.
+ */
+const legs = [
+  (a, b) => `C${a.x + (b.x - a.x) * 0.6} ${a.y} ${a.x + (b.x - a.x) * 0.25} ${b.y} ${b.x} ${b.y}`,
+  (a, b) => `C${a.x + (b.x - a.x) * 0.55} ${a.y} ${a.x + (b.x - a.x) * 0.5} ${b.y - 38} ${b.x} ${b.y}`,
+  (a, b) => `C${a.x + (b.x - a.x) * 0.4} ${a.y + 22} ${b.x - (b.x - a.x) * 0.35} ${b.y - 52} ${b.x} ${b.y}`,
+];
+
+/** Official mark (Simple Icons) or nothing — never an invented logo. The section is always dark. */
+const PartChip = ({ part }) => (
     <li className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 font-mono text-[0.6875rem] leading-none tracking-[0.04em] text-ink-dim">
       {part.icon && (
         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3 w-3 shrink-0">
-          <path d={part.icon.path} fill={techColor(`#${part.icon.hex}`, theme)} />
+          <path d={part.icon.path} fill={techColor(`#${part.icon.hex}`, "dark")} />
         </svg>
       )}
       {part.label}
     </li>
-  );
-};
+);
 PartChip.propTypes = { part: PropTypes.shape({ label: PropTypes.string.isRequired, icon: PropTypes.object }).isRequired };
 
-/**
- * A crop of a real project figure. The source is drawn into an SVG viewBox
- * so callouts share its pixel space exactly; selecting a stage with a
- * callout dims everything outside it.
- */
-const Plate = ({ id, active, className = "", style }) => {
-  const plate = PLATES[id];
-  const [vx, vy, vw, vh] = plate.view.split(" ").map(Number);
-  const lit = active && plate.stages.includes(active);
-  const callout = active && plate.callouts[active];
-  return (
-    <figure data-plate className={`absolute ${className}`} style={style}>
-      <div
-        className={`relative h-full w-full overflow-hidden border border-line bg-panel transition-[filter,opacity] duration-500 ease-out [clip-path:polygon(0_0,100%_0,100%_calc(100%-14px),calc(100%-14px)_100%,0_100%)] ${
-          !active || lit ? "opacity-100" : "opacity-50 saturate-50"
-        }`}
+const Pill = ({ stage }) => {
+  const { pill } = stage;
+  const cls =
+    "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[rgb(var(--stage)/0.55)] bg-[rgb(8_9_14/0.85)] px-3 py-1.5 text-[0.75rem] leading-none text-ink shadow-[0_0_24px_-6px_rgb(var(--stage)/0.6)] backdrop-blur";
+  if (pill.to) {
+    return (
+      <Link
+        to={pill.to}
+        data-cursor="link"
+        className={`${cls} group/pill pointer-events-auto transition-colors duration-300 hover:border-[rgb(var(--stage))] hover:bg-[rgb(var(--stage)/0.15)]`}
       >
-        <svg
-          data-plate-img
-          role="img"
-          aria-label={plate.alt}
-          viewBox={plate.view}
-          preserveAspectRatio="xMidYMid slice"
-          className="h-full w-full"
-        >
-          <image href={plate.src} width={plate.size[0]} height={plate.size[1]} />
-          <path
-            aria-hidden="true"
-            fillRule="evenodd"
-            d={`M${vx} ${vy}h${vw}v${vh}h${-vw}Z${callout ? `M${callout[0]} ${callout[1]}h${callout[2]}v${callout[3]}h${-callout[2]}Z` : ""}`}
-            className="fill-background transition-opacity duration-500"
-            opacity={callout ? 0.6 : 0}
-          />
-          {Object.entries(plate.callouts).map(([stage, [x, y, w, h]]) => (
-            <rect
-              key={stage}
-              aria-hidden="true"
-              x={x}
-              y={y}
-              width={w}
-              height={h}
-              rx="10"
-              fill="none"
-              strokeWidth="5"
-              strokeDasharray="14 10"
-              className={`stage-${stage} stroke-[rgb(var(--stage))] transition-opacity duration-500`}
-              opacity={active === stage ? 1 : 0}
-            />
-          ))}
-        </svg>
-        <figcaption className="hud absolute bottom-0 left-0 max-w-[85%] truncate bg-background/85 px-2 py-1 text-[0.625rem]">
-          {plate.label}
-        </figcaption>
-      </div>
-    </figure>
+        {pill.label}
+        <ArrowUpRight aria-hidden="true" className="ml-1.5 h-3.5 w-3.5 transition-transform duration-300 group-hover/pill:-translate-y-0.5 group-hover/pill:translate-x-0.5" />
+        <span className="sr-only"> — open the AttendEase case study</span>
+      </Link>
+    );
+  }
+  return (
+    <span className={cls}>
+      <pill.Icon aria-hidden="true" strokeWidth={1.75} className="h-3.5 w-3.5 text-[rgb(var(--stage))]" />
+      {pill.label}
+    </span>
   );
 };
-Plate.propTypes = {
-  id: PropTypes.oneOf(Object.keys(PLATES)).isRequired,
-  active: PropTypes.string,
-  className: PropTypes.string,
-  style: PropTypes.object,
+Pill.propTypes = { stage: PropTypes.object.isRequired };
+
+/* Where the wire meets each stage, as fractions of its card (Sense: of its header). */
+const ANCHOR = {
+  sense: "left-[calc(var(--pad)+5.5rem)] top-[4.15rem]",
+  process: "left-[30%] top-0",
+  connect: "left-[30%] top-[3%]",
+  experience: "left-[33%] top-[12%]",
 };
 
-/** Where the label sits relative to the icon disc (disc centre = anchor). */
-const PLACEMENT = {
-  right: "left-[-1.5rem] top-0 -translate-y-1/2 flex-row text-left",
-  left: "right-[-1.5rem] top-0 -translate-y-1/2 flex-row-reverse text-right",
-  below: "left-0 top-[-1.5rem] -translate-x-1/2 flex-col items-center text-center",
-  "below-start": "left-[-1.5rem] top-[-1.5rem] flex-col items-start text-left",
-  "below-end": "right-[-1.5rem] top-[-1.5rem] flex-col items-end text-right",
+/** One stage: header (the control), then its plate and label pill. */
+const Stage = ({ stage, on, dim, pinned, wire, readoutId }) => {
+  const Scene = SCENES[stage.id];
+  const framed = stage.id === "sense" || stage.id === "process";
+  return (
+    <li
+      data-stage={stage.id}
+      data-on={on}
+      onPointerEnter={(e) => e.pointerType === "mouse" && wire.setProbe(stage.id)}
+      onPointerLeave={(e) => e.pointerType === "mouse" && wire.setProbe(null)}
+      className={`stage-${stage.id} relative flex flex-col transition-opacity duration-500 [--pad:clamp(0.25rem,2.4vw,2.5rem)] ${
+        dim ? "opacity-55" : ""
+      }`}
+    >
+      <button
+        type="button"
+        aria-pressed={pinned === stage.id}
+        aria-describedby={readoutId}
+        onFocus={() => wire.setProbe(stage.id)}
+        onClick={() => wire.setPinned((p) => (p === stage.id ? null : stage.id))}
+        className="relative block rounded-lg pl-[var(--pad)] text-left focus-visible:outline-offset-4"
+      >
+        <span
+          data-node-disc
+          className={`grid h-[2.875rem] w-[2.875rem] place-items-center rounded-full border bg-[rgb(var(--stage)/0.08)] transition-[transform,box-shadow,border-color] duration-500 ease-out ${
+            on
+              ? "border-[rgb(var(--stage))] shadow-[0_0_0_5px_rgb(var(--stage)/0.12),0_0_28px_rgb(var(--stage)/0.55)] motion-safe:scale-110"
+              : "border-[rgb(var(--stage)/0.75)] shadow-[0_0_18px_-2px_rgb(var(--stage)/0.45)]"
+          }`}
+        >
+          <stage.Icon aria-hidden="true" strokeWidth={1.6} className="h-5 w-5 text-[rgb(var(--stage))]" />
+        </span>
+        <span data-node-text className="mt-4 block">
+          <span className="block text-[0.9375rem] font-medium tabular-nums leading-none text-[rgb(var(--stage))]">{stage.n}</span>
+          <span className="mt-2.5 block text-[1.0625rem] font-semibold uppercase leading-none tracking-[0.01em] text-[rgb(var(--stage))]">
+            {stage.name}
+          </span>
+          <span className="mt-3 block text-[0.8125rem] leading-[1.45] text-ink/80">
+            {stage.blurb[0]}
+            <br className="hidden xl:block" /> {stage.blurb[1]}
+          </span>
+        </span>
+        <span className="sr-only">: {stage.title}</span>
+      </button>
+      {stage.id === "sense" && <span aria-hidden="true" data-anchor="sense" className={`absolute h-0 w-0 ${ANCHOR.sense}`} />}
+
+      <div
+        data-card
+        className={`relative mt-5 aspect-[0.86/1] w-full transition-transform duration-700 ease-out ${on ? "motion-safe:-translate-y-1.5" : ""}`}
+      >
+        {stage.id !== "sense" && <span aria-hidden="true" data-anchor={stage.id} className={`absolute z-10 h-0 w-0 ${ANCHOR[stage.id]}`} />}
+        <div
+          data-frame
+          data-edge={stage.id === "experience" ? undefined : stage.id}
+          className={`absolute inset-0 ${framed ? "stage-card overflow-hidden rounded-xl" : ""} ${
+            stage.id === "connect" ? "top-[18%] bottom-[12%]" : ""
+          }`}
+        >
+          <div
+            data-scene
+            className={`h-full w-full ${
+              stage.id === "connect" ? "!absolute inset-x-0 -top-[28%] bottom-0 !h-auto" : ""
+            }`}
+          >
+            <Scene />
+          </div>
+        </div>
+        {stage.id === "experience" && <span aria-hidden="true" data-edge="experience" className="absolute left-0 top-[20%] h-[55%] w-full" />}
+        <div data-pill className={`absolute z-10 ${stage.id === "sense" ? "-bottom-3 left-[4%]" : "-bottom-1 left-[8%]"}`}>
+          <Pill stage={stage} />
+        </div>
+      </div>
+    </li>
+  );
+};
+Stage.propTypes = {
+  stage: PropTypes.object.isRequired,
+  on: PropTypes.bool,
+  dim: PropTypes.bool,
+  pinned: PropTypes.string,
+  wire: PropTypes.object.isRequired,
+  readoutId: PropTypes.string.isRequired,
 };
 
-/** Icon disc: brightens, rings and lifts slightly when its stage is the focus. */
-const Disc = ({ stage, on, dim, className = "h-12 w-12" }) => (
-  <span
-    data-node-disc
-    className={`relative grid shrink-0 place-items-center rounded-full border bg-background transition-[transform,box-shadow,border-color,background-color,opacity] duration-300 ease-out ${className} ${
-      on
-        ? "border-[rgb(var(--stage))] bg-[rgb(var(--stage)/0.14)] shadow-[0_0_0_6px_rgb(var(--stage)/0.12)] motion-safe:scale-110"
-        : "border-[rgb(var(--stage)/0.45)]"
-    } ${dim ? "opacity-60" : ""}`}
-  >
-    <stage.Icon aria-hidden="true" strokeWidth={1.6} className="h-[45%] w-[45%] text-[rgb(var(--stage))]" />
-  </span>
-);
-Disc.propTypes = { stage: PropTypes.object.isRequired, on: PropTypes.bool, dim: PropTypes.bool, className: PropTypes.string };
-
-/** Interaction wiring shared by both renderings: hover/focus probe, click pins. */
-const handlers = (id, { setProbe, setPinned }) => ({
-  onPointerEnter: (e) => e.pointerType === "mouse" && setProbe(id),
-  onPointerLeave: (e) => e.pointerType === "mouse" && e.currentTarget !== document.activeElement && setProbe(null),
-  onFocus: () => setProbe(id),
-  onClick: () => setPinned((p) => (p === id ? null : id)),
-});
-
-/** Desktop / tablet: plates, nodes and the drawn signal path on one canvas. */
-const Canvas = ({ layout, active, pinned, wire, readoutId }) => {
-  const L = LAYOUTS[layout];
-  const uid = useId().replace(/:/g, "");
-  const pathRefs = useRef([]);
-  const tapRefs = useRef([]);
+/**
+ * Sense → Process → Connect → Experience. Understandable at rest; hover,
+ * focus or tap brings a stage forward (disc, card, its legs of the wire) and
+ * the readout names what happens there. Selection state lives in Statement
+ * so the matching word in the statement can respond too. The wire is
+ * measured from the real layout, so it stays attached at every width.
+ */
+const SignalPath = ({ active, pinned, setProbe, setPinned }) => {
+  const wrap = useRef(null);
+  const legRefs = useRef([]);
   const dotRef = useRef(null);
-  const points = STAGES.map((s) => L.nodes[s.id]);
-  const segs = points.slice(1).map((p, i) => segment(points[i], p, L.curve));
+  const uid = useId().replace(/:/g, "");
+  const readoutId = `${uid}-readout`;
+  const [geo, setGeo] = useState(null);
+  const wire = { setProbe, setPinned };
   const ai = STAGES.findIndex((s) => s.id === active);
+  const stage = active ? byId[active] : null;
 
-  // A pulse travels into the selected stage (out of the plate, for Sense).
+  const measure = useCallback(() => {
+    const root = wrap.current;
+    if (!root) return;
+    const at = (sel) => root.querySelector(sel);
+    const anchors = STAGES.map((s) => at(`[data-anchor="${s.id}"]`));
+    const edges = STAGES.map((s) => at(`[data-edge="${s.id}"]`));
+    if (anchors.some((a) => !a) || edges.some((e) => !e)) return;
+    const pts = anchors.map((a) => offsetBox(a, root));
+    const boxes = edges.map((e) => offsetBox(e, root));
+    // Short links between neighbouring plates, at the height of the lower one's middle.
+    const links = boxes.slice(1).map((b, i) => {
+      const a = boxes[i];
+      const y = Math.max(a.y + a.h * 0.5, b.y + b.h * 0.42);
+      return { x1: a.x + a.w, x2: b.x, y };
+    });
+    setGeo({ w: root.offsetWidth, h: root.offsetHeight, pts, links });
+  }, []);
+
+  useLayoutEffect(() => {
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap.current);
+    document.fonts?.ready.then(measure);
+    return () => ro.disconnect();
+  }, [measure]);
+
+  // A pulse runs along the leg into the selected stage.
   useEffect(() => {
     const dot = dotRef.current;
-    if (ai < 0 || !dot || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
-    const path = ai === 0 ? tapRefs.current[0] : pathRefs.current[ai - 1];
+    if (ai < 1 || !dot || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const path = legRefs.current[ai - 1];
     if (!path) return undefined;
     const len = path.getTotalLength();
     const s = { t: 0 };
@@ -145,279 +223,143 @@ const Canvas = ({ layout, active, pinned, wire, readoutId }) => {
       { t: 0 },
       {
         t: 1,
-        duration: 0.7,
+        duration: 0.8,
         ease: EASE.soft,
         onStart: () => gsap.set(dot, { opacity: 1 }),
         onUpdate: () => {
           const p = path.getPointAtLength(s.t * len);
           dot.setAttribute("transform", `translate(${p.x} ${p.y})`);
         },
-        onComplete: () => gsap.to(dot, { opacity: 0, duration: 0.3 }),
+        onComplete: () => gsap.to(dot, { opacity: 0, duration: 0.35 }),
       },
     );
     return () => tw.kill();
-  }, [ai, layout]);
+  }, [ai, geo]);
 
-  const segState = (i) => {
-    if (ai < 0) return "rest";
-    return i === ai - 1 || i === ai ? "on" : "off";
-  };
+  const legState = (i) => (ai < 0 ? "rest" : i === ai - 1 || i === ai ? "on" : "off");
+  const d = geo ? geo.pts.slice(1).map((b, i) => `M${geo.pts[i].x} ${geo.pts[i].y} ${legs[i](geo.pts[i], b)}`) : [];
 
   return (
     <div
-      data-canvas
-      className="relative w-full"
-      style={{ aspectRatio: `${L.w} / ${L.h}` }}
+      ref={wrap}
+      className="relative"
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setProbe(null);
+      }}
     >
-      {/* Engineering backdrop: faint grid, masked to the canvas centre */}
-      <div
-        aria-hidden="true"
-        data-grid
-        className="micro-grid pointer-events-none absolute inset-0 [background-size:32px_32px] [mask-image:radial-gradient(closest-side,black,transparent)]"
-      />
+      <p aria-hidden="true" className="mb-[clamp(2.5rem,7vh,4.75rem)] hidden items-center justify-end gap-[clamp(0.75rem,1.8vw,1.75rem)] font-mono text-[0.625rem] uppercase tracking-[0.32em] text-ink/70 sm:flex">
+        {CHAIN.map((c, i) => (
+          <span key={c} data-chain className="flex items-center gap-[clamp(0.75rem,1.8vw,1.75rem)]">
+            {i > 0 && <span className="tracking-normal text-ink-faint">→</span>}
+            {c}
+          </span>
+        ))}
+      </p>
 
-      {Object.entries(L.plates).map(([id, [x, y, w, h]]) => (
-        <Plate
-          key={id}
-          id={id}
-          active={active}
-          style={{ left: pct(x, L.w), top: pct(y, L.h), width: pct(w, L.w), height: pct(h, L.h) }}
-        />
-      ))}
-
-      <svg aria-hidden="true" viewBox={`0 0 ${L.w} ${L.h}`} className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
-        <defs>
-          {segs.map((_, i) => (
-            <linearGradient
-              key={i}
-              id={`${uid}-g${i}`}
-              gradientUnits="userSpaceOnUse"
-              x1={points[i][0]}
-              y1={points[i][1]}
-              x2={points[i + 1][0]}
-              y2={points[i + 1][1]}
-            >
-              <stop offset="0" className={`stage-${STAGES[i].id}`} style={{ stopColor: "rgb(var(--stage))" }} />
-              <stop offset="1" className={`stage-${STAGES[i + 1].id}`} style={{ stopColor: "rgb(var(--stage))" }} />
+      {geo && (
+        <svg
+          aria-hidden="true"
+          viewBox={`0 0 ${geo.w} ${geo.h}`}
+          className="pointer-events-none absolute inset-0 z-[5] hidden h-full w-full overflow-visible md:block"
+        >
+          <defs>
+            <linearGradient id={`${uid}-g`} gradientUnits="userSpaceOnUse" x1={geo.pts[0].x} y1="0" x2={geo.pts[3].x} y2="0">
+              <stop offset="0" stopColor="rgb(var(--c-sense))" />
+              <stop offset="0.33" stopColor="rgb(var(--c-process))" />
+              <stop offset="0.68" stopColor="rgb(var(--c-connect))" />
+              <stop offset="1" stopColor="rgb(var(--c-experience))" />
             </linearGradient>
-          ))}
-        </defs>
+            <filter id={`${uid}-glow`} x="-20%" y="-50%" width="140%" height="200%">
+              <feGaussianBlur stdDeviation="3" />
+            </filter>
+          </defs>
 
-        {/* Taps: plate edge → its stage */}
-        {L.taps.map(([, from, stageId], i) => {
-          const to = L.nodes[stageId];
-          return (
-            <g key={stageId} className={`stage-${stageId}`}>
-              <path d={`M${from[0]} ${from[1]}L${to[0]} ${to[1]}`} className="stroke-ink/15" strokeWidth="1" fill="none" />
-              <path
-                ref={(el) => (tapRefs.current[i] = el)}
-                data-wire={i === 0 ? "in" : "out"}
-                d={i === 0 ? `M${from[0]} ${from[1]}L${to[0]} ${to[1]}` : `M${to[0]} ${to[1]}L${from[0]} ${from[1]}`}
-                pathLength="1"
-                strokeDasharray="1"
-                strokeDashoffset="0"
-                fill="none"
-                strokeWidth={active === stageId ? 2.5 : 1.5}
-                className="stroke-[rgb(var(--stage))] transition-[stroke-width,opacity] duration-300"
-                opacity={ai < 0 || active === stageId ? 0.9 : 0.3}
-              />
-              <circle cx={from[0]} cy={from[1]} r="3" className="fill-background stroke-[rgb(var(--stage))]" strokeWidth="1.5" />
+          {/* Links between plates */}
+          {geo.links.map((l, i) => (
+            <g key={i} className={`stage-${STAGES[i + 1].id}`} data-link opacity={ai < 0 || ai === i || ai === i + 1 ? 1 : 0.3}>
+              <path d={`M${l.x1} ${l.y}H${l.x2}`} stroke={`url(#${uid}-g)`} strokeWidth="1.2" pathLength="1" strokeDasharray="1" data-wire="link" />
+              <circle cx={l.x1} cy={l.y} r="2.6" fill="rgb(var(--stage))" />
+              <circle cx={l.x2} cy={l.y} r="2.6" fill="rgb(var(--stage))" />
             </g>
-          );
-        })}
+          ))}
 
-        {/* Track, then the coloured signal drawn over it */}
-        <path d={segs.join("")} fill="none" strokeWidth="1" className="stroke-ink/15" strokeDasharray="2 5" />
-        {segs.map((d, i) => {
-          const st = segState(i);
-          return (
-            <path
-              key={i}
-              ref={(el) => (pathRefs.current[i] = el)}
-              data-wire="seg"
-              d={d}
-              pathLength="1"
-              strokeDasharray="1"
-              strokeDashoffset="0"
-              fill="none"
-              strokeLinecap="round"
-              stroke={`url(#${uid}-g${i})`}
-              strokeWidth={st === "on" ? 3 : 2}
-              opacity={st === "off" ? 0.25 : st === "on" ? 1 : 0.85}
-              className="transition-[stroke-width,opacity] duration-300"
-            />
-          );
-        })}
+          {/* Glow under, crisp line over — drawn leg by leg */}
+          {d.map((p, i) => {
+            const st = legState(i);
+            return (
+              <g key={i} opacity={st === "off" ? 0.28 : 1} className="transition-opacity duration-500">
+                <path
+                  d={p}
+                  data-wire="glow"
+                  pathLength="1"
+                  strokeDasharray="1"
+                  fill="none"
+                  stroke={`url(#${uid}-g)`}
+                  strokeWidth={st === "on" ? 6 : 4}
+                  opacity="0.55"
+                  filter={`url(#${uid}-glow)`}
+                />
+                <path
+                  ref={(el) => (legRefs.current[i] = el)}
+                  d={p}
+                  data-wire="leg"
+                  pathLength="1"
+                  strokeDasharray="1"
+                  fill="none"
+                  strokeLinecap="round"
+                  stroke={`url(#${uid}-g)`}
+                  strokeWidth={st === "on" ? 2 : 1.25}
+                />
+              </g>
+            );
+          })}
 
-        <g ref={dotRef} opacity="0" data-pulse>
-          <circle r="9" style={{ fill: "rgb(var(--stage) / 0.22)" }} />
-          <circle r="3.5" style={{ fill: "rgb(var(--stage))" }} />
-        </g>
-      </svg>
+          {/* Terminals */}
+          {geo.pts.map((p, i) => (
+            <g key={STAGES[i].id} data-terminal className={`stage-${STAGES[i].id}`}>
+              <circle cx={p.x} cy={p.y} r={ai === i ? 9 : 6} fill="rgb(var(--stage) / 0.25)" className="transition-[r] duration-500" />
+              <circle cx={p.x} cy={p.y} r="3" fill="rgb(var(--stage))" />
+              <circle cx={p.x} cy={p.y} r="1.2" fill="#fff" />
+            </g>
+          ))}
 
-      {/* Ends of the line, named like the Hero's trace */}
-      <span
-        aria-hidden="true"
-        className="hud absolute -translate-y-1/2 pl-3 text-[0.625rem]"
-        style={{ left: pct(L.taps[0][1][0], L.w), top: pct((L.taps[0][1][1] + L.nodes.sense[1]) / 2 - 6, L.h) }}
-      >
-        Signal in
-      </span>
-      <span
-        aria-hidden="true"
-        className="hud absolute -translate-y-1/2 pr-3 text-right text-[0.625rem]"
-        style={{
-          right: pct(L.w - L.taps[1][1][0], L.w),
-          // Tall: just above the plate, clear of the stage label beside the node.
-          top: pct(L.curve === "v" ? L.taps[1][1][1] - 12 : (L.taps[1][1][1] + L.nodes.experience[1]) / 2 + 6, L.h),
-        }}
-      >
-        Interface out
-      </span>
+          <g ref={dotRef} opacity="0">
+            <circle r="10" style={{ fill: "rgb(var(--stage) / 0.3)" }} />
+            <circle r="3.5" fill="#fff" />
+          </g>
+        </svg>
+      )}
 
-      <ol className="pointer-events-none absolute inset-0">
-        {STAGES.map((stage) => {
-          const [x, y, side] = L.nodes[stage.id];
-          const on = active === stage.id;
-          return (
-            <li
-              key={stage.id}
-              data-node
-              className={`stage-${stage.id} absolute h-0 w-0 ${on ? "z-10" : ""}`}
-              style={{ left: pct(x, L.w), top: pct(y, L.h) }}
-            >
-              <button
-                type="button"
-                aria-pressed={pinned === stage.id}
-                aria-label={`${stage.n} ${stage.name}: ${stage.title}`}
-                aria-describedby={readoutId}
-                {...handlers(stage.id, wire)}
-                className={`pointer-events-auto absolute flex w-max items-center gap-3 rounded-full focus-visible:outline-offset-4 ${PLACEMENT[side]}`}
-              >
-                <Disc stage={stage} on={on} dim={!!active && !on} />
-                <span
-                  data-node-label
-                  className={`rounded-md bg-background/85 px-1.5 py-1 transition-opacity duration-300 ${active && !on ? "opacity-55" : ""}`}
-                >
-                  <span className="hud block text-[rgb(var(--stage))]">
-                    {stage.n} <span aria-hidden="true">·</span> {stage.name}
-                  </span>
-                  <span className="mt-0.5 block text-[0.9375rem] font-medium leading-tight tracking-[-0.01em] text-ink">
-                    {stage.title}
-                  </span>
-                </span>
-              </button>
-            </li>
-          );
-        })}
+      <ol className="relative grid grid-cols-2 gap-x-[clamp(1rem,1.8vw,1.75rem)] gap-y-14 md:grid-cols-4">
+        {STAGES.map((s) => (
+          <Stage key={s.id} stage={s} on={active === s.id} dim={!!active && active !== s.id} pinned={pinned} wire={wire} readoutId={readoutId} />
+        ))}
       </ol>
-    </div>
-  );
-};
-Canvas.propTypes = {
-  layout: PropTypes.oneOf(Object.keys(LAYOUTS)).isRequired,
-  active: PropTypes.string,
-  pinned: PropTypes.string,
-  wire: PropTypes.object.isRequired,
-  readoutId: PropTypes.string.isRequired,
-};
 
-/** Below md: the same path as a vertical flow, every label and detail visible. */
-const Stack = ({ active, pinned, wire }) => (
-  <div data-canvas className="space-y-6">
-    <Plate id="hardware" active={active} className="!relative block aspect-[2.3/1] w-full" />
-    <ol className="relative space-y-5">
-      <span aria-hidden="true" className="absolute bottom-6 left-[1.375rem] top-6 w-px -translate-x-1/2 bg-line" />
-      <span
-        aria-hidden="true"
-        data-rail
-        className="absolute bottom-6 left-[1.375rem] top-6 w-px origin-top -translate-x-1/2 signal-rail opacity-70"
-      />
-      {STAGES.map((stage) => {
-        const on = active === stage.id;
-        return (
-          <li key={stage.id} data-node className={`stage-${stage.id} relative`}>
-            <button
-              type="button"
-              aria-pressed={pinned === stage.id}
-              {...handlers(stage.id, wire)}
-              className="flex w-full items-start gap-4 rounded-lg text-left"
-            >
-              <Disc stage={stage} on={on} dim={!!active && !on} className="h-11 w-11" />
-              <span className={`min-w-0 pt-0.5 transition-opacity duration-300 ${active && !on ? "opacity-60" : ""}`}>
-                <span className="hud block text-[rgb(var(--stage))]">
-                  {stage.n} <span aria-hidden="true">·</span> {stage.name}
-                </span>
-                <span className="mt-1 block text-lg font-medium leading-tight tracking-[-0.015em] text-ink">{stage.title}</span>
-                <span className="mt-1.5 block text-[0.9375rem] leading-relaxed text-ink-dim">{stage.detail}</span>
-              </span>
-            </button>
-            <ul aria-label={`${stage.name} parts`} className="mt-2.5 flex flex-wrap gap-1.5 pl-[3.75rem]">
-              {stage.parts.map((p) => (
-                <PartChip key={p.label} part={p} />
-              ))}
-            </ul>
-          </li>
-        );
-      })}
-    </ol>
-    <Plate id="interface" active={active} className="!relative block aspect-[2.3/1] w-full" />
-  </div>
-);
-Stack.propTypes = { active: PropTypes.string, pinned: PropTypes.string, wire: PropTypes.object.isRequired };
-
-/**
- * Sense → Process → Connect → Experience, between a real hardware figure and
- * a real product screen. Understandable at rest; hover, focus or tap brings a
- * stage forward (disc, its wires, its plate callout) and the readout names
- * what happens there. Selection state lives in Statement so the matching
- * word in the statement can respond too.
- */
-const SignalPath = ({ layout, active, pinned, setProbe, setPinned }) => {
-  const wire = { setProbe, setPinned };
-  const stage = active ? byId[active] : null;
-  const readoutId = `${useId().replace(/:/g, "")}-readout`;
-
-  const onBlur = (e) => {
-    if (!e.currentTarget.contains(e.relatedTarget)) setProbe(null);
-  };
-
-  if (layout === "stack") {
-    return (
-      <div onBlur={onBlur}>
-        <Stack active={active} pinned={pinned} wire={wire} />
-      </div>
-    );
-  }
-
-  return (
-    <div onBlur={onBlur}>
-      <Canvas layout={layout} active={active} pinned={pinned} wire={wire} readoutId={readoutId} />
       <div
         id={readoutId}
         data-readout
         aria-live="polite"
-        className={`mt-6 min-h-[6.5rem] border-t border-line pt-4 ${stage ? `stage-${stage.id}` : ""}`}
+        className={`mt-12 flex min-h-[3.25rem] flex-col gap-2 md:mt-10 md:flex-row md:items-center md:gap-5 ${stage ? `stage-${stage.id}` : ""}`}
       >
         {stage ? (
           <>
-            <p className="hud text-[rgb(var(--stage))]">
-              {stage.n} / {stage.name} <span className="text-ink-dim">— {stage.title}</span>
+            <p className="text-[0.875rem] leading-snug text-ink">
+              <span className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-[rgb(var(--stage))]">
+                {stage.n} / {stage.title}
+              </span>
+              <span className="ml-3 text-ink-dim">{stage.detail}</span>
             </p>
-            <p className="mt-2 max-w-md text-[0.95rem] leading-relaxed text-ink">{stage.detail}</p>
-            <ul aria-label={`${stage.name} parts`} className="mt-3 flex flex-wrap gap-1.5">
+            <ul aria-label={`${stage.name} parts`} className="flex shrink-0 flex-wrap gap-1.5">
               {stage.parts.map((p) => (
                 <PartChip key={p.label} part={p} />
               ))}
             </ul>
           </>
         ) : (
-          <>
-            <p className="hud">Fig. 01 — Signal path, four stages</p>
-            <p className="mt-2 max-w-md text-[0.95rem] leading-relaxed text-ink-dim">
-              One system from breadboard to browser. Hover, focus or tap a stage to trace the signal.
-            </p>
-          </>
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-ink-dim">
+            Fig. 01 — Ultrasonic Blind Stick → AttendEase <span className="normal-case tracking-normal text-ink-faint">· hover, focus or tap a stage to trace the signal</span>
+          </p>
         )}
       </div>
     </div>
@@ -425,7 +367,6 @@ const SignalPath = ({ layout, active, pinned, setProbe, setPinned }) => {
 };
 
 SignalPath.propTypes = {
-  layout: PropTypes.oneOf(["tall", "wide", "stack"]).isRequired,
   active: PropTypes.string,
   pinned: PropTypes.string,
   setProbe: PropTypes.func.isRequired,

@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUp } from "lucide-react";
-import { useGSAP } from "@gsap/react";
-import { gsap, EASE, Magnetic, useLenis, usePrefersReducedMotion } from "../motion";
+import { Magnetic, useLenis, usePrefersReducedMotion } from "../motion";
 import { CV } from "../data/portfolioData";
 import { LocalTime } from "./ui";
 import SectionAvatar from "./avatar/SectionAvatar";
+import FooterWordmark from "./FooterWordmark";
 
 const PAGES = [
   { label: "Projects", to: "/projects" },
@@ -23,32 +23,14 @@ const SOCIAL = [
 ];
 
 /**
- * Minimal but final: the full name set wall-to-wall (letters rise in as the
- * footer arrives), the role and place, live Kathmandu time, and a magnetic
- * back-to-top whose arrow exits upward on hover.
+ * Minimal but final: the role and place, live Kathmandu time, the links, a
+ * magnetic back-to-top whose arrow exits upward on hover, and the full name
+ * as an interactive edge-to-edge signature (FooterWordmark).
  */
 const Footer = () => {
   const ref = useRef(null);
   const lenis = useLenis();
   const reduced = usePrefersReducedMotion();
-
-  useGSAP(
-    () => {
-      if (reduced) return;
-      gsap.fromTo(
-        "[data-foot-char]",
-        { yPercent: 105 },
-        {
-          yPercent: 0,
-          duration: 1.1,
-          ease: EASE.strong,
-          stagger: 0.025,
-          scrollTrigger: { trigger: "[data-foot-mark]", start: "top 95%", once: true },
-        },
-      );
-    },
-    { dependencies: [reduced], scope: ref },
-  );
 
   const toTop = () => {
     if (lenis) lenis.scrollTo(0, { duration: 1.4 });
@@ -122,20 +104,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <p
-        data-foot-mark
-        aria-hidden="true"
-        className="mt-20 select-none whitespace-nowrap px-[var(--gutter)] text-center text-[clamp(2.2rem,8vw,10rem)] font-semibold leading-[0.8] tracking-[-0.055em] text-ink"
-      >
-        <span className="line-mask pb-[0.12em]">
-          {"Aashik Kumar Mahato".split("").map((ch, i) => (
-            <span key={i} data-foot-char className="inline-block">
-              {ch === " " ? " " : ch}
-            </span>
-          ))}
-          <span data-foot-char className="inline-block text-signal">.</span>
-        </span>
-      </p>
+      <FooterWordmark />
 
       {/* Right padding keeps the baseline clear of the floating chat button. */}
       <div className="shell flex flex-wrap items-center justify-between gap-4 border-t border-line py-6 pr-[calc(var(--gutter)+4rem)]">
