@@ -410,6 +410,21 @@
     backdrop-filter: none;
   }
 }
+@keyframes companion-typing {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+.companion-typing-dot {
+  animation: companion-typing 0.9s ease-in-out infinite;
+}
 .companion-tip-tail {
   position: absolute;
   width: 10px;

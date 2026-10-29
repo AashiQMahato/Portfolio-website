@@ -77,8 +77,9 @@ const Companion = () => {
   const [spot, setSpot] = useState(null); // { el, section, mood, hover }
   const [motionMood, setMotionMood] = useState(null); // excited / curious / searching while travelling
   const [hot, setHot] = useState(null);
-  const [bubble, setBubble] = useState(null); // { kind: "panel" | "message", text, view?, link?, actions? }
-  const [tip, setTip] = useState(null); // { section, text } — the small per-section tip
+  const [bubble, setBubble] = useState(null); // { kind: "panel", text, view?, link? } — the conversation the visitor opened
+  const [tip, setTip] = useState(null); // { section, text, kind: "tip" | "say" } — the chat bubble beside the character
+  const [typing, setTyping] = useState(false);
   const [quiet, setQuiet] = useState(() => store.get(QUIET_KEY) === "1");
   const clicks = useRef(0);
   const lastClick = useRef(0);
@@ -92,7 +93,8 @@ const Companion = () => {
   const tour = useAvatarTour({ scrollTo, reduced });
   const mood = useAvatarMood({ base: spot?.mood, hot, panelOpen: bubble?.kind === "panel", override: tour.step?.mood ?? motionMood });
 
-  const say = useCallback((text, extra = {}) => setBubble({ kind: "message", text, ...extra }), []);
+  // Short lines go in the chat bubble beside the character (section: null — they leave with the section).
+  const say = useCallback((text) => setTip({ section: null, text, kind: "say" }), []);
 
   /* ---------------------------------------------------------- positioning */
   useEffect(() => {
@@ -366,7 +368,7 @@ const Companion = () => {
       }
       seen.current.tips.add(section);
       const touch = window.matchMedia("(hover: none)").matches;
-      setTip({ section, text: (touch && TOUCH_TIPS[section]) || TIPS[section] });
+      setTip({ section, text: (touch && TOUCH_TIPS[section]) || TIPS[section], kind: "tip" });
     };
     t = window.setTimeout(attempt, ARRIVE_MS);
     return () => window.clearTimeout(t);
@@ -381,14 +383,18 @@ const Companion = () => {
   }, [bubble, tour.active, quiet]);
   useEffect(() => {
     if (!tip) return undefined;
-    const t = window.setTimeout(() => setTip(null), TIP_MS);
+    // A beat of "typing" first, like a chat message arriving.
+    setTyping(!reduced);
+    const k = window.setTimeout(() => setTyping(false), reduced ? 0 : 550);
+    const t = window.setTimeout(() => setTip(null), TIP_MS + (reduced ? 0 : 550));
     const onKey = (e) => e.key === "Escape" && setTip(null);
     window.addEventListener("keydown", onKey);
     return () => {
+      window.clearTimeout(k);
       window.clearTimeout(t);
       window.removeEventListener("keydown", onKey);
     };
-  }, [tip]);
+  }, [tip, reduced]);
 
   // The tip sits right beside the character, its tail pointing back at it.
   useEffect(() => {
@@ -429,18 +435,6 @@ const Companion = () => {
     }
     return () => gsap.ticker.remove(placeTip);
   }, [tip, reduced]);
-
-  // A section's message (and its actions) leaves with the section; a conversation the visitor opened stays.
-  useEffect(() => {
-    setBubble((b) => (b?.kind === "message" ? null : b));
-  }, [spot?.section]);
-
-  // Messages fade on their own; the panel waits for the visitor.
-  useEffect(() => {
-    if (bubble?.kind !== "message") return undefined;
-    const t = window.setTimeout(() => setBubble(null), bubble.actions || bubble.link ? 7000 : 4500);
-    return () => window.clearTimeout(t);
-  }, [bubble]);
 
   // Escape or a click elsewhere closes the bubble.
   useEffect(() => {
@@ -558,11 +552,10 @@ const Companion = () => {
       const next = !quiet;
       setQuiet(next);
       store.set(QUIET_KEY, next ? "1" : "0");
-      setBubble(next ? null : { kind: "message", text: "I'm back. I'll keep it short." });
+      setBubble(null);
+      if (!next) say("I'm back. I'll keep it short.");
     },
   });
-  // An arrival message offers at most the two most relevant actions.
-  const offered = bubble?.actions ? actions.filter((a) => a.primary).slice(0, 2) : [];
 
   const goTo = (id, e) => {
     if (isHome) {
@@ -599,7 +592,7 @@ const Companion = () => {
       </>
     );
   } else if (bubble) {
-    const list = bubble.kind === "panel" ? (bubble.view === "places" ? [] : actions) : offered;
+    const list = bubble.view === "places" ? [] : actions;
     content = (
       <>
         <p className="text-sm leading-snug text-ink">{bubble.text}</p>
@@ -699,8 +692,17 @@ const Companion = () => {
             data-cursor="button"
             className="companion-tip-card relative block rounded-2xl border px-3.5 py-2.5 text-left text-[0.8125rem] leading-snug text-ink shadow-lg backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d8bfd]"
           >
-            <span className="mb-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.16em] text-[#7fb2ff]">Tip</span>
-            {tip.text}
+            {tip.kind === "tip" && <span className="mb-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.16em] text-[#7fb2ff]">Tip</span>}
+            {typing ? (
+              <span aria-hidden="true" className="flex h-[1.15rem] items-center gap-1 px-0.5">
+                {[0, 1, 2].map((i) => (
+                  <span key={i} className="companion-typing-dot h-1.5 w-1.5 rounded-full bg-[#7fb2ff]" style={{ animationDelay: `${i * 0.15}s` }} />
+                ))}
+              </span>
+            ) : (
+              tip.text
+            )}
+            {typing && <span className="sr-only">{tip.text}</span>}
             <span className="sr-only"> — open the sidekick&apos;s menu</span>
             <span aria-hidden="true" className="companion-tip-tail" />
           </button>
