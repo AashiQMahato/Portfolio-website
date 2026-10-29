@@ -294,25 +294,29 @@
 }
 
 /*
- * Statement signal path — one hue per stage, physical → digital:
- * teal (sense) → blue (process) → violet (connect) → the site signal
- * (experience). Scoped to the section (.signal-flow); a .stage-* child
- * exposes its hue as --stage, used as rgb(var(--stage) / α). Light values
- * hold ≥4.5:1 on paper, dark values ≥7:1 on the near-black canvas.
- * Outside @layer on purpose: stage classes are composed at runtime
- * (`stage-${id}`), so Tailwind's content scan must not purge them.
+ * Statement — "From Signal to Interface". Always set on a near-black stage
+ * (in both themes), so it redefines the tokens it uses locally. One hue per
+ * stage, physical → digital: teal (sense) → blue (process) → violet
+ * (connect) → pink (experience). A .stage-* child exposes its hue as
+ * --stage, used as rgb(var(--stage) / α). Outside @layer on purpose: stage
+ * classes are composed at runtime (`stage-${id}`), so Tailwind's content
+ * scan must not purge them. Every hue holds ≥7:1 on the canvas.
  */
-.signal-flow {
+.statement-scope {
+  --background: 6 7 11;
+  --panel: 12 13 19;
+  --line: 34 36 46;
+  --ink: 240 241 245;
+  --ink-dim: 160 163 176;
+  --ink-faint: 98 101 114;
+  --ring: 147 197 253;
   --c-sense: 45 212 191;
-  --c-process: 96 165 250;
-  --c-connect: 192 132 252;
-  --c-experience: var(--signal);
-}
-html.light .signal-flow {
-  --c-sense: 15 118 110;
-  --c-process: 29 78 216;
-  --c-connect: 126 34 206;
-  --c-experience: var(--accent-ink);
+  --c-process: 77 144 255;
+  --c-connect: 157 125 255;
+  --c-experience: 236 112 220;
+  color-scheme: dark;
+  background-color: rgb(var(--background));
+  color: rgb(var(--ink));
 }
 .stage-sense {
   --stage: var(--c-sense);
@@ -336,10 +340,65 @@ html.light .signal-flow {
   );
 }
 
-/* Emphasised statement word: --e 0 → ink, 1 → its stage colour */
+/* Emphasised statement word: a gradient in its own hue, swept in by --e (0 → 1) */
 .emph-word {
   --e: 1;
-  color: color-mix(in srgb, rgb(var(--stage)) calc(var(--e) * 100%), rgb(var(--ink)));
+  background-image: linear-gradient(100deg, var(--g1), var(--g2) 50%, rgb(var(--ink)) 50.01%);
+  background-size: 200% 100%;
+  background-position: calc(100% - var(--e) * 100%) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.emph-software {
+  --g1: #3b82f6;
+  --g2: #5b9bff;
+}
+.emph-electronics {
+  --g1: #22d3b4;
+  --g2: #3ee08f;
+}
+.emph-interaction {
+  --g1: #8b5cf6;
+  --g2: #b98cff;
+}
+
+/* Stage glass card: a hairline in the stage hue over a soft tinted wash */
+.stage-card {
+  border: 1px solid rgb(var(--stage) / 0.28);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgb(var(--stage) / 0.16), transparent 70%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 30px 60px -30px rgb(var(--stage) / 0.35);
+  transition:
+    border-color 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-on="true"] .stage-card {
+  border-color: rgb(var(--stage) / 0.7);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 0 0 1px rgb(var(--stage) / 0.25),
+    0 30px 70px -20px rgb(var(--stage) / 0.55);
+}
+
+/* Footer wordmark: hollow letter + a fill that rises on pointer proximity */
+/* Stroke painted under an opaque body: only the outer half shows, so the
+   variable font's overlapping contours (H, A crossbars) never draw inside. */
+.wordmark-ghost {
+  color: color-mix(in srgb, rgb(var(--ink)) 4%, rgb(var(--background)));
+  -webkit-text-stroke: 2px rgb(var(--ink) / 0.26);
+  paint-order: stroke fill;
+}
+.wordmark-fill {
+  background-image: linear-gradient(180deg, rgb(var(--ink)) 35%, rgb(var(--signal)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Hero scroll cue: a line that draws in from the left and exits right */

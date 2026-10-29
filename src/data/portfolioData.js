@@ -533,7 +533,7 @@ export const projects = [
     ],
     github: "https://github.com/AashiQMahato/Smart-School-management-system-Frontend",
     githubBackend: "https://github.com/AashiQMahato/Smart-School-management-system-Backend",
-    live: "https://smart-school-management-system-frontend.onrender.com/",
+    live: "https://smart-school-management-system-frontend-sieb.onrender.com/",
     category: "Full-Stack",
     cats: ["Full-Stack", "Web Dev", "AI/ML"],
     status: "live",
