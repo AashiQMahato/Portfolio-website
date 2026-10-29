@@ -9,7 +9,6 @@ import FooterWordmark from "./FooterWordmark";
 
 const PAGES = [
   { label: "Projects", to: "/projects" },
-  { label: "Writing", to: "/blog" },
   { label: "Résumé", to: "/resume" },
   { label: "Now", to: "/now" },
   { label: "Timeline", to: "/timeline" },

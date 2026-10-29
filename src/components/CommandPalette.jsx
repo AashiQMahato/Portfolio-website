@@ -18,7 +18,6 @@ import {
   Briefcase,
   Mail,
   LayoutDashboard,
-  BookOpen,
   Compass,
   Github,
   Terminal,
@@ -32,7 +31,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { projects } from "../data/portfolioData";
-import { blogPosts } from "../data/blogPosts";
 import { gsap, EASE, DUR, usePrefersReducedMotion } from "../motion";
 
 /* ─── Command definitions ─────────────────────────────────── */
@@ -45,7 +43,6 @@ const NAV_TARGETS = [
   { id: "skills", label: "Skills", description: "Technical skills & expertise", icon: Code2, to: "/#skills", keywords: ["skills", "tech", "expertise", "languages"] },
   { id: "contact", label: "Contact", description: "Get in touch", icon: Mail, to: "/#contact", keywords: ["contact", "hire", "email", "reach"] },
   { id: "projects", label: "Projects", description: "View all projects", icon: FolderKanban, to: "/projects", keywords: ["projects", "portfolio", "builds"] },
-  { id: "blog", label: "Blog", description: "Technical writing & insights", icon: BookOpen, to: "/blog", keywords: ["blog", "articles", "writing", "posts"] },
   { id: "resume", label: "Resume", description: "View & download resume", icon: FileText, to: "/resume", keywords: ["resume", "cv", "download", "pdf"] },
   { id: "now", label: "Now", description: "What I'm doing now", icon: Compass, to: "/now", keywords: ["now", "currently", "doing", "learning"] },
   { id: "timeline", label: "Timeline", description: "My developer journey", icon: Clock, to: "/timeline", keywords: ["timeline", "journey", "history", "milestones"] },
@@ -122,17 +119,6 @@ const buildCommands = (navigate, theme, setTheme) => [
     ],
     action: () => navigate(`/projects/${p.slug}`),
     tag: p.category,
-  })),
-  // Blog posts
-  ...blogPosts.map((post) => ({
-    group: "Blog",
-    id: `blog-${post.slug}`,
-    label: post.title,
-    description: `${post.category} · ${post.readTime}`,
-    icon: BookOpen,
-    keywords: [post.slug, post.category?.toLowerCase(), "blog", "article"],
-    action: () => navigate(`/blog/${post.slug}`),
-    tag: post.category,
   })),
 ];
 
@@ -375,7 +361,7 @@ const CommandPalette = () => {
             aria-controls="cmd-listbox"
             aria-activedescendant={activeId}
             aria-autocomplete="list"
-            placeholder="Search commands, projects, blog posts..."
+            placeholder="Search commands and projects..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}

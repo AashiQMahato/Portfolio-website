@@ -326,7 +326,6 @@ const Companion = () => {
     const onClick = (e) => {
       if (rootRef.current.contains(e.target) || bubbleRef.current?.contains(e.target)) return;
       if (e.target.closest?.('a[href^="/projects/"]')) reactAvatar(BEHAVIOR.celebration, 1600);
-      else if (e.target.closest?.('a[href^="/blog/"]') && !quietRef.current) say("Good pick. I'll keep quiet while you read.");
       else if (e.target.closest?.('a[href="/resume"], a[href$=".pdf"]') && !quietRef.current) {
         reactAvatar(BEHAVIOR.celebration, 1600);
         say(CHOICE_LINE);

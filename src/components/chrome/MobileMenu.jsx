@@ -141,7 +141,6 @@ const MobileMenu = ({ open, onClose, sections, active, onSection, onHome }) => {
 
       <div className="grid grid-cols-2 gap-y-3 border-t border-line pt-6 text-sm">
         <Link data-menu-secondary to="/resume" onClick={onClose} className="text-ink">Résumé</Link>
-        <Link data-menu-secondary to="/blog" onClick={onClose} className="text-ink">Blog</Link>
         <a data-menu-secondary href={`mailto:${CV.contact.email}`} className="text-ink">Email</a>
         <a data-menu-secondary href={CV.contact.github} target="_blank" rel="noopener noreferrer" className="text-ink">GitHub ↗</a>
         <a data-menu-secondary href={CV.contact.linkedin} target="_blank" rel="noopener noreferrer" className="text-ink">LinkedIn ↗</a>

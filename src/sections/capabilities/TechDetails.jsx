@@ -36,14 +36,13 @@ const TechDetails = ({ capability, tech }) => {
               <p className="text-2xl font-medium tracking-[-0.03em] text-ink">{tech.name}</p>
             </div>
             <p className="mt-3 max-w-xs text-sm text-ink-dim">{tech.blurb}</p>
-            {tech.listed && !tech.projects.length && !tech.roles.length && !tech.posts.length && (
+            {tech.listed && !tech.projects.length && !tech.roles.length && (
               <p className="mt-2 max-w-xs text-xs text-ink-faint">On my CV skill list — not yet in a published case study.</p>
             )}
           </div>
-          <dl className="grid gap-5 text-sm sm:grid-cols-3">
+          <dl className="grid gap-5 text-sm sm:grid-cols-2">
             <Trace label="Projects" items={tech.projects} />
             <Trace label="Roles" items={tech.roles.map((r) => ({ title: r }))} />
-            <Trace label="Writing" items={tech.posts} />
           </dl>
         </div>
       ) : (

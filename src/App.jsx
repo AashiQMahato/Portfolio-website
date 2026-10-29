@@ -8,8 +8,6 @@ import Home from "./pages/Home";
 const Projects = lazy(() => import("./pages/Projects"));
 const ProjectCaseStudy = lazy(() => import("./pages/ProjectCaseStudy"));
 const GitHubDashboard = lazy(() => import("./pages/GitHubDashboard"));
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogPost = lazy(() => import("./pages/BlogPost"));
 const NowPage = lazy(() => import("./pages/NowPage"));
 const TimelinePage = lazy(() => import("./pages/TimelinePage"));
 const ResumePage = lazy(() => import("./pages/ResumePage"));
@@ -25,8 +23,6 @@ const App = () => (
         <Route index element={<Home />} />
         <Route path="projects" element={<Projects />} />
         <Route path="projects/:slug" element={<ProjectCaseStudy />} />
-        <Route path="blog" element={<Blog />} />
-        <Route path="blog/:slug" element={<BlogPost />} />
         <Route path="resume" element={<ResumePage />} />
         <Route path="now" element={<NowPage />} />
         <Route path="timeline" element={<TimelinePage />} />

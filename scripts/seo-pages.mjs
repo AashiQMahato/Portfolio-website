@@ -63,7 +63,7 @@ try {
   }
 
   for (const path of allPaths()) {
-    // Flat files (/blog → blog.html) so hosts with clean URLs resolve every
+    // Flat files (/projects → projects.html) so hosts with clean URLs resolve every
     // route without a trailing slash; see "cleanUrls" in vercel.json.
     const out = path === "/" ? join(dist, "index.html") : join(dist, `${path.slice(1)}.html`);
     await mkdir(dirname(out), { recursive: true });

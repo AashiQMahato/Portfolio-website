@@ -1,5 +1,4 @@
 import { CV, projects } from "../data/portfolioData";
-import { blogPosts } from "../data/blogPosts";
 
 /**
  * Single source of truth for per-route SEO metadata. Read at runtime by
@@ -99,12 +98,6 @@ const STATIC_ROUTES = {
       "Case studies from Aashik Kumar Mahato: face-recognition attendance, a GSM/GPS smart blind stick, school management and React/Next.js web apps.",
     crumbs: [["Projects", "/projects"]],
   },
-  "/blog": {
-    title: titled("Blog — Notes on IoT, React & Embedded Systems"),
-    description:
-      "Technical writing by Aashik Kumar Mahato on IoT dashboards, MQTT, React, Framer Motion and building hardware that talks to the web.",
-    crumbs: [["Blog", "/blog"]],
-  },
   "/resume": {
     title: titled("Résumé — Experience, Education & Skills"),
     description:
@@ -146,20 +139,15 @@ const NOT_FOUND = {
 export const indexablePaths = () => [
   ...Object.keys(STATIC_ROUTES).filter((p) => !STATIC_ROUTES[p].noindex),
   ...projects.map((p) => `/projects/${p.slug}`),
-  ...blogPosts.map((p) => `/blog/${p.slug}`),
 ];
 
 /** Every route that should get its own prerendered HTML head. */
 export const allPaths = () => [
   ...Object.keys(STATIC_ROUTES),
   ...projects.map((p) => `/projects/${p.slug}`),
-  ...blogPosts.map((p) => `/blog/${p.slug}`),
 ];
 
-export const lastModified = (path) => {
-  const post = blogPosts.find((p) => `/blog/${p.slug}` === path);
-  return post?.date;
-};
+export const lastModified = () => undefined;
 
 const normalize = (pathname) => {
   const p = pathname.replace(/\/+$/, "");
@@ -176,7 +164,6 @@ export const getRouteMeta = (pathname) => {
   let type = "website";
 
   const projectMatch = path.match(/^\/projects\/([^/]+)$/);
-  const postMatch = path.match(/^\/blog\/([^/]+)$/);
 
   if (!meta && projectMatch) {
     const project = projects.find((p) => p.slug === projectMatch[1]);
@@ -199,35 +186,6 @@ export const getRouteMeta = (pathname) => {
           creator: { "@id": person["@id"] },
           ...(project.year ? { dateCreated: String(project.year) } : {}),
           ...(Array.isArray(project.tags) ? { keywords: project.tags.join(", ") } : {}),
-        },
-      };
-    }
-  }
-
-  if (!meta && postMatch) {
-    const post = blogPosts.find((p) => p.slug === postMatch[1]);
-    if (post) {
-      type = "article";
-      meta = {
-        title: titled(post.title),
-        description: post.excerpt,
-        published: post.date,
-        crumbs: [
-          ["Blog", "/blog"],
-          [post.title, path],
-        ],
-        extra: {
-          "@type": "BlogPosting",
-          headline: post.title,
-          description: post.excerpt,
-          datePublished: post.date,
-          dateModified: post.date,
-          articleSection: post.category,
-          url: abs(path),
-          mainEntityOfPage: abs(path),
-          image: abs(SITE.image),
-          author: { "@id": person["@id"] },
-          publisher: { "@id": person["@id"] },
         },
       };
     }

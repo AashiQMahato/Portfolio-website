@@ -10,7 +10,6 @@ export const techShape = PropTypes.shape({
   listed: PropTypes.bool,
   projects: PropTypes.arrayOf(PropTypes.shape({ title: PropTypes.string, href: PropTypes.string })).isRequired,
   roles: PropTypes.arrayOf(PropTypes.string).isRequired,
-  posts: PropTypes.arrayOf(PropTypes.shape({ title: PropTypes.string, href: PropTypes.string })).isRequired,
 });
 
 export const capabilityShape = PropTypes.shape({

@@ -23,12 +23,11 @@ import {
   siVite,
 } from "simple-icons";
 import { CV, projects, techPills } from "./portfolioData";
-import { blogPosts } from "./blogPosts";
 
 /**
  * Capabilities map. Each technology carries its official mark (Simple Icons:
  * path + brand hex), a one-line description of what the technology *is*, and
- * a pattern that finds it in project data, CV roles/projects and blog posts —
+ * a pattern that finds it in project data and CV roles/projects —
  * so every "where was this used" answer is derived from real content, never
  * hand-maintained and never a self-rated percentage. Technologies without an
  * official mark get a `code` monogram instead of an invented logo.
@@ -132,7 +131,6 @@ const projectText = (p) => {
 };
 
 const roleText = (e) => [e.role, ...e.bullets].join(" ");
-const postText = (b) => `${b.title} ${b.excerpt} ${b.content ?? ""}`;
 const listedSkills = [...CV.skills, ...techPills];
 
 export const capabilities = CAPABILITIES.map(({ items, ...cap }, ci) => {
@@ -147,7 +145,6 @@ export const capabilities = CAPABILITIES.map(({ items, ...cap }, ci) => {
       .filter((p) => pattern.test(projectText(p)))
       .map((p) => ({ title: p.title, href: `/projects/${p.slug}` })),
     roles: CV.experience.filter((e) => pattern.test(roleText(e))).map((e) => `${e.role} — ${e.company}`),
-    posts: blogPosts.filter((b) => pattern.test(postText(b))).map((b) => ({ title: b.title, href: `/blog/${b.slug}` })),
     listed: listedSkills.some((s) => pattern.test(s)),
   }));
   // Projects that use anything in this capability, most-connected first.
