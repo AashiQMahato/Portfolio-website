@@ -16,10 +16,7 @@ const LINES = [
   ["I", "build", "digital", "systems"],
   ["where", { w: "software", after: "," }],
   [{ w: "electronics" }, "and"],
-  [{ w: "interaction" }, "meet —"],
-  ["from", "sensor", "traces", "on", "a"],
-  ["breadboard", "to", "the", "interfaces"],
-  ["people", "actually", "touch."],
+  [{ w: "interaction" }, "meet."]
 ];
 const FULL = LINES.flat()
   .map((t) => (typeof t === "string" ? t : t.w + (t.after ?? "")))
@@ -164,7 +161,7 @@ const Statement = () => {
       className="statement-scope relative isolate overflow-x-clip py-[clamp(5rem,13vh,9.5rem)]"
     >
       {/* Ambient: faint coloured light pooled behind the chain, a vignette at the edges */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none -z-10">
         <div className="absolute right-[-10%] top-[18%] h-[60%] w-[70%] bg-[radial-gradient(closest-side,rgb(var(--c-process)/0.09),transparent)]" />
         <div className="absolute left-[-15%] top-[5%] h-[55%] w-[45%] bg-[radial-gradient(closest-side,rgb(var(--c-sense)/0.05),transparent)]" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[rgb(var(--background))] to-transparent" />
@@ -187,7 +184,7 @@ const Statement = () => {
                   className="absolute inset-0 origin-left bg-[linear-gradient(90deg,rgb(var(--c-sense)/0.9),rgb(var(--c-process)/0.5)_70%,transparent)]"
                 />
               </span>
-              <SectionAvatar mood="thinking" hover="curious" className="ml-auto h-10 w-10 md:h-12 md:w-12" />
+              <SectionAvatar mood="thinking" hover="curious" className="w-10 h-10 ml-auto md:h-12 md:w-12" />
             </div>
 
             <p className="text-[clamp(2rem,5vw,3rem)] xl:text-[clamp(2rem,2.82vw,3rem)] font-light leading-[1.28] tracking-[-0.03em] text-ink">
