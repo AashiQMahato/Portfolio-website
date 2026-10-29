@@ -691,11 +691,11 @@ const Companion = () => {
             data-cursor="button"
             className="companion-tip-card relative block rounded-2xl border px-3.5 py-2.5 text-left text-[0.8125rem] leading-snug text-ink shadow-lg backdrop-blur-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3d8bfd]"
           >
-            {tip.kind === "tip" && <span className="mb-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.16em] text-[#7fb2ff]">Tip</span>}
+            {tip.kind === "tip" && <span className="mb-0.5 block font-mono text-[0.625rem] uppercase tracking-[0.16em] text-[#1d4ed8] dark:text-[#7fb2ff]">Tip</span>}
             {typing ? (
               <span aria-hidden="true" className="flex h-[1.15rem] items-center gap-1 px-0.5">
                 {[0, 1, 2].map((i) => (
-                  <span key={i} className="companion-typing-dot h-1.5 w-1.5 rounded-full bg-[#7fb2ff]" style={{ animationDelay: `${i * 0.15}s` }} />
+                  <span key={i} className="companion-typing-dot h-1.5 w-1.5 rounded-full bg-[#3d8bfd]" style={{ animationDelay: `${i * 0.15}s` }} />
                 ))}
               </span>
             ) : (

@@ -347,7 +347,7 @@ const ConnectScene = () => {
           <path d="M76 68 V84" />
         </g>
       </svg>
-      <ul className="relative grid w-[86%] grid-cols-3 gap-[6%] rounded-xl border border-[rgb(var(--stage)/0.45)] bg-[rgb(10_11_20/0.75)] p-[6%] shadow-[0_0_40px_-12px_rgb(var(--stage)/0.6),inset_0_1px_0_rgb(255_255_255/0.06)] backdrop-blur-sm">
+      <ul className="relative grid w-[86%] grid-cols-3 gap-[6%] rounded-xl border border-[rgb(var(--stage)/0.45)] bg-background/70 p-[6%] shadow-[0_0_40px_-12px_rgb(var(--stage)/0.6),inset_0_1px_0_rgb(255_255_255/0.06)] backdrop-blur-sm">
         {[
           { label: "SIM800L GSM", node: <RadioTower aria-hidden="true" strokeWidth={1.6} className="h-[46%] w-[46%]" /> },
           { label: "Node.js", node: <Mark icon={siNodedotjs} label="Node.js" /> },
@@ -356,7 +356,7 @@ const ConnectScene = () => {
           <li
             key={t.label}
             title={t.label}
-            className="grid aspect-square place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-ink"
+            className="grid aspect-square place-items-center rounded-lg border border-ink/10 bg-ink/[0.04] text-ink"
           >
             {t.node}
             {t.label === "SIM800L GSM" && <span className="sr-only">{t.label}</span>}

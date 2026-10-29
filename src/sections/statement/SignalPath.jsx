@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { gsap, EASE } from "../../motion";
+import { useTheme } from "../../context/ThemeContext";
 import { techColor } from "../capabilities/techColor";
 import { STAGES, CHAIN } from "./stages";
 import { offsetBox } from "./wire";
@@ -22,23 +23,26 @@ const legs = [
   (a, b) => `C${a.x + (b.x - a.x) * 0.4} ${a.y + 22} ${b.x - (b.x - a.x) * 0.35} ${b.y - 52} ${b.x} ${b.y}`,
 ];
 
-/** Official mark (Simple Icons) or nothing — never an invented logo. The section is always dark. */
-const PartChip = ({ part }) => (
+/** Official mark (Simple Icons) or nothing — never an invented logo. */
+const PartChip = ({ part }) => {
+  const { theme } = useTheme();
+  return (
     <li className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 font-mono text-[0.6875rem] leading-none tracking-[0.04em] text-ink-dim">
       {part.icon && (
         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3 w-3 shrink-0">
-          <path d={part.icon.path} fill={techColor(`#${part.icon.hex}`, "dark")} />
+          <path d={part.icon.path} fill={techColor(`#${part.icon.hex}`, theme)} />
         </svg>
       )}
       {part.label}
     </li>
-);
+  );
+};
 PartChip.propTypes = { part: PropTypes.shape({ label: PropTypes.string.isRequired, icon: PropTypes.object }).isRequired };
 
 const Pill = ({ stage }) => {
   const { pill } = stage;
   const cls =
-    "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[rgb(var(--stage)/0.55)] bg-[rgb(8_9_14/0.85)] px-3 py-1.5 text-[0.75rem] leading-none text-ink shadow-[0_0_24px_-6px_rgb(var(--stage)/0.6)] backdrop-blur";
+    "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[rgb(var(--stage)/0.55)] bg-background/85 px-3 py-1.5 text-[0.75rem] leading-none text-ink shadow-[0_0_24px_-6px_rgb(var(--stage)/0.6)] backdrop-blur";
   if (pill.to) {
     return (
       <Link

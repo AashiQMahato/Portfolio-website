@@ -69,7 +69,7 @@ const FULL = LINES.flat()
 
 /** What each card shows: a slice of the real résumé. */
 const Sheet = ({ id }) => {
-  const row = "border-b border-white/[0.06] pb-2.5 last:border-0 last:pb-0";
+  const row = "border-b border-ink/10 pb-2.5 last:border-0 last:pb-0";
   if (id === "sense") {
     return (
       <ul className="space-y-2.5">
@@ -109,7 +109,7 @@ const Sheet = ({ id }) => {
   return (
     <ul className="flex flex-wrap gap-1.5">
       {CV.skills.map((s) => (
-        <li key={s} className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[0.625rem] leading-relaxed text-ink/80">
+        <li key={s} className="rounded-full border border-ink/10 bg-ink/[0.04] px-2 py-0.5 font-mono text-[0.625rem] leading-relaxed text-ink/80">
           {s}
         </li>
       ))}
@@ -167,7 +167,7 @@ const Part = ({ part, on, dim, pinned, setProbe, setPinned }) => (
       </div>
       <span
         data-pill
-        className="absolute -bottom-3 left-4 z-10 whitespace-nowrap rounded-full border border-[rgb(var(--stage)/0.55)] bg-[rgb(8_9_14/0.9)] px-3 py-1.5 text-[0.75rem] leading-none tabular-nums text-ink shadow-[0_0_24px_-6px_rgb(var(--stage)/0.6)]"
+        className="absolute -bottom-3 left-4 z-10 whitespace-nowrap rounded-full border border-[rgb(var(--stage)/0.55)] bg-background/90 px-3 py-1.5 text-[0.75rem] leading-none tabular-nums text-ink shadow-[0_0_24px_-6px_rgb(var(--stage)/0.6)]"
       >
         {part.pill}
       </span>
@@ -427,7 +427,7 @@ const ResumeCta = () => {
             href="/AashikKumarMahatoResume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex max-w-md items-center gap-4 rounded-xl border border-line bg-white/[0.02] p-3 pr-4 transition-colors duration-300 hover:border-[rgb(var(--c-connect)/0.6)] focus-visible:outline-offset-4"
+            className="group flex max-w-md items-center gap-4 rounded-xl border border-line bg-ink/[0.02] p-3 pr-4 transition-colors duration-300 hover:border-[rgb(var(--c-connect)/0.6)] focus-visible:outline-offset-4"
           >
             <span className="grid h-14 w-11 shrink-0 place-items-center rounded-[4px] border border-[rgb(var(--c-connect)/0.45)] bg-[rgb(var(--c-connect)/0.08)] shadow-[0_0_24px_-8px_rgb(var(--c-connect)/0.7)] transition-transform duration-500 ease-out group-hover:-translate-y-0.5 group-hover:-rotate-3">
               <FileText aria-hidden="true" strokeWidth={1.5} className="h-5 w-5 text-[rgb(var(--c-connect))]" />
